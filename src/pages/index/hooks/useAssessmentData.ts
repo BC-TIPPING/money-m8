@@ -141,7 +141,20 @@ export function useAssessmentData(assessment: AssessmentState) {
             assessment.setEmploymentStatus(typedAssessment.employment_status ?? undefined);
             assessment.setHasRegularIncome(typedAssessment.has_regular_income ?? undefined);
             assessment.setIncomeSources((typedAssessment.income_sources as any) || [{ category: "", amount: "", frequency: "Monthly" }]);
-            assessment.setExpenseItems((typedAssessment.expense_items as any) || PRELOADED_EXPENSE_CATEGORIES.map((c) => ({ category: c, amount: "", frequency: "Weekly" })));
+            
+            const oldExpenseItems = (typedAssessment.expense_items as any[]) || [];
+            const preservedData = new Map(oldExpenseItems.map(item => [item.category, item]));
+
+            const newExpenseItems = PRELOADED_EXPENSE_CATEGORIES.map(category => {
+                const oldItem = preservedData.get(category);
+                return {
+                    category,
+                    amount: oldItem?.amount || '',
+                    frequency: oldItem?.frequency || 'Monthly',
+                };
+            });
+            assessment.setExpenseItems(newExpenseItems);
+            
             assessment.setFinancialKnowledgeLevel(typedAssessment.financial_knowledge_level ?? undefined);
             assessment.setInvestmentExperience(typedAssessment.investment_experience ?? []);
             assessment.setOtherGoal(typedAssessment.other_goal ?? "");
@@ -165,7 +178,7 @@ export function useAssessmentData(assessment: AssessmentState) {
     assessment.setEmploymentStatus(undefined);
     assessment.setHasRegularIncome(undefined);
     assessment.setIncomeSources([{ category: "", amount: "", frequency: "Monthly" }]);
-    assessment.setExpenseItems(PRELOADED_EXPENSE_CATEGORIES.map((c) => ({ category: c, amount: "", frequency: "Weekly" })));
+    assessment.setExpenseItems(PRELOADED_EXPENSE_CATEGORIES.map((c) => ({ category: c, amount: "", frequency: "Monthly" })));
     assessment.setFinancialKnowledgeLevel(undefined);
     assessment.setInvestmentExperience([]);
     assessment.setGoals([]);
