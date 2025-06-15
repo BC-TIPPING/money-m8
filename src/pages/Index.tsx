@@ -204,14 +204,7 @@ export default function Index() {
         )}
         {isComplete && (
             <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-20 flex gap-4">
-                <Button 
-                    onClick={handleStartOver}
-                    variant="secondary"
-                    className="shadow-lg"
-                >
-                    Select a New Goal
-                </Button>
-                {aiSummary && (
+                {!aiSummary && (
                     <Button 
                         onClick={() => generateSummary({ personality: 'dave_ramsey' })}
                         variant="destructive"
@@ -223,7 +216,16 @@ export default function Index() {
                                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                                 Getting tough...
                             </>
-                        ) : "Get Dave Ramsey's Tough Love"}
+                        ) : "Tough Love"}
+                    </Button>
+                )}
+                {aiSummary && (
+                    <Button 
+                        onClick={handleStartOver}
+                        variant="secondary"
+                        className="shadow-lg"
+                    >
+                        Select a New Goal
                     </Button>
                 )}
             </div>
