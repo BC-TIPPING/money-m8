@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -42,6 +41,16 @@ interface CalculationResult {
   newTerm: string;
   error?: string;
 }
+
+const formatTerm = (years: number, months: number): string => {
+    const yearText = years > 0 ? `${years} Yr` : null;
+    const monthText = months > 0 ? `${months} M` : null;
+
+    if (yearText && monthText) {
+        return `${yearText} & ${monthText}`;
+    }
+    return yearText || monthText || '0 M';
+};
 
 const calculateLoanDetails = (values: CalculatorFormValues): CalculationResult => {
   const { loanAmount, loanTerm, interestRate, extraRepayment, repaymentFrequency } = values;
@@ -119,10 +128,10 @@ const calculateLoanDetails = (values: CalculatorFormValues): CalculationResult =
 
   return {
     monthlyPayment,
-    timeSaved: `${yearsSaved} years and ${monthsSaved} months`,
+    timeSaved: formatTerm(yearsSaved, monthsSaved),
     interestSaved: interestSaved,
-    originalTerm: `${originalTermYears} years and ${originalTermMonths} months`,
-    newTerm: `${newTermYears} years and ${newTermMonths} months`,
+    originalTerm: formatTerm(originalTermYears, originalTermMonths),
+    newTerm: formatTerm(newTermYears, newTermMonths),
   };
 };
 
