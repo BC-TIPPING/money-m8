@@ -26,70 +26,43 @@ export type Database = {
           income_sources: Json | null
           investment_experience: string[] | null
           other_goal: string | null
-          user_id: string
-        }
-        Insert: {
-          created_at?: string
-          debt_details?: Json | null
-          debt_management_confidence?: string | null
-          debt_types?: string[] | null
-          employment_status?: string | null
-          expense_items?: Json | null
-          financial_knowledge_level?: string | null
-          free_text_comments?: string | null
-          goal_timeframe?: string | null
-          goals?: string[] | null
-          has_regular_income?: boolean | null
-          id?: string
-          income_sources?: Json | null
-          investment_experience?: string[] | null
-          other_goal?: string | null
-          user_id: string
-        }
-        Update: {
-          created_at?: string
-          debt_details?: Json | null
-          debt_management_confidence?: string | null
-          debt_types?: string[] | null
-          employment_status?: string | null
-          expense_items?: Json | null
-          financial_knowledge_level?: string | null
-          free_text_comments?: string | null
-          goal_timeframe?: string | null
-          goals?: string[] | null
-          has_regular_income?: boolean | null
-          id?: string
-          income_sources?: Json | null
-          investment_experience?: string[] | null
-          other_goal?: string | null
-          user_id?: string
-        }
-        Relationships: []
-      }
-      profiles: {
-        Row: {
-          avatar_url: string | null
-          full_name: string | null
-          id: string
-          updated_at: string | null
           username: string | null
-          website: string | null
         }
         Insert: {
-          avatar_url?: string | null
-          full_name?: string | null
-          id: string
-          updated_at?: string | null
+          created_at?: string
+          debt_details?: Json | null
+          debt_management_confidence?: string | null
+          debt_types?: string[] | null
+          employment_status?: string | null
+          expense_items?: Json | null
+          financial_knowledge_level?: string | null
+          free_text_comments?: string | null
+          goal_timeframe?: string | null
+          goals?: string[] | null
+          has_regular_income?: boolean | null
+          id?: string
+          income_sources?: Json | null
+          investment_experience?: string[] | null
+          other_goal?: string | null
           username?: string | null
-          website?: string | null
         }
         Update: {
-          avatar_url?: string | null
-          full_name?: string | null
+          created_at?: string
+          debt_details?: Json | null
+          debt_management_confidence?: string | null
+          debt_types?: string[] | null
+          employment_status?: string | null
+          expense_items?: Json | null
+          financial_knowledge_level?: string | null
+          free_text_comments?: string | null
+          goal_timeframe?: string | null
+          goals?: string[] | null
+          has_regular_income?: boolean | null
           id?: string
-          updated_at?: string | null
+          income_sources?: Json | null
+          investment_experience?: string[] | null
+          other_goal?: string | null
           username?: string | null
-          website?: string | null
         }
         Relationships: []
       }

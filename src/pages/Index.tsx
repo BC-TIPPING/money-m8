@@ -2,9 +2,7 @@
 import LandingSection from "./index/LandingSection";
 import AssessmentStepper from "./index/AssessmentStepper";
 import { useAssessmentState, questions } from "./index/assessmentHooks";
-import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
-import { useAuth } from "@/hooks/useAuth";
 import { useEffect, useState } from "react";
 import { useMutation } from "@tanstack/react-query";
 import { useToast } from "@/components/ui/use-toast";
@@ -14,19 +12,17 @@ type AssessmentInsert = Database['public']['Tables']['assessments']['Insert'];
 
 export default function Index() {
   const assessment = useAssessmentState();
-  const { user } = useAuth();
   const { toast } = useToast();
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const [username, setUsername] = useState<string | null>(null);
 
   const isComplete = assessment.step >= questions.length;
 
   const { mutate: saveAssessment, isPending: isSaving } = useMutation({
-    mutationFn: async (assessmentData: Omit<AssessmentInsert, 'user_id' | 'id' | 'created_at'>) => {
-      if (!user) throw new Error("User not authenticated");
-
+    mutationFn: async (assessmentData: AssessmentInsert) => {
       const { data, error } = await supabase
         .from('assessments')
-        .insert([{ ...assessmentData, user_id: user.id }])
+        .insert([assessmentData])
         .select();
 
       if (error) throw error;
@@ -42,8 +38,9 @@ export default function Index() {
   });
 
   useEffect(() => {
-    if (isComplete && !isSubmitted && !isSaving) {
-      const dbData: Omit<AssessmentInsert, 'user_id' | 'id' | 'created_at'> = {
+    if (isComplete && !isSubmitted && !isSaving && username) {
+      const dbData: AssessmentInsert = {
+        username,
         employment_status: assessment.employmentStatus,
         has_regular_income: assessment.hasRegularIncome,
         income_sources: assessment.incomeSources,
@@ -60,22 +57,18 @@ export default function Index() {
       };
       saveAssessment(dbData);
     }
-  }, [isComplete, isSubmitted, isSaving, saveAssessment, assessment, user]);
+  }, [isComplete, isSubmitted, isSaving, saveAssessment, assessment, username]);
 
 
-  const handleStartAssessment = (goal: string) => {
+  const handleStartAssessment = (goal: string, newUsername: string) => {
     assessment.setGoals([goal]);
+    setUsername(newUsername);
     assessment.setShowAssessment(true);
-  };
-
-  const handleLogout = async () => {
-    await supabase.auth.signOut();
   };
   
   if (!assessment.showAssessment) {
     return (
       <div className="relative min-h-screen">
-        <Button onClick={handleLogout} variant="ghost" className="absolute top-4 right-4 z-10">Logout</Button>
         <LandingSection onStartAssessment={handleStartAssessment} />
       </div>
     );
@@ -83,7 +76,6 @@ export default function Index() {
 
   return (
     <div className="relative min-h-screen">
-        <Button onClick={handleLogout} variant="ghost" className="absolute top-4 right-4 z-10">Logout</Button>
         <AssessmentStepper {...assessment} />
     </div>
   );
