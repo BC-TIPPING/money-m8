@@ -1,6 +1,8 @@
 
 import "https://deno.land/x/xhr@0.1.0/mod.ts";
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { calculateMonthlyAmount } from './utils/calculations.ts';
+import { generateMainPrompt } from './prompts/mainPrompt.ts';
 
 const openAIApiKey = Deno.env.get('OPENAI_API_KEY');
 
@@ -8,48 +10,6 @@ const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
-
-function calculateMonthlyAmount(items: {amount: string, frequency: string}[]) {
-    let totalMonthly = 0;
-    if (!items || !Array.isArray(items)) return 0;
-
-    for (const item of items) {
-        if (!item.amount) continue;
-        const amount = parseFloat(item.amount);
-        if (isNaN(amount)) continue;
-
-        switch (item.frequency) {
-            case 'Weekly':
-                totalMonthly += amount * 4.33;
-                break;
-            case 'Fortnightly':
-                totalMonthly += amount * 2.165;
-                break;
-            case 'Monthly':
-                totalMonthly += amount;
-                break;
-            case 'Annually':
-                totalMonthly += amount / 12;
-                break;
-        }
-    }
-    return totalMonthly;
-}
-
-function formatForPrompt(data: any) {
-    if (!data) return 'Not provided';
-    if (Array.isArray(data) && data.length === 0) return 'None';
-    if (Array.isArray(data)) return data.join(', ');
-    if (typeof data === 'object' && data !== null) {
-      // Don't stringify empty objects or arrays within objects
-      const filteredData = Array.isArray(data) 
-        ? data.filter(item => Object.values(item).some(v => v !== '' && v !== null))
-        : data;
-      if (Array.isArray(filteredData) && filteredData.length === 0) return 'None';
-      return JSON.stringify(filteredData, null, 2);
-    }
-    return String(data);
-}
 
 serve(async (req) => {
   // Handle CORS preflight requests
@@ -67,11 +27,7 @@ serve(async (req) => {
       });
     }
 
-    const {
-        username, goals, other_goal, goal_timeframe, employment_status, income_sources, 
-        expense_items, debt_types, debt_details, debt_management_confidence, 
-        financial_knowledge_level, investment_experience, free_text_comments
-    } = assessmentData;
+    const { username, income_sources, expense_items } = assessmentData;
 
     const totalMonthlyIncome = calculateMonthlyAmount(income_sources);
     const totalMonthlyExpenses = calculateMonthlyAmount(expense_items);
@@ -83,160 +39,8 @@ serve(async (req) => {
     } else if (totalMonthlyIncome > 0) {
         savingsCallout = `- It looks like your expenses might be higher than your income right now. That's okay, we can look at strategies to manage this.`;
     }
-
-    const primaryGoal = goals && goals.length > 0 ? goals[0] : 'Not specified';
-
-    let goalSpecificInstructions = '';
-
-    switch (primaryGoal) {
-        case 'Reduce debt':
-            goalSpecificInstructions = `
-**Debt Reduction Scenarios (Snowball Method)**
-- Recap their current debts from the data provided (type, balance, interest rate, and monthly repayment).
-- The "debt snowball" strategy focuses on paying off the debt with the lowest balance first, while making minimum payments on all other debts. Once a debt is paid off, its minimum payment is rolled into the payment for the next-smallest debt.
-
-- **Here is how you MUST calculate the scenarios:**
-  - For each extra weekly repayment scenario ($0, $50, $100, $200, $500), you must perform a month-by-month simulation.
-  - Convert the extra weekly payment to a monthly amount by multiplying by 4.33.
-  - The total monthly payment for debts is the sum of all minimum monthly repayments plus the extra monthly amount.
-  - **Simulation Example:** Let's say we have two debts:
-    1.  Credit Card: $2,000 balance, $50 min. payment, 20% interest rate.
-    2.  Car Loan: $8,000 balance, $200 min. payment, 8% interest rate.
-    - And we add an extra $50/week (approx $217/month).
-    - The lowest balance debt is the Credit Card. It's the "snowball" target.
-    - Total monthly debt payment = $50 + $200 + $217 = $467.
-    - **Month 1:**
-      - First, calculate and add interest for the month to each loan's balance.
-      - CC Interest: $2,000 * (0.20 / 12) = $33.33. New CC Balance: $2,033.33.
-      - Car Loan Interest: $8,000 * (0.08 / 12) = $53.33. New Car Loan Balance: $8,053.33.
-      - Then, apply payments. You pay the minimum on the Car Loan: $200.
-      - The rest of the budget goes to the Credit Card: $467 - $200 = $267.
-      - Final CC Balance: $2,033.33 - $267 = $1,766.33.
-      - Final Car Loan Balance: $8,053.33 - $200 = $7,853.33.
-    - **Continue this simulation month by month.** When the Credit Card is paid off, its $50 minimum payment gets added to the Car Loan payment. The new Car Loan payment becomes $250 + $217 = $467.
-  - After running the simulation for each scenario, you will have the total months to be debt-free.
-
-- **Create a markdown table** to show the results. The columns MUST be: "Extra Weekly Repayment", "Paid off sooner by", "Total Interest Saved", "Debt-Free Date".
-- **"Paid off sooner by"** is the difference in time between the "$0 extra" scenario payoff time and the current scenario's payoff time. It should be in years and months (e.g., "1 year, 2 months"). For the "$0 extra" row, this value should be "-".
-- **"Total Interest Saved"** is the interest paid in the "$0 extra" scenario minus the interest paid in the current scenario.
-- **"Debt-Free Date"** is calculated from today. It should be formatted as Month YYYY (e.g., "Jun 2027").
-- You **MUST** output real numbers in the table, not placeholders like [Time] or [Amount].
-- Provide a motivational summary highlighting how a small extra contribution can save thousands of dollars and years of repayments.
-- Use Australian currency ($) and provide all monetary values formatted nicely (e.g., $5,123.45).
-
-- **CHART DATA INSTRUCTIONS (VERY IMPORTANT):**
-- After the entire markdown summary, on a new line, you MUST provide a JSON object prefixed with \`CHART_DATA::\`.
-- This JSON object must contain a key \`debtReductionData\`, which is an array of objects for the chart.
-- Each object in the array represents a month in the simulation.
-- Each object MUST have a \`month\` key (0, 1, 2, ...) and keys for the remaining total debt balance for each scenario.
-- The keys for the scenarios MUST be: \`no_extra\`, \`50_extra\`, \`100_extra\`, \`200_extra\`, \`500_extra\`.
-- The data must continue until the debt is fully paid off in the longest scenario (\`no_extra\`).
-- **Example JSON output:**
-\`\`\`json
-CHART_DATA::{"debtReductionData": [{"month": 0, "no_extra": 20000, "50_extra": 20000, "100_extra": 20000, "200_extra": 20000, "500_extra": 20000}, {"month": 1, "no_extra": 19800, "50_extra": 19600, "100_extra": 19400, "200_extra": 19000, "500_extra": 18200}]}
-\`\`\`
-            `;
-            break;
-        case 'Buy a house':
-            goalSpecificInstructions = `
-**Home Deposit Savings Plan**
-- Analyze their current income and expenses to suggest a potential monthly savings amount.
-- Create a markdown table showing a savings timeline. The columns should be "Monthly Savings", "Time to Reach $50k Deposit", "Time to Reach $100k Deposit".
-- Show scenarios for 3 different monthly savings amounts (e.g., current potential, +$200, +$500).
-- Assume savings grow with a modest 2% p.a. interest rate in a high-yield savings account.
-- Add a section with mortgage affordability estimates based on their income, and provide 3 brief tips for first-home buyers in Australia.
-            `;
-            break;
-        case 'Pay off home loan sooner':
-            goalSpecificInstructions = `
-**Mortgage Payoff Accelerator**
-- Based on their debt details (assuming one is a home loan), create a scenario analysis.
-- If no home loan is listed, provide a general example for a hypothetical $500,000 loan over 30 years at 6% p.a.
-- Create a markdown table showing the impact of extra monthly repayments.
-- The columns should be: "Extra Monthly Repayment", "New Loan Term", "Total Interest Saved".
-- Show scenarios for an extra $0, $200, $500, and $1000 per month.
-- Include a summary of how much time and money they can save.
-- Add some motivational emojis. 🚀
-            `;
-            break;
-        case 'Grow investments':
-            goalSpecificInstructions = `
-**Investment Growth Forecaster**
-- Create a markdown table forecasting investment growth. Assume a starting investment of $5,000 and a 7% annual return, as the user has not provided their current investment details.
-- The columns should be: "Monthly Contribution", "Portfolio Value in 10 Years", "Portfolio Value in 20 Years", "Total Interest Earned in 20 Years".
-- Show scenarios for monthly contributions of $250, $500, and $1000.
-- Explain the power of compound interest using these figures.
-            `;
-            break;
-        case 'Improve financial literacy':
-             goalSpecificInstructions = `
-**Your Financial Literacy Boost**
-- **The Barefoot Investor Steps:** Provide a simplified summary of the core "Barefoot Investor" steps as a markdown checklist (e.g., Set up your buckets, Domino your debts, etc.).
-- **Key Concepts Explained Simply:**
-    - **Compound Interest:** Explain what it is with a simple, relatable example.
-    - **Budgeting:** Explain the "why" behind budgeting, not just the "how".
-    - **Good Debt vs. Bad Debt:** Give clear examples of each.
-- Encourage them to start with one small area to learn about.
-            `;
-            break;
-        default:
-            goalSpecificInstructions = `
-**Your Action Plan**
-- Provide a set of 3-5 actionable next steps tailored to their goal of "${primaryGoal}".
-- These steps should be simple, clear, and encouraging.
-            `;
-    }
-
-    const prompt = `
-You are ClearFin.AI, a friendly and encouraging financial assistant providing advice for an Australian audience. Based on the following financial assessment data for a user named ${username || 'there'}, provide a detailed financial health check.
-
-**Structure your response in three sections using markdown. Use emojis to make it engaging.**
-
----
-
-### Section 1: Your Financial Snapshot 📸
-
-- Start with a warm greeting to ${username || 'there'}.
-${savingsCallout}
-- Provide a concise summary of their current financial situation (income, expenses, debt) based on the data provided.
-- Highlight one positive aspect of their current situation.
-- Keep the tone positive and empowering.
-
----
-
-### Section 2: Progressing Towards Your Goal 🎯
-
-- Acknowledge their primary goal: **${primaryGoal}**.
-- Compare their goal with their current financial habits (e.g., "To reach your goal of buying a house, let's look at how your current savings align with that...").
-- Offer gentle, encouraging advice on how they can start moving towards their goal.
-
----
-
-### Section 3: Analysis & Scenarios 🔬
-
-- **Financial Literacy Score:** Provide a "Financial Literacy Score" (e.g., Budding Saver, Confident Investor, Financial Pro) based on their self-assessed knowledge and investment experience. Give a one-sentence explanation for the score.
-- **Goal-Specific Scenarios:**
-${goalSpecificInstructions}
-
----
-
-End with a motivational closing statement, encouraging them to take the first step.
-
-**User's Data:**
-- **Potential Monthly Savings:** $${potentialMonthlySavings.toFixed(2)}
-- **Primary Goal(s):** ${formatForPrompt(goals)}
-- **Other Goal:** ${formatForPrompt(other_goal)}
-- **Goal Timeframe:** ${formatForPrompt(goal_timeframe)}
-- **Employment:** ${formatForPrompt(employment_status)}
-- **Income Sources:** ${formatForPrompt(income_sources)}
-- **Monthly Expenses:** ${formatForPrompt(expense_items)}
-- **Current Debts:** ${formatForPrompt(debt_types)}
-- **Debt Details:** ${formatForPrompt(debt_details)}
-- **Confidence in Managing Debt:** ${formatForPrompt(debt_management_confidence)}
-- **Financial Knowledge Level:** ${formatForPrompt(financial_knowledge_level)}
-- **Investment Experience:** ${formatForPrompt(investment_experience)}
-- **Additional Comments:** ${formatForPrompt(free_text_comments)}
-    `.trim();
+    
+    const prompt = generateMainPrompt(assessmentData, potentialMonthlySavings, savingsCallout);
 
     console.log(`Generating financial summary for: ${username}`);
 
