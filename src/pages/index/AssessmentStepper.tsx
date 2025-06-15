@@ -121,15 +121,7 @@ const AssessmentStepper: React.FC<AssessmentStepperProps> = (props) => {
     }
   };
 
-  const questionsWithUpload = [
-    {
-      id: "upload",
-      title: "Import Your Budget (Optional)",
-      subtitle: "Upload a CSV or PDF to fill in your info faster, or continue manually.",
-      type: "upload"
-    },
-    ...questions
-  ];
+  const questionsWithUpload = questions;
 
   const goalsStepIdx = questionsWithUpload.findIndex(q => q.id === "goals");
   const pastGoalsStep = step >= goalsStepIdx && goals.length > 0;

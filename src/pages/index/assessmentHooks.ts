@@ -55,6 +55,12 @@ export const questions = [
     type: "income-list"
   },
   {
+    id: "upload",
+    title: "Import Your Budget (Optional)",
+    subtitle: "Upload a CSV or PDF to fill in your info faster, or continue manually.",
+    type: "upload"
+  },
+  {
     id: "expenses",
     title: "What are your main expenses?",
     subtitle: "Add your regular expense categories",
