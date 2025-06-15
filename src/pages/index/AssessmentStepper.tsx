@@ -27,6 +27,7 @@ import {
 } from "./assessmentHooks";
 import { supabase } from "@/integrations/supabase/client";
 import FileAnalysisReport from "./FileAnalysisReport";
+import { calculateMonthlyAmount, calculateAustralianIncomeTax } from "@/lib/financialCalculations";
 
 const CenteredCard = ({ children }: { children: React.ReactNode }) => (
   <section className="w-full flex flex-col items-center min-h-[100dvh] justify-center px-4 pt-8 pb-10">
@@ -463,7 +464,12 @@ const AssessmentStepper: React.FC<AssessmentStepperProps> = (props) => {
               </div>
             );
           
-          case "income-list":
+          case "income-list": {
+            const totalMonthlyGross = calculateMonthlyAmount(incomeSources);
+            const totalAnnualGross = totalMonthlyGross * 12;
+            const annualTax = calculateAustralianIncomeTax(totalAnnualGross);
+            const totalMonthlyNet = totalAnnualGross > 0 ? (totalAnnualGross - annualTax) / 12 : 0;
+
             return (
               <div className="space-y-4">
                 {incomeSources.map((src, idx) => (
@@ -513,8 +519,19 @@ const AssessmentStepper: React.FC<AssessmentStepperProps> = (props) => {
                   </div>
                 ))}
                 <Button variant="outline" size="sm" onClick={addIncomeSource}>+ Add Income Source</Button>
+
+                {totalMonthlyGross > 0 && (
+                  <div className="pt-6 mt-6 border-t border-gray-200">
+                    <div className="flex justify-between items-center text-base">
+                      <p className="font-medium text-gray-700">Estimated monthly take-home pay:</p>
+                      <p className="font-bold text-lg text-gray-900">${totalMonthlyNet.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
+                    </div>
+                    <p className="text-sm text-muted-foreground text-right mt-1">Based on a gross monthly income of ${totalMonthlyGross.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}.</p>
+                  </div>
+                )}
               </div>
             );
+          }
           
           case "expense-list":
             return (

@@ -34,8 +34,8 @@ export const questions = [
   },
   {
     id: "incomeSources",
-    title: "Income Sources",
-    subtitle: "Please specify your sources of income.",
+    title: "Gross Income Sources",
+    subtitle: "Please specify your sources of pre-tax income.",
     type: "income-list",
   },
   {
