@@ -54,14 +54,37 @@ serve(async (req) => {
         case 'Reduce debt':
             goalSpecificInstructions = `
 **Debt Reduction Scenarios (Snowball Method)**
-- Recap their current debts from the data provided (type, balance, interest rate).
-- Their current total monthly repayments are the sum of individual debt repayments.
-- Create a markdown table to illustrate the power of extra repayments. The columns should be: "Extra Weekly Repayment", "New Payoff Time", "Total Interest Saved", "Debt-Free Date".
-- Show scenarios for paying an extra $0, $25, $50, and $75 per week.
-- For your calculations, assume a 'debt snowball' strategy where extra payments are allocated to the debt with the lowest balance first, while making minimum payments on others. Once a debt is paid off, its payment rolls over to the next-smallest debt.
-- Perform the amortization calculations carefully to determine the payoff time and interest saved for each scenario. Calculate the debt-free date from today, ${new Date().toISOString().split('T')[0]}.
+- Recap their current debts from the data provided (type, balance, interest rate, and monthly repayment).
+- The "debt snowball" strategy focuses on paying off the debt with the lowest balance first, while making minimum payments on all other debts. Once a debt is paid off, its minimum payment is rolled into the payment for the next-smallest debt.
+
+- **Here is how you MUST calculate the scenarios:**
+  - For each extra weekly repayment scenario ($0, $25, $50, $75), you must perform a month-by-month simulation.
+  - Convert the extra weekly payment to a monthly amount by multiplying by 4.33.
+  - The total monthly payment for debts is the sum of all minimum monthly repayments plus the extra monthly amount.
+  - **Simulation Example:** Let's say we have two debts:
+    1.  Credit Card: $2,000 balance, $50 min. payment, 20% interest rate.
+    2.  Car Loan: $8,000 balance, $200 min. payment, 8% interest rate.
+    - And we add an extra $50/week (approx $217/month).
+    - The lowest balance debt is the Credit Card. It's the "snowball" target.
+    - Total monthly debt payment = $50 + $200 + $217 = $467.
+    - **Month 1:**
+      - First, calculate and add interest for the month to each loan's balance.
+      - CC Interest: $2,000 * (0.20 / 12) = $33.33. New CC Balance: $2,033.33.
+      - Car Loan Interest: $8,000 * (0.08 / 12) = $53.33. New Car Loan Balance: $8,053.33.
+      - Then, apply payments. You pay the minimum on the Car Loan: $200.
+      - The rest of the budget goes to the Credit Card: $467 - $200 = $267.
+      - Final CC Balance: $2,033.33 - $267 = $1,766.33.
+      - Final Car Loan Balance: $8,053.33 - $200 = $7,853.33.
+    - **Continue this simulation month by month.** When the Credit Card is paid off, its $50 minimum payment gets added to the Car Loan payment. The new Car Loan payment becomes $250 + $217 = $467.
+  - After running the simulation for each scenario, you will have the total months to be debt-free.
+
+- **Create a markdown table** to show the results. The columns MUST be: "Extra Weekly Repayment", "New Payoff Time", "Total Interest Saved", "Debt-Free Date".
+- **"New Payoff Time"** should be in years and months (e.g., "3 years, 4 months").
+- **"Total Interest Saved"** is the interest paid in the "$0 extra" scenario minus the interest paid in the current scenario.
+- **"Debt-Free Date"** is calculated from today: ${new Date().toLocaleDateString('en-AU', { year: 'numeric', month: 'long', day: 'numeric' })}.
+- You **MUST** output real numbers in the table, not placeholders like [Time] or [Amount].
 - Provide a motivational summary highlighting how a small extra contribution can save thousands of dollars and years of repayments.
-- Use Australian currency ($) and provide all monetary values formatted nicely.
+- Use Australian currency ($) and provide all monetary values formatted nicely (e.g., $5,123.45).
             `;
             break;
         case 'Buy a house':
