@@ -1,4 +1,3 @@
-
 import LandingSection from "./index/LandingSection";
 import AssessmentStepper from "./index/AssessmentStepper";
 import { useAssessmentState, questions, PRELOADED_EXPENSE_CATEGORIES } from "./index/assessmentHooks";
@@ -187,7 +186,7 @@ export default function Index() {
     <div className="relative min-h-screen">
         <AssessmentStepper 
           {...assessment} 
-          generateSummary={() => generateSummary()}
+          generateSummary={() => generateSummary({})}
           isGeneratingSummary={isGeneratingSummary}
           aiSummary={aiSummary}
           chartData={chartData}
