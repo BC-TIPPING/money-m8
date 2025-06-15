@@ -1,6 +1,7 @@
+
 import React from "react";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, ArrowLeft } from "lucide-react";
+import { ArrowRight, ArrowLeft, Check } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
@@ -24,7 +25,7 @@ import {
 
 const CenteredCard = ({ children }: { children: React.ReactNode }) => (
   <section className="w-full flex flex-col items-center min-h-[100dvh] justify-center px-4 pt-8 pb-10">
-    <div className="relative w-full max-w-2xl rounded-2xl shadow-2xl p-8 md:p-12 bg-white border border-gray-200">
+    <div className="relative w-full max-w-2xl rounded-2xl shadow-2xl p-8 md:p-12 bg-card border border-border">
       {children}
     </div>
   </section>
@@ -167,14 +168,14 @@ const AssessmentStepper: React.FC<AssessmentStepperProps> = (props) => {
             >
               {uploadedFile ? `Uploaded: ${uploadedFile.name}` : "Upload CSV or PDF"}
             </Button>
-            <div className="text-gray-500 text-xs">
+            <div className="text-muted-foreground text-xs">
               You can import your bank statement, budget, or expenses PDF/CSV.
             </div>
           </div>
           <div className="flex items-center justify-center mt-2">
-            <span className="text-gray-500 text-sm">Or</span>
+            <span className="text-muted-foreground text-sm">Or</span>
           </div>
-          <div className="mt-2 text-center text-gray-700 text-base">
+          <div className="mt-2 text-center text-foreground/80 text-base">
             Continue to manually enter your financial details.
           </div>
         </div>
@@ -186,7 +187,7 @@ const AssessmentStepper: React.FC<AssessmentStepperProps> = (props) => {
         <div className="space-y-4">
           {expenseItems.map((exp, idx) => (
             <div className="flex gap-3 items-center" key={exp.category}>
-              <span className="flex-1 text-gray-900">{exp.category}</span>
+              <span className="flex-1 text-foreground">{exp.category}</span>
               <Input
                 placeholder="Amount ($)"
                 type="number"
@@ -211,29 +212,42 @@ const AssessmentStepper: React.FC<AssessmentStepperProps> = (props) => {
       (() => {
         switch (question.type) {
           case "radio":
-            return (
-              <RadioGroup 
-                value={question.id === "employment" ? employmentStatus : 
+            const radioValue = question.id === "employment" ? employmentStatus : 
                        question.id === "incomeConfidence" ? incomeConfidence :
                        question.id === "financialKnowledge" ? financialKnowledgeLevel :
                        question.id === "goalTimeframe" ? goalTimeframe :
-                       question.id === "debtConfidence" ? debtManagementConfidence : ""} 
-                onValueChange={(value) => {
-                  if (question.id === "employment") setEmploymentStatus(value);
-                  else if (question.id === "incomeConfidence") setIncomeConfidence(value);
-                  else if (question.id === "financialKnowledge") setFinancialKnowledgeLevel(value);
-                  else if (question.id === "goalTimeframe") setGoalTimeframe(value);
-                  else if (question.id === "debtConfidence") setDebtManagementConfidence(value);
-                }}
+                       question.id === "debtConfidence" ? debtManagementConfidence : "";
+            const onRadioChange = (value: string) => {
+              if (question.id === "employment") setEmploymentStatus(value);
+              else if (question.id === "incomeConfidence") setIncomeConfidence(value);
+              else if (question.id === "financialKnowledge") setFinancialKnowledgeLevel(value);
+              else if (question.id === "goalTimeframe") setGoalTimeframe(value);
+              else if (question.id === "debtConfidence") setDebtManagementConfidence(value);
+            }
+            return (
+              <RadioGroup 
+                value={radioValue}
+                onValueChange={onRadioChange}
                 className="space-y-3"
               >
                 {question.options?.map(option => (
-                  <div key={option} className="flex items-center space-x-3 p-4 rounded-lg border border-gray-200 hover:bg-gray-50 cursor-pointer">
-                    <RadioGroupItem value={option} id={option} />
-                    <label htmlFor={option} className="flex-1 cursor-pointer text-gray-900 font-medium">
+                  <label key={option} htmlFor={option} className={clsx(
+                    "flex items-center space-x-4 p-4 rounded-lg border-2 cursor-pointer transition-all",
+                    radioValue === option
+                      ? "border-primary bg-primary/10"
+                      : "border-border hover:border-primary/50"
+                  )}>
+                    <RadioGroupItem value={option} id={option} className="hidden" />
+                    <div className={clsx(
+                      "w-5 h-5 rounded-full border-2 flex items-center justify-center shrink-0",
+                      radioValue === option ? "border-primary bg-primary" : "border-muted-foreground"
+                    )}>
+                      {radioValue === option && <Check className="w-3 h-3 text-primary-foreground" />}
+                    </div>
+                    <span className="flex-1 cursor-pointer text-foreground font-medium">
                       {option}
-                    </label>
-                  </div>
+                    </span>
+                  </label>
                 ))}
               </RadioGroup>
             );
@@ -241,36 +255,24 @@ const AssessmentStepper: React.FC<AssessmentStepperProps> = (props) => {
           case "boolean":
             return (
               <div className="space-y-3">
-                <div 
-                  className={clsx(
-                    "flex items-center space-x-3 p-4 rounded-lg border cursor-pointer transition-all",
-                    hasRegularIncome === true ? "border-blue-500 bg-blue-50" : "border-gray-200 hover:bg-gray-50"
-                  )}
-                  onClick={() => setHasRegularIncome(true)}
-                >
-                  <div className={clsx(
-                    "w-5 h-5 rounded-full border-2 flex items-center justify-center",
-                    hasRegularIncome === true ? "border-blue-500 bg-blue-500" : "border-gray-300"
-                  )}>
-                    {hasRegularIncome === true && <div className="w-2 h-2 rounded-full bg-white" />}
+                {[ { label: "Yes", value: true }, { label: "No", value: false } ].map(opt => (
+                  <div
+                    key={opt.label}
+                    className={clsx(
+                      "flex items-center space-x-4 p-4 rounded-lg border-2 cursor-pointer transition-all",
+                      hasRegularIncome === opt.value ? "border-primary bg-primary/10" : "border-border hover:border-primary/50"
+                    )}
+                    onClick={() => setHasRegularIncome(opt.value)}
+                  >
+                    <div className={clsx(
+                      "w-5 h-5 rounded-full border-2 flex items-center justify-center shrink-0",
+                      hasRegularIncome === opt.value ? "border-primary bg-primary" : "border-muted-foreground"
+                    )}>
+                      {hasRegularIncome === opt.value && <Check className="w-3 h-3 text-primary-foreground" />}
+                    </div>
+                    <span className="flex-1 text-foreground font-medium">{opt.label}</span>
                   </div>
-                  <span className="flex-1 text-gray-900 font-medium">Yes</span>
-                </div>
-                <div 
-                  className={clsx(
-                    "flex items-center space-x-3 p-4 rounded-lg border cursor-pointer transition-all",
-                    hasRegularIncome === false ? "border-blue-500 bg-blue-50" : "border-gray-200 hover:bg-gray-50"
-                  )}
-                  onClick={() => setHasRegularIncome(false)}
-                >
-                  <div className={clsx(
-                    "w-5 h-5 rounded-full border-2 flex items-center justify-center",
-                    hasRegularIncome === false ? "border-blue-500 bg-blue-500" : "border-gray-300"
-                  )}>
-                    {hasRegularIncome === false && <div className="w-2 h-2 rounded-full bg-white" />}
-                  </div>
-                  <span className="flex-1 text-gray-900 font-medium">No</span>
-                </div>
+                ))}
               </div>
             );
           
@@ -285,8 +287,12 @@ const AssessmentStepper: React.FC<AssessmentStepperProps> = (props) => {
             return (
               <div className="space-y-3">
                 {question.options?.map(option => (
-                  <div key={option} className="flex items-center space-x-3 p-4 rounded-lg border border-gray-200 hover:bg-gray-50">
+                  <label key={option} htmlFor={option} className={clsx(
+                    "flex items-start space-x-4 p-4 rounded-lg border-2 cursor-pointer transition-all",
+                    currentValues.includes(option) ? "border-primary bg-primary/10" : "border-border hover:border-primary/50"
+                  )}>
                     <Checkbox
+                      id={option}
                       checked={currentValues.includes(option)}
                       onCheckedChange={(checked) => {
                         if (checked) {
@@ -295,9 +301,17 @@ const AssessmentStepper: React.FC<AssessmentStepperProps> = (props) => {
                           setCurrentValues(currentValues.filter(item => item !== option));
                         }
                       }}
+                      className="hidden"
                     />
-                    <label className="flex-1 cursor-pointer text-gray-900 font-medium">
-                      {option}
+                    <div className={clsx(
+                      "w-5 h-5 mt-1 rounded-md border-2 flex items-center justify-center shrink-0",
+                      currentValues.includes(option) ? "border-primary bg-primary" : "border-muted-foreground"
+                    )}>
+                      {currentValues.includes(option) && <Check className="w-3 h-3 text-primary-foreground" />}
+                    </div>
+
+                    <div className="flex-1 cursor-pointer">
+                      <span className="font-medium text-foreground">{option}</span>
                       {option === "Other" && goals.includes("Other") && (
                         <Input 
                           className="mt-2" 
@@ -306,8 +320,8 @@ const AssessmentStepper: React.FC<AssessmentStepperProps> = (props) => {
                           placeholder="Describe your goal" 
                         />
                       )}
-                    </label>
-                  </div>
+                    </div>
+                  </label>
                 ))}
               </div>
             );
@@ -399,16 +413,16 @@ const AssessmentStepper: React.FC<AssessmentStepperProps> = (props) => {
 
   if (step >= questionsWithUpload.length) {
     return (
-      <div className="w-full min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="w-full min-h-screen bg-background flex items-center justify-center">
         <CenteredCard>
           <div className="text-center py-12">
-            <h2 className="text-3xl font-bold mb-4 text-gray-900">Thank you!</h2>
-            <div className="text-xl font-semibold mb-4 text-blue-600">Assessment completed 🎉</div>
-            <p className="text-gray-600 mb-6 max-w-md">
+            <h2 className="text-3xl font-bold mb-4 text-foreground">Thank you!</h2>
+            <div className="text-xl font-semibold mb-4 text-primary">Assessment completed 🎉</div>
+            <p className="text-muted-foreground mb-6 max-w-md">
               We're analyzing your responses to personalize your financial profile, tools and action steps.
             </p>
-            <div className="bg-blue-50 rounded-lg p-6 mb-8 text-sm text-gray-700">
-              <strong className="text-blue-900">What's next?</strong> You'll soon be able to: review your answers, set detailed budgets/goals, get a personalized roadmap, and play with powerful financial calculators.
+            <div className="bg-card rounded-lg p-6 mb-8 text-sm text-muted-foreground border border-border">
+              <strong className="text-foreground">What's next?</strong> You'll soon be able to: review your answers, set detailed budgets/goals, get a personalized roadmap, and play with powerful financial calculators.
             </div>
             <Button onClick={() => window.location.reload()}>Close</Button>
           </div>
@@ -419,7 +433,7 @@ const AssessmentStepper: React.FC<AssessmentStepperProps> = (props) => {
 
   const currentQuestion = questionsWithUpload[step];
   return (
-    <div className="w-full min-h-screen bg-gray-50 flex items-center justify-center">
+    <div className="w-full min-h-screen bg-background flex items-center justify-center">
       <CenteredCard>
         <ProgressMilestones
           progress={progress}
@@ -431,10 +445,10 @@ const AssessmentStepper: React.FC<AssessmentStepperProps> = (props) => {
 
         {/* Question content */}
         <div className="mb-8">
-          <h2 className="text-2xl font-bold text-gray-900 mb-2">
+          <h2 className="text-2xl font-bold text-foreground mb-2">
             {currentQuestion.title}
           </h2>
-          <p className="text-gray-600 mb-8">
+          <p className="text-muted-foreground mb-8">
             {currentQuestion.subtitle}
           </p>
           
@@ -442,7 +456,7 @@ const AssessmentStepper: React.FC<AssessmentStepperProps> = (props) => {
         </div>
 
         {/* Navigation */}
-        <div className="flex justify-between items-center pt-6 border-t border-gray-200">
+        <div className="flex justify-between items-center pt-6 border-t border-border">
           <Button
             variant="outline"
             onClick={handleBack}
@@ -455,7 +469,7 @@ const AssessmentStepper: React.FC<AssessmentStepperProps> = (props) => {
           <Button
             onClick={handleNext}
             disabled={!canGoNext}
-            className="flex items-center gap-2"
+            className="flex items-center gap-2 bg-primary hover:bg-primary/90 text-primary-foreground"
           >
             {step === questionsWithUpload.length - 1 ? "Finish" : "Next"}
             <ArrowRight className="h-4 w-4" />
