@@ -46,7 +46,12 @@ ${resources}
 `;
 }
 
-function getDebtReductionInstructions() {
+function getDebtReductionInstructions(personality: string = 'default') {
+    let motivationalSummary = `Provide a motivational summary highlighting how a small extra contribution can save thousands of dollars and years of repayments.`;
+    if (personality === 'dave_ramsey') {
+        motivationalSummary = `Look at these numbers. This is your ticket out of financial bondage. An extra $100 a week isn't for a coffee, it's for buying back years of your life. Get mad at this debt. Attack it. Sell stuff. Get another job. Do whatever it takes.`;
+    }
+
     return `
 **Debt Reduction Scenarios (Snowball Method)**
 - Recap their current debts from the data provided (type, balance, interest rate, and monthly repayment).
@@ -79,7 +84,7 @@ function getDebtReductionInstructions() {
 - **"Interest Saved"** is the interest paid in the "$0 extra" scenario minus the interest paid in the current scenario. It should be a whole number, prefixed with a dollar sign and with commas for thousands (e.g., $400, $1,400).
 - **"Debt-Free Date"** is calculated from today. It should be formatted as Month YYYY (e.g., "Mar 2031").
 - You **MUST** output real numbers in the table, not placeholders like [Time] or [Amount].
-- Provide a motivational summary highlighting how a small extra contribution can save thousands of dollars and years of repayments.
+- ${motivationalSummary}
 - Use Australian currency ($).
 
 - **CHART DATA INSTRUCTIONS (VERY IMPORTANT):**
@@ -107,7 +112,7 @@ function getBuyAHomeInstructions() {
 }
 
 function getPayOffHomeLoanSoonerInstructions() {
-     return `
+    return `
 **Mortgage Payoff Accelerator**
 - Based on their debt details (assuming one is a home loan), create a scenario analysis.
 - If no home loan is listed, provide a general example for a hypothetical $500,000 loan over 30 years at 6% p.a.
@@ -151,10 +156,10 @@ function getDefaultInstructions(primaryGoal: string) {
 }
 
 
-export function getGoalSpecificInstructions(primaryGoal: string) {
+export function getGoalSpecificInstructions(primaryGoal: string, personality: string = 'default') {
     switch (primaryGoal) {
         case 'Reduce debt':
-            return getDebtReductionInstructions();
+            return getDebtReductionInstructions(personality);
         case 'Buy a house':
             return getBuyAHomeInstructions();
         case 'Pay off home loan sooner':

@@ -18,7 +18,7 @@ serve(async (req) => {
   }
 
   try {
-    const { assessmentData } = await req.json();
+    const { assessmentData, personality = 'default' } = await req.json();
 
     if (!assessmentData) {
       return new Response(JSON.stringify({ error: 'assessmentData is required' }), {
@@ -40,9 +40,14 @@ serve(async (req) => {
         savingsCallout = `- It looks like your expenses might be higher than your income right now. That's okay, we can look at strategies to manage this.`;
     }
     
-    const prompt = generateMainPrompt(assessmentData, potentialMonthlySavings, savingsCallout);
+    const prompt = generateMainPrompt(assessmentData, potentialMonthlySavings, savingsCallout, personality);
 
-    console.log(`Generating financial summary for: ${username}`);
+    console.log(`Generating financial summary for: ${username} with personality: ${personality}`);
+
+    let system_prompt = 'You are a helpful financial assistant for an Australian audience. Be encouraging, clear, and use markdown for readability. Structure your response in the requested three sections.';
+    if (personality === 'dave_ramsey') {
+        system_prompt = `You are a financial advisor inspired by Dave Ramsey, providing advice for an Australian audience. You use a "tough love" approach. Be very direct, critical, and no-nonsense. Your goal is to shock the user into action to get out of debt. Use short, punchy sentences. Don't be afraid to call certain financial decisions "stupid". Emphasize that they need to sell unnecessary items (like boats, fancy cars if they have debt) and attack their debt with gazelle intensity. Credit cards are the enemy. The tone should be brutally honest but ultimately aimed at helping them achieve financial peace.`;
+    }
 
     const response = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
@@ -53,7 +58,7 @@ serve(async (req) => {
       body: JSON.stringify({
         model: 'gpt-4o-mini',
         messages: [
-          { role: 'system', content: 'You are a helpful financial assistant for an Australian audience. Be encouraging, clear, and use markdown for readability. Structure your response in the requested three sections.' },
+          { role: 'system', content: system_prompt },
           { role: 'user', content: prompt }
         ],
         max_tokens: 1000,

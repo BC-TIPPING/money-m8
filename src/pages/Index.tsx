@@ -1,3 +1,4 @@
+
 import LandingSection from "./index/LandingSection";
 import AssessmentStepper from "./index/AssessmentStepper";
 import { useAssessmentState, questions, PRELOADED_EXPENSE_CATEGORIES } from "./index/assessmentHooks";
@@ -8,6 +9,7 @@ import { useToast } from "@/components/ui/use-toast";
 import { type Database } from "@/integrations/supabase/types";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
+import { Loader2 } from "lucide-react";
 
 type AssessmentInsert = Database['public']['Tables']['assessments']['Insert'];
 
@@ -82,9 +84,9 @@ export default function Index() {
   });
 
   const { mutate: generateSummary, isPending: isGeneratingSummary } = useMutation({
-    mutationFn: async (assessmentData: AssessmentInsert) => {
+    mutationFn: async ({ personality = 'default' }: { personality?: string } = {}) => {
       const { data, error } = await supabase.functions.invoke('generate-financial-summary', {
-        body: { assessmentData },
+        body: { assessmentData, personality },
       });
 
       if (error) {
@@ -185,7 +187,7 @@ export default function Index() {
     <div className="relative min-h-screen">
         <AssessmentStepper 
           {...assessment} 
-          generateSummary={() => generateSummary(assessmentData)}
+          generateSummary={() => generateSummary()}
           isGeneratingSummary={isGeneratingSummary}
           aiSummary={aiSummary}
           chartData={chartData}
@@ -202,7 +204,7 @@ export default function Index() {
             </div>
         )}
         {isComplete && (
-            <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-20">
+            <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-20 flex gap-4">
                 <Button 
                     onClick={handleStartOver}
                     variant="secondary"
@@ -210,6 +212,21 @@ export default function Index() {
                 >
                     Select a New Goal
                 </Button>
+                {aiSummary && (
+                    <Button 
+                        onClick={() => generateSummary({ personality: 'dave_ramsey' })}
+                        variant="destructive"
+                        className="shadow-lg"
+                        disabled={isGeneratingSummary}
+                    >
+                        {isGeneratingSummary ? (
+                            <>
+                                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                Getting tough...
+                            </>
+                        ) : "Get Dave Ramsey's Tough Love"}
+                    </Button>
+                )}
             </div>
         )}
     </div>
