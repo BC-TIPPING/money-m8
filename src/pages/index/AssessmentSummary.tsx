@@ -1,5 +1,7 @@
+
 import React from 'react';
 import { type DebtDetail } from './assessmentHooks';
+import { calculateMonthlyAmount, calculateAustralianIncomeTax } from '@/lib/financialCalculations';
 
 interface AssessmentSummaryProps {
   employmentStatus?: string;
@@ -18,21 +20,22 @@ interface AssessmentSummaryProps {
   freeTextComments?: string;
 }
 
-const SummaryItem = ({ label, value }: { label: string; value?: string | string[] | boolean | null }) => {
+const SummaryItem = ({ label, value }: { label: string; value?: string | string[] | boolean | null | React.ReactNode }) => {
   if (value === undefined || value === null || value === '' || (Array.isArray(value) && value.length === 0)) {
     return null;
   }
   
-  const displayValue = Array.isArray(value) ? value.join(', ') : 
+  const displayValue = React.isValidElement(value) ? value : 
+                       Array.isArray(value) ? value.join(', ') : 
                        typeof value === 'boolean' ? (value ? 'Yes' : 'No') :
                        value;
 
-  if (!displayValue) return null;
+  if (!displayValue && typeof displayValue !== 'number') return null;
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-3 gap-1 md:gap-4">
       <p className="font-medium text-gray-600 col-span-1">{label}</p>
-      <p className="text-gray-800 col-span-2">{displayValue}</p>
+      <div className="text-gray-800 col-span-2">{displayValue}</div>
     </div>
   );
 };
@@ -67,6 +70,17 @@ const AssessmentSummary: React.FC<AssessmentSummaryProps> = (props) => {
 
   const filteredIncomeSources = incomeSources.filter(s => s.category && s.amount);
   const filteredExpenseItems = expenseItems.filter(e => e.amount);
+
+  const totalMonthlyGrossIncome = calculateMonthlyAmount(incomeSources);
+  const totalAnnualGrossIncome = totalMonthlyGrossIncome * 12;
+  const annualTax = calculateAustralianIncomeTax(totalAnnualGrossIncome);
+  const totalMonthlyNetIncome = totalAnnualGrossIncome > 0 ? (totalAnnualGrossIncome - annualTax) / 12 : 0;
+  
+  const totalMonthlyExpenses = calculateMonthlyAmount(expenseItems);
+
+  const monthlySavings = totalMonthlyNetIncome - totalMonthlyExpenses;
+  const savingsPercentage = totalMonthlyNetIncome > 0 ? (monthlySavings / totalMonthlyNetIncome) * 100 : 0;
+
 
   return (
     <div className="space-y-8 text-sm">
@@ -135,6 +149,28 @@ const AssessmentSummary: React.FC<AssessmentSummaryProps> = (props) => {
             <p className="text-gray-700 italic">"{freeTextComments}"</p>
         </Section>
       )}
+
+      <Section title="Financial Summary">
+          <SummaryItem label="Total Monthly Expenses" value={`$${totalMonthlyExpenses.toFixed(2)}`} />
+          <SummaryItem 
+            label="Potential Monthly Savings" 
+            value={
+              <span className={monthlySavings >= 0 ? 'text-green-600 font-medium' : 'text-destructive font-medium'}>
+                  {`${monthlySavings >= 0 ? '' : '-'}$${Math.abs(monthlySavings).toFixed(2)}`}
+              </span>
+            } 
+          />
+          {totalMonthlyNetIncome > 0 && (
+            <SummaryItem 
+                label="Savings as % of Net Income" 
+                value={
+                    <span className={monthlySavings >= 0 ? 'text-green-600 font-medium' : 'text-destructive font-medium'}>
+                        {`${savingsPercentage.toFixed(1)}%`}
+                    </span>
+                } 
+            />
+          )}
+      </Section>
     </div>
   );
 };
