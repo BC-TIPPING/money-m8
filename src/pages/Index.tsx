@@ -154,6 +154,9 @@ const CenteredCard = ({ children }: { children: React.ReactNode }) => (
 
 export default function Index() {
   const [uploadedFile, setUploadedFile] = useState<File | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // Only declare expenseItems once, preloaded with categories
   const [expenseItems, setExpenseItems] = useState(
     PRELOADED_EXPENSE_CATEGORIES.map((cat) => ({ category: cat, amount: "" }))
   );
@@ -165,7 +168,6 @@ export default function Index() {
   const [hasRegularIncome, setHasRegularIncome] = useState<boolean | undefined>();
   const [incomeConfidence, setIncomeConfidence] = useState<string | undefined>();
   const [incomeSources, setIncomeSources] = useState([{ description: "", amount: "" }]);
-  const [expenseItems, setExpenseItems] = useState([{ category: "", amount: "" }]);
   const [financialKnowledgeLevel, setFinancialKnowledgeLevel] = useState<string | undefined>();
   const [investmentExperience, setInvestmentExperience] = useState<string[]>([]);
   const [goals, setGoals] = useState<string[]>([]);
