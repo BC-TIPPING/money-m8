@@ -19,20 +19,20 @@ const chartConfig = {
     label: "No Extra",
     color: "hsl(var(--chart-1))",
   },
-  "10_extra": {
-    label: "$10/week Extra",
-    color: "hsl(var(--chart-2))",
-  },
-  "25_extra": {
-    label: "$25/week Extra",
-    color: "hsl(var(--chart-3))",
-  },
   "50_extra": {
     label: "$50/week Extra",
-    color: "hsl(var(--chart-4))",
+    color: "hsl(var(--chart-2))",
   },
   "100_extra": {
     label: "$100/week Extra",
+    color: "hsl(var(--chart-3))",
+  },
+  "200_extra": {
+    label: "$200/week Extra",
+    color: "hsl(var(--chart-4))",
+  },
+  "500_extra": {
+    label: "$500/week Extra",
     color: "hsl(var(--chart-5))",
   },
 } satisfies ChartConfig

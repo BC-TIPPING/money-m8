@@ -1,3 +1,4 @@
+
 import "https://deno.land/x/xhr@0.1.0/mod.ts";
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 
@@ -57,7 +58,7 @@ serve(async (req) => {
 - The "debt snowball" strategy focuses on paying off the debt with the lowest balance first, while making minimum payments on all other debts. Once a debt is paid off, its minimum payment is rolled into the payment for the next-smallest debt.
 
 - **Here is how you MUST calculate the scenarios:**
-  - For each extra weekly repayment scenario ($0, $10, $25, $50, $100), you must perform a month-by-month simulation.
+  - For each extra weekly repayment scenario ($0, $50, $100, $200, $500), you must perform a month-by-month simulation.
   - Convert the extra weekly payment to a monthly amount by multiplying by 4.33.
   - The total monthly payment for debts is the sum of all minimum monthly repayments plus the extra monthly amount.
   - **Simulation Example:** Let's say we have two debts:
@@ -77,10 +78,10 @@ serve(async (req) => {
     - **Continue this simulation month by month.** When the Credit Card is paid off, its $50 minimum payment gets added to the Car Loan payment. The new Car Loan payment becomes $250 + $217 = $467.
   - After running the simulation for each scenario, you will have the total months to be debt-free.
 
-- **Create a markdown table** to show the results. The columns MUST be: "Extra Weekly Repayment", "New Payoff Time", "Total Interest Saved", "Debt-Free Date".
-- **"New Payoff Time"** should be in years and months (e.g., "3 years, 4 months").
+- **Create a markdown table** to show the results. The columns MUST be: "Extra Weekly Repayment", "Paid off sooner by", "Total Interest Saved", "Debt-Free Date".
+- **"Paid off sooner by"** is the difference in time between the "$0 extra" scenario payoff time and the current scenario's payoff time. It should be in years and months (e.g., "1 year, 2 months"). For the "$0 extra" row, this value should be "-".
 - **"Total Interest Saved"** is the interest paid in the "$0 extra" scenario minus the interest paid in the current scenario.
-- **"Debt-Free Date"** is calculated from today: ${new Date().toLocaleDateString('en-AU', { year: 'numeric', month: 'long', day: 'numeric' })}.
+- **"Debt-Free Date"** is calculated from today. It should be formatted as Month YYYY (e.g., "Jun 2027").
 - You **MUST** output real numbers in the table, not placeholders like [Time] or [Amount].
 - Provide a motivational summary highlighting how a small extra contribution can save thousands of dollars and years of repayments.
 - Use Australian currency ($) and provide all monetary values formatted nicely (e.g., $5,123.45).
@@ -90,11 +91,11 @@ serve(async (req) => {
 - This JSON object must contain a key \`debtReductionData\`, which is an array of objects for the chart.
 - Each object in the array represents a month in the simulation.
 - Each object MUST have a \`month\` key (0, 1, 2, ...) and keys for the remaining total debt balance for each scenario.
-- The keys for the scenarios MUST be: \`no_extra\`, \`10_extra\`, \`25_extra\`, \`50_extra\`, \`100_extra\`.
+- The keys for the scenarios MUST be: \`no_extra\`, \`50_extra\`, \`100_extra\`, \`200_extra\`, \`500_extra\`.
 - The data must continue until the debt is fully paid off in the longest scenario (\`no_extra\`).
 - **Example JSON output:**
 \`\`\`json
-CHART_DATA::{"debtReductionData": [{"month": 0, "no_extra": 20000, "10_extra": 20000, "25_extra": 20000, "50_extra": 20000, "100_extra": 20000}, {"month": 1, "no_extra": 19800, "10_extra": 19750, "25_extra": 19700, "50_extra": 19600, "100_extra": 19500}]}
+CHART_DATA::{"debtReductionData": [{"month": 0, "no_extra": 20000, "50_extra": 20000, "100_extra": 20000, "200_extra": 20000, "500_extra": 20000}, {"month": 1, "no_extra": 19800, "50_extra": 19600, "100_extra": 19400, "200_extra": 19000, "500_extra": 18200}]}
 \`\`\`
             `;
             break;
