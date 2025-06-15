@@ -19,8 +19,8 @@ const ProgressMilestones: React.FC<ProgressMilestonesProps> = ({
 }) => (
   <div className="mb-8">
     <div className="flex justify-between items-center mb-2">
-      <span className="text-sm text-muted-foreground">{Math.round(progress)}% Complete</span>
-      <span className="text-sm text-muted-foreground">{step + 1} of {total}</span>
+      <span className="text-sm text-gray-500">{Math.round(progress)}% Complete</span>
+      <span className="text-sm text-gray-500">{step + 1} of {total}</span>
     </div>
     <Progress value={progress} className="h-2" />
     <div className="flex flex-row flex-wrap justify-between mt-2 w-full">
@@ -28,9 +28,9 @@ const ProgressMilestones: React.FC<ProgressMilestonesProps> = ({
         <span
           key={goal + idx}
           className={
-            "text-[10px] md:text-xs text-muted-foreground transition-all " +
+            "text-[10px] md:text-xs text-gray-400 transition-all " +
             (currentMilestoneIdx === idx
-              ? "font-bold text-primary scale-110"
+              ? "font-bold text-blue-600 scale-110"
               : "")
           }
           style={{ maxWidth: "max(8%,80px)" }}

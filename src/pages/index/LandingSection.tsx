@@ -14,15 +14,22 @@ const goalPanels = [
 ];
 
 const LandingSection = ({ onStartAssessment }: { onStartAssessment: () => void }) => (
-  <div className="w-full min-h-screen relative flex flex-col items-center justify-center overflow-hidden bg-background">
+  <div className="w-full min-h-screen relative flex flex-col items-center justify-center overflow-hidden bg-gradient-to-br from-[#202336] via-[#28365a] to-[#191d29]">
+    <div 
+      className="absolute inset-0 z-0 bg-cover bg-center bg-no-repeat"
+      style={{
+        backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.5)), url('/lovable-uploads/3b4aa2ff-8ca4-4b86-85e7-85b1d027ca73.png')`
+      }}
+    />
+    <div className="absolute inset-0 z-1 bg-gradient-to-br from-emerald-900/20 via-blue-900/30 to-purple-900/20" />
     <main className="relative z-10 w-full flex flex-col items-center mt-6 md:mt-8 px-2">
-      <h1 className="text-5xl md:text-6xl font-extrabold mb-2 md:mb-2 text-center tracking-tight text-foreground">
+      <h1 className="text-4xl md:text-5xl font-extrabold mb-2 md:mb-2 text-center tracking-tight text-white drop-shadow-2xl">
         Financial health check
       </h1>
-      <div className="text-2xl md:text-3xl font-semibold text-foreground/90 mb-0 mt-2 text-center">
+      <div className="text-2xl md:text-3xl font-semibold text-white/90 mb-0 mt-2 text-center drop-shadow-lg">
         Get a clear picture of your finances
       </div>
-      <div className="text-lg md:text-xl text-foreground/80 mb-8 mt-2 max-w-2xl text-center font-medium">
+      <div className="text-lg md:text-xl text-white/80 mb-8 mt-2 max-w-2xl text-center drop-shadow font-medium">
         no jargon, no stress
       </div>
       <section className="w-full max-w-2xl mb-12">
@@ -30,27 +37,27 @@ const LandingSection = ({ onStartAssessment }: { onStartAssessment: () => void }
           <CarouselContent>
             {goalPanels.map((panel, i) => (
               <CarouselItem key={i} className="px-1 py-4">
-                <div className="bg-card/80 backdrop-blur-md border border-border rounded-2xl shadow-xl p-6 flex flex-col items-center gap-3 transition-all hover:scale-105 hover:border-primary/50">
+                <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl shadow-xl p-6 flex flex-col items-center gap-3 transition-all hover:scale-105 hover:bg-white/15">
                   <span className="text-4xl">{panel.emoji}</span>
-                  <span className="font-bold text-xl text-foreground">{panel.title}</span>
-                  <span className="text-base text-foreground/80 text-center">{panel.description}</span>
+                  <span className="font-bold text-xl text-white">{panel.title}</span>
+                  <span className="text-base text-white/80 text-center">{panel.description}</span>
                 </div>
               </CarouselItem>
             ))}
           </CarouselContent>
-          <CarouselPrevious className="bg-card border-border text-foreground hover:bg-accent hover:text-accent-foreground" />
-          <CarouselNext className="bg-card border-border text-foreground hover:bg-accent hover:text-accent-foreground" />
+          <CarouselPrevious className="bg-white/20 border-white/30 text-white hover:bg-white/30" />
+          <CarouselNext className="bg-white/20 border-white/30 text-white hover:bg-white/30" />
         </Carousel>
       </section>
       <Button 
         size="lg" 
-        className="text-xl px-12 py-6 rounded-xl bg-primary hover:bg-primary/90 text-primary-foreground font-semibold shadow-2xl transform hover:scale-105 transition-all"
+        className="text-xl px-12 py-6 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-semibold shadow-2xl transform hover:scale-105 transition-all"
         onClick={onStartAssessment}
       >
         Let's have a look
       </Button>
     </main>
-    <footer className="mt-12 mb-6 text-sm text-foreground/60 z-10 text-center">
+    <footer className="mt-12 mb-6 text-sm text-white/60 z-10 text-center">
       &copy; {new Date().getFullYear()} ClearFin.AI&nbsp;&nbsp;|&nbsp;&nbsp;Financial clarity for Australians
     </footer>
   </div>
