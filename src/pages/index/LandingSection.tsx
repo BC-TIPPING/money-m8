@@ -3,12 +3,14 @@ import React from "react";
 import { Button } from "@/components/ui/button";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
 
-const adventurousPanels = [
-  { title: "Chart Your Journey", description: "Imagine your financial path as a wild trek — we help you map it out.", emoji: "🗺️" },
-  { title: "Climb Your Goals", description: "Reach summits: home, wealth, freedom. We're with you at every step.", emoji: "⛰️" },
-  { title: "Navigate Uncertainty", description: "Weather every storm with insight and clarity, no matter the terrain.", emoji: "🌌" },
-  { title: "Unlock Hidden Opportunities", description: "Discover financial secrets hidden in plain sight.", emoji: "🧭" },
-  { title: "Equip for Adventure", description: "Tools, knowledge, confidence — your pack for the future.", emoji: "🛡️" },
+const goalPanels = [
+  { title: "Buy a House", description: "Turn your dream of homeownership into a reality with a solid plan.", emoji: "🏠" },
+  { title: "Improve Financial Literacy", description: "Gain the knowledge to make confident financial decisions for your future.", emoji: "📚" },
+  { title: "Set a Budget", description: "Take control of your spending and master your cash flow.", emoji: "📊" },
+  { title: "Reduce Debt", description: "Create a strategy to pay down debts and achieve financial freedom.", emoji: "💳" },
+  { title: "Grow Investments", description: "Make your money work for you and build long-term wealth.", emoji: "📈" },
+  { title: "Save for a Purchase", description: "Whether it's a car or a holiday, we'll help you reach your savings goals.", emoji: "🎯" },
+  { title: "Pay Off Your Home Loan", description: "Learn strategies to clear your mortgage faster and save thousands.", emoji: "🏡" },
 ];
 
 const LandingSection = ({ onStartAssessment }: { onStartAssessment: () => void }) => (
@@ -28,12 +30,12 @@ const LandingSection = ({ onStartAssessment }: { onStartAssessment: () => void }
         Get a clear picture of your finances
       </div>
       <div className="text-lg md:text-xl text-white/80 mb-8 mt-2 max-w-2xl text-center drop-shadow font-medium">
-        – no jargon, no stress
+        no jargon, no stress
       </div>
       <section className="w-full max-w-2xl mb-12">
         <Carousel opts={{ align: "center", loop: true }} className="w-full">
           <CarouselContent>
-            {adventurousPanels.map((panel, i) => (
+            {goalPanels.map((panel, i) => (
               <CarouselItem key={i} className="px-1 py-4">
                 <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl shadow-xl p-6 flex flex-col items-center gap-3 transition-all hover:scale-105 hover:bg-white/15">
                   <span className="text-4xl">{panel.emoji}</span>
