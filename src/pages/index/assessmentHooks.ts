@@ -122,7 +122,6 @@ export const PRELOADED_EXPENSE_CATEGORIES = PreloadedExpenseCategories;
 export function useAssessmentState() {
   const [step, setStep] = useState(0);
   const [showAssessment, setShowAssessment] = useState(false);
-  const [username, setUsername] = useState("");
   const [goals, setGoals] = useState<string[]>([]);
   const [otherGoal, setOtherGoal] = useState("");
   const [goalTimeframe, setGoalTimeframe] = useState<string | undefined>();
@@ -158,8 +157,6 @@ export function useAssessmentState() {
     setStep,
     showAssessment,
     setShowAssessment,
-    username,
-    setUsername,
     goals,
     setGoals,
     otherGoal,

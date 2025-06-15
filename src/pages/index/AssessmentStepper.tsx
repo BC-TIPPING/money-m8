@@ -15,6 +15,7 @@ import {
 } from "@/components/ui/select";
 import clsx from "clsx";
 import ProgressMilestones from "./ProgressMilestones";
+import AssessmentSummary from "./AssessmentSummary";
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import DebtReductionChart from "./DebtReductionChart";
@@ -72,13 +73,10 @@ interface AssessmentStepperProps {
   setDebtManagementConfidence: (val: string) => void;
   freeTextComments: string;
   setFreeTextComments: (val: string) => void;
-  onSubmit: () => void;
+  generateSummary: () => void;
   isGeneratingSummary: boolean;
   aiSummary: string | null;
   chartData: any | null;
-  personality: string;
-  setPersonality: (p: string) => void;
-  setAnalysisReport: (r: any) => void;
 }
 
 const AssessmentStepper: React.FC<AssessmentStepperProps> = (props) => {
@@ -92,7 +90,7 @@ const AssessmentStepper: React.FC<AssessmentStepperProps> = (props) => {
     goals, setGoals, otherGoal, setOtherGoal, goalTimeframe, setGoalTimeframe,
     debtTypes, setDebtTypes, debtDetails, setDebtDetails, debtManagementConfidence, setDebtManagementConfidence,
     freeTextComments, setFreeTextComments,
-    onSubmit, isGeneratingSummary, aiSummary, chartData, setAnalysisReport
+    generateSummary, isGeneratingSummary, aiSummary, chartData
   } = props;
 
   // Local state for file processing
@@ -147,19 +145,12 @@ const AssessmentStepper: React.FC<AssessmentStepperProps> = (props) => {
 
             if (error) throw error;
             
-            if (data.analysis) {
-                setAnalysisReport(data);
-            } else {
+            if (!data.categorizedExpenses || !data.analysis) {
               throw new Error("AI response is not in the expected format.");
             }
 
-            if (data.categorizedExpenses) {
-                setExpenseItems(data.categorizedExpenses);
-            }
-            if (data.analysis) {
-                setFileAnalysisResult(data);
-            }
-
+            setFileAnalysisResult(data);
+            setExpenseItems(data.categorizedExpenses);
 
         } catch (e: any) {
             console.error(e);
@@ -683,8 +674,7 @@ const AssessmentStepper: React.FC<AssessmentStepperProps> = (props) => {
           </div>
 
           <div className="max-h-[40vh] overflow-y-auto p-4 bg-white rounded-lg border border-gray-200">
-            {/* The summary part that was here is now handled by ResultsDisplay on the main page */}
-            Summary of inputs will be shown here.
+            <AssessmentSummary {...props} />
           </div>
 
           {aiSummary ? (
@@ -715,7 +705,7 @@ const AssessmentStepper: React.FC<AssessmentStepperProps> = (props) => {
               <strong className="text-blue-900 block mb-2">What's next?</strong>
               <p>Get a personalized summary of your financial goals and a comparison to what you've entered.</p> 
               <div className="text-center mt-6">
-                 <Button onClick={onSubmit} disabled={isGeneratingSummary}>
+                 <Button onClick={generateSummary} disabled={isGeneratingSummary}>
                   {isGeneratingSummary ? (
                     <>
                       <Loader2 className="mr-2 h-4 w-4 animate-spin" />

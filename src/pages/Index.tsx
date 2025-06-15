@@ -1,167 +1,152 @@
-
-import { useState } from "react";
-import { Button } from "@/components/ui/button";
-import AssessmentStepper from "./index/AssessmentStepper";
-import { useAssessmentState } from "./index/assessmentHooks";
-import { useAssessmentApi } from "./index/hooks/useAssessmentApi";
-import { PRELOADED_EXPENSE_CATEGORIES } from "@/lib/budgetCategories";
-import ResultsDisplay from "./index/ResultsDisplay";
 import LandingSection from "./index/LandingSection";
-import FileAnalysisReport from "./index/FileAnalysisReport";
+import AssessmentStepper from "./index/AssessmentStepper";
+import { useAssessmentState, questions } from "./index/assessmentHooks";
+import { Link } from "react-router-dom";
+import { Button } from "@/components/ui/button";
+import { Loader2 } from "lucide-react";
+import { useAssessmentData } from "./index/hooks/useAssessmentData";
+import InterestSavedChart from "./index/InterestSavedChart";
+import DebtReductionChart from "./index/DebtReductionChart";
+import BudgetPlanner from "./index/budget-planner";
+import { Card, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { calculateMonthlyAmount, calculateAustralianIncomeTax } from "@/lib/financialCalculations";
 
-export type AssessmentData = ReturnType<typeof useAssessmentState>;
+const DEBT_GOALS = ['Pay off home loan sooner', 'Reduce debt'];
 
-export default function IndexPage() {
-  const assessmentState = useAssessmentState();
-  const { showAssessment, setShowAssessment, setUsername, setGoals } = assessmentState;
+export default function Index() {
+  const assessment = useAssessmentState();
+  const {
+    aiSummary,
+    chartData,
+    isPreloaded,
+    isLoadingAssessment,
+    isGeneratingSummary,
+    isComplete,
+    setUsernameToFetch,
+    generateSummary,
+    handleStartOver,
+    handleChangeGoal,
+  } = useAssessmentData(assessment);
 
-  const { isGenerating, assessmentResult, error, generateFinancialSummary, setAssessmentResult } = useAssessmentApi();
-  const [personality, setPersonality] = useState('default');
-  const [analysisReport, setAnalysisReport] = useState<any>(null);
-
-
-  const handleSubmit = () => {
-    const dataToSubmit = { ...assessmentState };
-    // Let's remove things we don't want to send to the backend
-    delete (dataToSubmit as any).setStep;
-    delete (dataToSubmit as any).setShowAssessment;
-    // ... and so on for all state setters
-    const {
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      setStep,
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      setShowAssessment,
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      setGoals,
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      setUsername,
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      setOtherGoal,
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      setGoalTimeframe,
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      setDebtTypes,
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      setDebtDetails,
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      setDebtManagementConfidence,
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      setFreeTextComments,
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      setFinancialKnowledgeLevel,
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      setInvestmentExperience,
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      setEmploymentStatus,
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      setHasRegularIncome,
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      setIncomeSources,
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      setExpenseItems,
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      setUploadedFile,
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      fileInputRef,
-      ...data
-    } = assessmentState;
-
-
-    generateFinancialSummary(data, personality);
-    setShowAssessment(false);
+  const handleStartAssessment = (goal: string, newUsername: string) => {
+    assessment.setGoals([goal]);
+    setUsernameToFetch(newUsername);
   };
+  
+  const hasDebtGoal = assessment.goals.some(g => DEBT_GOALS.includes(g));
 
-  const handleStartOver = () => {
-    // Reset all state to initial values
-    assessmentState.setStep(0);
-    assessmentState.setGoals([]);
-    assessmentState.setOtherGoal('');
-    assessmentState.setGoalTimeframe(undefined);
-    assessmentState.setDebtTypes([]);
-    assessmentState.setDebtDetails([]);
-    assessmentState.setDebtManagementConfidence(undefined);
-    assessmentState.setFreeTextComments('');
-    assessmentState.setFinancialKnowledgeLevel(undefined);
-    assessmentState.setInvestmentExperience([]);
-    assessmentState.setEmploymentStatus(undefined);
-    assessmentState.setHasRegularIncome(undefined);
-    assessmentState.setIncomeSources([{ category: '', amount: '', frequency: 'Monthly' }]);
-    assessmentState.setExpenseItems(PRELOADED_EXPENSE_CATEGORIES.map(c => ({ category: c, amount: '', frequency: 'Weekly' })));
-    assessmentState.setUploadedFile(null);
-    setAssessmentResult(null);
-    setAnalysisReport(null);
-    setShowAssessment(false);
-  };
+  const totalMonthlyGrossIncome = calculateMonthlyAmount(assessment.incomeSources);
+  const totalAnnualGrossIncome = totalMonthlyGrossIncome * 12;
+  const annualTax = calculateAustralianIncomeTax(totalAnnualGrossIncome);
+  const totalMonthlyNetIncome = totalAnnualGrossIncome > 0 ? (totalAnnualGrossIncome - annualTax) / 12 : 0;
 
-  const handleStartAssessment = (goal: string, username: string) => {
-    setGoals([goal]);
-    setUsername(username);
-    setShowAssessment(true);
+  if (!assessment.showAssessment) {
+    return (
+      <div className="relative min-h-screen">
+        <LandingSection onStartAssessment={handleStartAssessment} isLoading={isLoadingAssessment} />
+        <div className="absolute bottom-4 right-4">
+            <Button asChild variant="outline">
+                <Link to="/ask-ai">Ask our AI</Link>
+            </Button>
+        </div>
+      </div>
+    );
   }
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <div className="w-full max-w-4xl mx-auto space-y-8">
-        {!showAssessment && !assessmentResult && !isGenerating && !analysisReport && (
-          <LandingSection onStartAssessment={handleStartAssessment} isLoading={isGenerating} />
-        )}
-
-        {(showAssessment || (assessmentResult && !isGenerating) || analysisReport) && (
-            <div className="flex justify-end">
-                <Button variant="ghost" onClick={handleStartOver}>Start Over</Button>
+    <div className="relative flex flex-col min-h-screen">
+        <div className={`flex-grow ${isComplete ? 'pb-52' : ''}`}>
+            <AssessmentStepper 
+              {...assessment} 
+              generateSummary={() => generateSummary({})}
+              isGeneratingSummary={isGeneratingSummary}
+              aiSummary={aiSummary}
+              chartData={chartData}
+            />
+            {isComplete && (
+                <div className="container mx-auto grid gap-6 px-4 py-6 sm:px-6 lg:grid-cols-2 lg:px-8">
+                    {assessment.goals.includes('Pay off home loan sooner') && (
+                        <Card>
+                            <CardHeader>
+                                <CardTitle>Pay Off Home Loan Sooner 🚀</CardTitle>
+                                <CardDescription>Use our calculator to see how extra repayments can save you thousands!</CardDescription>
+                            </CardHeader>
+                            <CardFooter>
+                                <Button asChild>
+                                    <Link to="/pay-off-home-loan">Open Calculator</Link>
+                                </Button>
+                            </CardFooter>
+                        </Card>
+                    )}
+                    {assessment.goals.includes('Maximise super') && (
+                        <Card>
+                            <CardHeader>
+                                <CardTitle>Maximise Super 💰</CardTitle>
+                                <CardDescription>Use our calculator to see how extra contributions can boost your retirement savings and lower your tax.</CardDescription>
+                            </CardHeader>
+                            <CardFooter>
+                                <Button asChild>
+                                    <Link to="/maximise-super">Open Calculator</Link>
+                                </Button>
+                            </CardFooter>
+                        </Card>
+                    )}
+                    {assessment.goals.includes('Set a budget') && (
+                        <BudgetPlanner expenseItems={assessment.expenseItems} totalMonthlyNetIncome={totalMonthlyNetIncome} />
+                    )}
+                    {chartData?.debtReductionData && <DebtReductionChart data={chartData.debtReductionData} />}
+                    {chartData?.interestSavedData && <InterestSavedChart data={chartData.interestSavedData} />}
+                </div>
+            )}
+        </div>
+        {isPreloaded && !isComplete && (
+            <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-20">
+                <Button 
+                    variant="secondary"
+                    className="shadow-lg"
+                    onClick={() => assessment.setStep(questions.length)}
+                >
+                    Skip to My Summary
+                </Button>
             </div>
         )}
-
-        {showAssessment && !assessmentResult && (
-          <AssessmentStepper 
-            {...assessmentState}
-            onSubmit={handleSubmit}
-            personality={personality}
-            setPersonality={setPersonality}
-            setAnalysisReport={(report) => {
-              setAnalysisReport(report);
-              setShowAssessment(false);
-            }}
-            isGeneratingSummary={isGenerating}
-            aiSummary={assessmentResult?.summary ?? null}
-            chartData={assessmentResult?.chartData ?? null}
-          />
-        )}
-
-        {isGenerating && (
-          <div className="text-center p-8">
-            <p className="text-lg animate-pulse">Brewing your personalised financial plan... 一杯どうぞ</p>
-          </div>
-        )}
-
-        {error && <div className="text-red-500 text-center p-4">{error}</div>}
-
-        {analysisReport && !assessmentResult && (
-          <div>
-            <FileAnalysisReport result={analysisReport} />
-            <div className="mt-8 text-center space-x-4">
-              <Button onClick={() => {
-                if (analysisReport.income_sources) {
-                  assessmentState.setIncomeSources(analysisReport.income_sources);
-                }
-                if (analysisReport.expense_items) {
-                  assessmentState.setExpenseItems(analysisReport.expense_items);
-                }
-                handleSubmit();
-                setAnalysisReport(null);
-              }}>Accept & Proceed</Button>
-              <Button variant="outline" onClick={() => {
-                setAnalysisReport(null);
-                setShowAssessment(true);
-              }}>Reconfigure Manually</Button>
+        {isComplete && (
+            <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-20 w-full max-w-sm px-4">
+                <div className="flex flex-col items-center gap-4">
+                    {aiSummary && (
+                        <Button 
+                            onClick={handleStartOver}
+                            variant="outline"
+                            className="shadow-lg bg-background w-full"
+                        >
+                            Start Over
+                        </Button>
+                    )}
+                    <Button
+                        onClick={handleChangeGoal}
+                        variant="outline"
+                        className="shadow-lg bg-background w-full"
+                    >
+                        Change Goal
+                    </Button>
+                    {!aiSummary && hasDebtGoal && (
+                        <Button 
+                            onClick={() => generateSummary({ personality: 'dave_ramsey' })}
+                            variant="destructive"
+                            className="shadow-lg w-full"
+                            disabled={isGeneratingSummary}
+                        >
+                            {isGeneratingSummary ? (
+                                <>
+                                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                    Getting tough...
+                                </>
+                            ) : "Tough Love"}
+                        </Button>
+                    )}
+                </div>
             </div>
-          </div>
         )}
-
-        {assessmentResult && !isGenerating && (
-          <ResultsDisplay summary={assessmentResult.summary} chartData={assessmentResult.chartData} />
-        )}
-      </div>
     </div>
   );
 }

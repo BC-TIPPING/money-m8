@@ -1,8 +1,8 @@
+
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/components/ui/use-toast";
 import { type Database } from "@/integrations/supabase/types";
-import { useState } from "react";
 
 type AssessmentInsert = Database['public']['Tables']['assessments']['Insert'];
 
@@ -101,26 +101,4 @@ export function useGenerateSummary(onSuccessCallback: (data: any) => void) {
             toast({ title: "Error generating summary", description: error.message, variant: 'destructive' });
         }
     });
-}
-
-export function useAssessmentApi() {
-  const [assessmentResult, setAssessmentResult] = useState<{ summary: string; chartData: any } | null>(null);
-
-  const { mutate, isPending: isGenerating, error: mutationError } = useGenerateSummary((data) => {
-    setAssessmentResult(data);
-  });
-
-  const generateFinancialSummary = (assessmentData: any, personality: string) => {
-    mutate({ assessmentData, personality });
-  };
-
-  const error = mutationError ? (mutationError as Error).message : null;
-
-  return {
-    isGenerating,
-    assessmentResult,
-    error,
-    generateFinancialSummary,
-    setAssessmentResult,
-  };
 }
