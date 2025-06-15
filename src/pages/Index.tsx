@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import {
   Carousel,
@@ -391,71 +390,57 @@ export default function Index() {
   if (!showAssessment) {
     return (
       <div className="w-full min-h-screen relative flex flex-col items-center justify-center overflow-hidden bg-gradient-to-br from-[#202336] via-[#28365a] to-[#191d29]">
-        {/* Aurora and starfield background effects */}
-        <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden">
-          <div className="absolute left-0 top-0 w-[120%] h-[90%] -translate-x-1/12 -translate-y-1/12 bg-gradient-to-br from-[#211e50] via-[#253472] to-transparent animate-[move-bg_16s_ease-in-out_infinite_alternate] opacity-60 blur-2xl" />
-          <div className="absolute right-[-15%] bottom-[-8%] w-[600px] h-[400px] bg-gradient-to-br from-[#46b1ea] via-transparent to-[#9989c4] rounded-full blur-3xl opacity-30 animate-pulse" />
-          <svg className="absolute inset-0 w-full h-full opacity-20" style={{zIndex:1}} xmlns="http://www.w3.org/2000/svg">
-            <circle cx="10%" cy="20%" r="1" fill="#fff" />
-            <circle cx="30%" cy="80%" r="1" fill="#fff" />
-            <circle cx="70%" cy="15%" r="0.7" fill="#fff" />
-            <circle cx="85%" cy="50%" r="1.2" fill="#fff" />
-            <circle cx="52%" cy="72%" r="0.6" fill="#fff" />
-            <circle cx="60%" cy="35%" r="1.4" fill="#fff" />
-            <circle cx="24%" cy="64%" r="1" fill="#fff" />
-            <circle cx="45%" cy="38%" r="0.7" fill="#fff" />
-          </svg>
-        </div>
+        {/* Australian Currency Background */}
+        <div 
+          className="absolute inset-0 z-0 bg-cover bg-center bg-no-repeat"
+          style={{
+            backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.5)), url('/lovable-uploads/3b4aa2ff-8ca4-4b86-85e7-85b1d027ca73.png')`
+          }}
+        />
+        
+        {/* Overlay for better text readability */}
+        <div className="absolute inset-0 z-1 bg-gradient-to-br from-emerald-900/20 via-blue-900/30 to-purple-900/20" />
 
         {/* Main content */}
         <main className="relative z-10 w-full flex flex-col items-center mt-6 md:mt-8 px-2">
-          <h1 className="text-3xl md:text-5xl font-extrabold mb-4 md:mb-8 text-center tracking-tight bg-gradient-to-r from-[#89c5e6] via-[#fac778] to-[#9bf0e1] text-transparent bg-clip-text animate-fade-in">
-            Get a clear picture of your finances – no jargon, no stress
+          <h1 className="text-4xl md:text-6xl font-extrabold mb-6 md:mb-8 text-center tracking-tight text-white drop-shadow-2xl">
+            Master Your Money
           </h1>
-          <p className="text-lg text-[#b5b5cc] mb-10 max-w-xl text-center animate-fade-in">
-            Start your journey to financial clarity. Take a quick assessment to receive tailored insights, education, and actionable next steps. Private, secure, and stress‑free.
+          <p className="text-xl md:text-2xl text-white/90 mb-12 max-w-2xl text-center drop-shadow-lg font-medium">
+            Take control of your finances with a quick assessment tailored for Australians
           </p>
 
           {/* Carousel panel */}
-          <section className="w-full max-w-2xl mb-10">
+          <section className="w-full max-w-2xl mb-12">
             <Carousel opts={{ align: "center", loop: true }} className="w-full">
               <CarouselContent>
                 {adventurousPanels.map((panel, i) => (
                   <CarouselItem key={i} className="px-1 py-4">
-                    <div className="bg-[#22273c] border border-[#393e54]/60 rounded-2xl shadow-xl p-6 flex flex-col items-center gap-2 transition-all hover-scale">
+                    <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl shadow-xl p-6 flex flex-col items-center gap-3 transition-all hover:scale-105 hover:bg-white/15">
                       <span className="text-4xl">{panel.emoji}</span>
-                      <span className="font-bold text-xl text-sky-200">{panel.title}</span>
-                      <span className="text-base text-[#b5b5cc] text-center">{panel.description}</span>
+                      <span className="font-bold text-xl text-white">{panel.title}</span>
+                      <span className="text-base text-white/80 text-center">{panel.description}</span>
                     </div>
                   </CarouselItem>
                 ))}
               </CarouselContent>
-              <CarouselPrevious />
-              <CarouselNext />
+              <CarouselPrevious className="bg-white/20 border-white/30 text-white hover:bg-white/30" />
+              <CarouselNext className="bg-white/20 border-white/30 text-white hover:bg-white/30" />
             </Carousel>
           </section>
 
           <Button 
             size="lg" 
-            className="text-lg px-8 py-4 rounded-xl"
+            className="text-xl px-12 py-6 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-semibold shadow-2xl transform hover:scale-105 transition-all"
             onClick={() => setShowAssessment(true)}
           >
-            Start Assessment
+            Start Your Financial Journey
           </Button>
         </main>
 
-        <footer className="mt-10 mb-6 text-xs text-[#7d7ead] z-10 text-center">
-          &copy; {new Date().getFullYear()} ClearFin.AI&nbsp;&nbsp;|&nbsp;&nbsp;No financial advice, just clarity.
+        <footer className="mt-12 mb-6 text-sm text-white/60 z-10 text-center">
+          &copy; {new Date().getFullYear()} ClearFin.AI&nbsp;&nbsp;|&nbsp;&nbsp;Financial clarity for Australians
         </footer>
-
-        <style>
-          {`
-            @keyframes move-bg {
-              0% { transform: translate(-10%, -10%) scale(1);}
-              100% { transform: translate(-3%, 10%) scale(1.1);}
-            }
-          `}
-        </style>
       </div>
     );
   }
