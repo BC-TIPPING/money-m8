@@ -285,7 +285,7 @@ const AssessmentStepper: React.FC<AssessmentStepperProps> = (props) => {
             return (
               <div className="space-y-3">
                 {question.options?.map(option => (
-                  <div key={option} className="flex items-center space-x-3 p-4 rounded-lg border border-gray-200 hover:bg-gray-50">
+                  <label key={option} className="flex items-center space-x-3 p-4 rounded-lg border border-gray-200 hover:bg-gray-50 cursor-pointer">
                     <Checkbox
                       checked={currentValues.includes(option)}
                       onCheckedChange={(checked) => {
@@ -296,18 +296,22 @@ const AssessmentStepper: React.FC<AssessmentStepperProps> = (props) => {
                         }
                       }}
                     />
-                    <label className="flex-1 cursor-pointer text-gray-900 font-medium">
+                    <span className="flex-1 text-gray-900 font-medium">
                       {option}
                       {option === "Other" && goals.includes("Other") && (
                         <Input 
                           className="mt-2" 
                           value={otherGoal} 
-                          onChange={e => setOtherGoal(e.target.value)} 
+                          onChange={e => {
+                            e.preventDefault();
+                            setOtherGoal(e.target.value)
+                          }} 
+                          onClick={e => e.preventDefault()}
                           placeholder="Describe your goal" 
                         />
                       )}
-                    </label>
-                  </div>
+                    </span>
+                  </label>
                 ))}
               </div>
             );
