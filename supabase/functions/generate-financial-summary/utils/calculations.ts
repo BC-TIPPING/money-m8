@@ -25,3 +25,29 @@ export function calculateMonthlyAmount(items: {amount: string, frequency: string
     }
     return totalMonthly;
 }
+
+export function calculateInvestmentGrowth(
+    initialInvestment: number, 
+    monthlyContribution: number, 
+    years: number, 
+    annualRate: number
+) {
+    const monthlyRate = annualRate / 12;
+    const numberOfMonths = years * 12;
+
+    // Calculate future value of the initial investment
+    const fvInitial = initialInvestment * Math.pow(1 + monthlyRate, numberOfMonths);
+
+    // Calculate future value of the series of monthly contributions
+    const fvContributions = monthlyContribution * ( (Math.pow(1 + monthlyRate, numberOfMonths) - 1) / monthlyRate );
+
+    const totalValue = fvInitial + fvContributions;
+    
+    const totalContributions = initialInvestment + (monthlyContribution * numberOfMonths);
+    const interestEarned = totalValue - totalContributions;
+
+    return {
+        portfolioValue: totalValue,
+        interestEarned: interestEarned
+    };
+}
