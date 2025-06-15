@@ -7,6 +7,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 import { ReactNode } from "react";
+import AskAI from "./pages/AskAI";
 
 const queryClient = new QueryClient();
 
@@ -14,6 +15,7 @@ const AppRoutes = () => {
     return (
         <Routes>
             <Route path="/" element={<Index />} />
+            <Route path="/ask-ai" element={<AskAI />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
         </Routes>
