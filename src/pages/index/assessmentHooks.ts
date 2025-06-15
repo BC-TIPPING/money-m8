@@ -27,6 +27,14 @@ export const debtTypeOptions = [
 ];
 export const debtConfidenceOptions = ["Yes", "Somewhat", "No"];
 
+export interface DebtDetail {
+  type: string;
+  loanAmount: string;
+  balance: string;
+  repayments: string;
+  interestRate: string;
+}
+
 export const questions = [
   {
     id: "employment",
@@ -102,6 +110,12 @@ export const questions = [
     options: debtTypeOptions
   },
   {
+    id: "debtDetails",
+    title: "Tell us more about your debts",
+    subtitle: "Provide details for each loan you have. You can fill this in later.",
+    type: "debt-details-list"
+  },
+  {
     id: "debtConfidence",
     title: "Are you confident in your ability to manage your debts?",
     subtitle: "Understanding your confidence helps us provide support",
@@ -136,6 +150,7 @@ export function useAssessmentState() {
   const [otherGoal, setOtherGoal] = useState("");
   const [goalTimeframe, setGoalTimeframe] = useState<string | undefined>();
   const [debtTypes, setDebtTypes] = useState<string[]>([]);
+  const [debtDetails, setDebtDetails] = useState<DebtDetail[]>([]);
   const [debtManagementConfidence, setDebtManagementConfidence] = useState<string | undefined>();
   const [freeTextComments, setFreeTextComments] = useState("");
 
@@ -146,7 +161,7 @@ export function useAssessmentState() {
     incomeConfidence, setIncomeConfidence, incomeSources, setIncomeSources,
     financialKnowledgeLevel, setFinancialKnowledgeLevel, investmentExperience, setInvestmentExperience,
     goals, setGoals, otherGoal, setOtherGoal, goalTimeframe, setGoalTimeframe,
-    debtTypes, setDebtTypes, debtManagementConfidence, setDebtManagementConfidence,
+    debtTypes, setDebtTypes, debtDetails, setDebtDetails, debtManagementConfidence, setDebtManagementConfidence,
     freeTextComments, setFreeTextComments
   };
 }

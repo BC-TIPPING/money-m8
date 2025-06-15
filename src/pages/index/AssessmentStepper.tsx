@@ -20,6 +20,7 @@ import {
   goalTimeframes,
   debtTypeOptions,
   debtConfidenceOptions,
+  type DebtDetail,
 } from "./assessmentHooks";
 
 const CenteredCard = ({ children }: { children: React.ReactNode }) => (
@@ -62,6 +63,8 @@ interface AssessmentStepperProps {
   setGoalTimeframe: (val: string) => void;
   debtTypes: string[];
   setDebtTypes: (val: string[]) => void;
+  debtDetails: DebtDetail[];
+  setDebtDetails: React.Dispatch<React.SetStateAction<DebtDetail[]>>;
   debtManagementConfidence: string | undefined;
   setDebtManagementConfidence: (val: string) => void;
   freeTextComments: string;
@@ -77,9 +80,36 @@ const AssessmentStepper: React.FC<AssessmentStepperProps> = (props) => {
     incomeConfidence, setIncomeConfidence, incomeSources, setIncomeSources,
     financialKnowledgeLevel, setFinancialKnowledgeLevel, investmentExperience, setInvestmentExperience,
     goals, setGoals, otherGoal, setOtherGoal, goalTimeframe, setGoalTimeframe,
-    debtTypes, setDebtTypes, debtManagementConfidence, setDebtManagementConfidence,
+    debtTypes, setDebtTypes, debtDetails, setDebtDetails, debtManagementConfidence, setDebtManagementConfidence,
     freeTextComments, setFreeTextComments
   } = props;
+
+  React.useEffect(() => {
+    const newDetails = debtTypes
+      .filter(type => type !== "No current debt")
+      .map(type => {
+        const existingDetail = debtDetails.find(d => d.type === type);
+        return existingDetail || {
+          type,
+          loanAmount: "",
+          balance: "",
+          repayments: "",
+          interestRate: "",
+        };
+      });
+
+    if (JSON.stringify(newDetails) !== JSON.stringify(debtDetails)) {
+        setDebtDetails(newDetails);
+    }
+  }, [debtTypes, debtDetails, setDebtDetails]);
+
+  const handleDebtDetailChange = (idx: number, key: keyof Omit<DebtDetail, "type">, value: string) => {
+    setDebtDetails(prev => {
+        const next = [...prev];
+        next[idx] = { ...next[idx], [key]: value };
+        return next;
+    });
+  };
 
   // Handler fns as in old file...
   const handleIncomeChange = (idx: number, key: "description" | "amount", value: string) => {
@@ -115,6 +145,7 @@ const AssessmentStepper: React.FC<AssessmentStepperProps> = (props) => {
       case "goals": return goals.length > 0;
       case "goalTimeframe": return goalTimeframe;
       case "debtTypes": return debtTypes.length > 0;
+      case "debtDetails": return true;
       case "debtConfidence": return debtManagementConfidence;
       case "additionalNotes": return true;
       default: return false;
@@ -289,10 +320,26 @@ const AssessmentStepper: React.FC<AssessmentStepperProps> = (props) => {
                     <Checkbox
                       checked={currentValues.includes(option)}
                       onCheckedChange={(checked) => {
-                        if (checked) {
-                          setCurrentValues([...currentValues, option]);
+                        if (question.id === 'debtTypes') {
+                            const setDebtTypesTyped = setCurrentValues as React.Dispatch<React.SetStateAction<string[]>>;
+                            const typedCurrent = currentValues as string[];
+                            if (option === 'No current debt') {
+                                setDebtTypesTyped(checked ? ['No current debt'] : []);
+                            } else {
+                                let newDebtTypes = typedCurrent.filter(item => item !== 'No current debt');
+                                if (checked) {
+                                    newDebtTypes.push(option);
+                                } else {
+                                    newDebtTypes = newDebtTypes.filter(item => item !== option);
+                                }
+                                setDebtTypesTyped(newDebtTypes);
+                            }
                         } else {
-                          setCurrentValues(currentValues.filter(item => item !== option));
+                          if (checked) {
+                            setCurrentValues([...currentValues, option]);
+                          } else {
+                            setCurrentValues(currentValues.filter(item => item !== option));
+                          }
                         }
                       }}
                     />
@@ -369,6 +416,68 @@ const AssessmentStepper: React.FC<AssessmentStepperProps> = (props) => {
                   </div>
                 ))}
                 <Button variant="outline" size="sm" onClick={addExpenseItem}>+ Add Expense</Button>
+              </div>
+            );
+          
+          case "debt-details-list":
+            if (debtDetails.length === 0) {
+              return (
+                <div className="text-center text-gray-600">
+                  <p>You have no debts selected.</p>
+                  <p className="text-sm">You can go back to add debts or click Next to continue.</p>
+                </div>
+              )
+            }
+            return (
+              <div className="space-y-6">
+                {debtDetails.map((detail, idx) => (
+                  <div key={idx} className="p-4 border rounded-lg space-y-4 bg-gray-50/50">
+                    <h3 className="font-semibold text-lg text-gray-800">{detail.type}</h3>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Loan Amount</label>
+                        <Input
+                          placeholder="e.g. 20000"
+                          type="number"
+                          min={0}
+                          value={detail.loanAmount}
+                          onChange={e => handleDebtDetailChange(idx, "loanAmount", e.target.value)}
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Current Balance</label>
+                        <Input
+                          placeholder="e.g. 15000"
+                          type="number"
+                          min={0}
+                          value={detail.balance}
+                          onChange={e => handleDebtDetailChange(idx, "balance", e.target.value)}
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Repayments</label>
+                        <Input
+                          placeholder="e.g. 400"
+                          type="number"
+                          min={0}
+                          value={detail.repayments}
+                          onChange={e => handleDebtDetailChange(idx, "repayments", e.target.value)}
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Interest Rate (%)</label>
+                        <Input
+                          placeholder="e.g. 5.5"
+                          type="number"
+                          min={0}
+                          step={0.01}
+                          value={detail.interestRate}
+                          onChange={e => handleDebtDetailChange(idx, "interestRate", e.target.value)}
+                        />
+                      </div>
+                    </div>
+                  </div>
+                ))}
               </div>
             );
           
