@@ -19,7 +19,13 @@ const budgetGuidelines = `
 - **Miscellaneous:** 1%-3%
 `;
 
-export function generateMainPrompt(assessmentData: any, potentialMonthlySavings: number, savingsCallout: string, personality: string = 'default') {
+export function generateMainPrompt(
+    assessmentData: any, 
+    potentialMonthlySavings: number, 
+    savingsCallout: string, 
+    personality: string = 'default',
+    totalMonthlyNetIncome: number
+) {
     const {
         username, goals, other_goal, goal_timeframe, employment_status, income_sources, 
         expense_items, debt_types, debt_details, debt_management_confidence, 
@@ -66,6 +72,7 @@ ${goalSpecificInstructions}
 You can do this, but it's going to be hard. It requires sacrifice. No more restaurants, no more toys, no more excuses. Are you ready to get serious?
 
 **User's Data (For Your Reference Only - Do not repeat in the response):**
+- **Monthly Net Income (Take-Home Pay):** $${totalMonthlyNetIncome.toFixed(2)}
 - **Potential Monthly Savings:** $${potentialMonthlySavings.toFixed(2)}
 - **Primary Goal(s):** ${formatForPrompt(goals)}
 - **Other Goal:** ${formatForPrompt(other_goal)}
@@ -133,6 +140,7 @@ End with a motivational closing statement, encouraging them to take the first st
 ${budgetGuidelines}
 
 **User's Data:**
+- **Monthly Net Income (Take-Home Pay):** $${totalMonthlyNetIncome.toFixed(2)}
 - **Potential Monthly Savings:** $${potentialMonthlySavings.toFixed(2)}
 - **Primary Goal(s):** ${formatForPrompt(goals)}
 - **Other Goal:** ${formatForPrompt(other_goal)}

@@ -1,4 +1,3 @@
-
 import "https://deno.land/x/xhr@0.1.0/mod.ts";
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { calculateMonthlyAmount, calculateAustralianIncomeTax } from './utils/calculations.ts';
@@ -44,7 +43,7 @@ serve(async (req) => {
         savingsCallout = `- After estimating taxes, it looks like your expenses might be higher than your take-home pay right now. That's okay, we can look at strategies to manage this.`;
     }
     
-    const prompt = generateMainPrompt(assessmentData, potentialMonthlySavings, savingsCallout, personality);
+    const prompt = generateMainPrompt(assessmentData, potentialMonthlySavings, savingsCallout, personality, totalMonthlyNetIncome);
 
     console.log(`Generating financial summary for: ${username} with personality: ${personality}`);
 
