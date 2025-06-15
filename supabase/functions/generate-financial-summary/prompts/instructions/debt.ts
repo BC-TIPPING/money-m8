@@ -1,4 +1,3 @@
-
 export function getDebtReductionInstructions(personality: string = 'default', debtDetails?: any[]) {
     let motivationalSummary = `Provide a motivational summary highlighting how a small extra contribution can save thousands of dollars and years of repayments.`;
     if (personality === 'dave_ramsey') {
@@ -38,13 +37,11 @@ ${debtRecap}
   - After running the simulation for each scenario, you will have the total months to be debt-free.
 
 - **Create a markdown table** to show the results. The columns MUST be: "Extra / week", "Time Saved", "Interest Saved", "Debt-Free Date".
-- The table MUST follow this exact structure, including the header separator line:
-  \`\`\`
+- The table MUST follow this exact markdown structure, including the header separator line. Do not use code blocks for the table.
   | Extra / week | Time Saved | Interest Saved | Debt-Free Date |
   |--------------|------------|----------------|----------------|
   | $0           | -          | -              | e.g. Mar 2031  |
   | $50          | 2 years    | $1,234         | e.g. Mar 2029  |
-  \`\`\`
 - The values in the "Extra / week" column should be prefixed with a dollar sign (e.g., $50).
 - **"Time Saved"** is the difference in time between the "$0 extra" scenario payoff time and the current scenario's payoff time. It should be in years and months (e.g., "1 year, 2 months"). For the "$0 extra" row, this value should be "-".
 - **"Interest Saved"** is the interest paid in the "$0 extra" scenario minus the interest paid in the current scenario. It should be a whole number, prefixed with a dollar sign and with commas for thousands (e.g., $400, $1,400).
@@ -69,9 +66,7 @@ ${debtRecap}
   - It should also have keys for the *cumulative interest saved* for each scenario compared to the 'no_extra' baseline. The keys MUST be: \`50_extra\`, \`100_extra\`, \`200_extra\`, \`500_extra\`.
   - The value for each scenario key at a given month is calculated as: \`(cumulative interest paid in 'no_extra' scenario by that month) - (cumulative interest paid in the current scenario by that month)\`.
   - The data must continue until the debt is fully paid off in the longest scenario (\`no_extra\`).
-- **Example JSON output:**
-\`\`\`json
+- **Example JSON output (do not wrap in a code block):**
 CHART_DATA::{"debtReductionData": [{"month": 0, "no_extra": 20000, "50_extra": 20000, "100_extra": 20000, "200_extra": 20000, "500_extra": 20000}, {"month": 1, "no_extra": 19800, "50_extra": 19600, "100_extra": 19400, "200_extra": 19000, "500_extra": 18200}], "interestSavedData": [{"month": 0, "50_extra": 0, "100_extra": 0, "200_extra": 0, "500_extra": 0}, {"month": 1, "50_extra": 10, "100_extra": 20, "200_extra": 40, "500_extra": 80}]}
 \`\`\`
             `;
-}

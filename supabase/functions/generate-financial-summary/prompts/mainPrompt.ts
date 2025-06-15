@@ -1,3 +1,4 @@
+
 import { formatForPrompt } from '../utils/formatting.ts';
 import { getGoalSpecificInstructions, getLiteracyBoostSection } from './goalInstructions.ts';
 
@@ -38,7 +39,7 @@ export function generateMainPrompt(
 
     if (personality === 'dave_ramsey') {
         return `
-You are a financial advisor inspired by Dave Ramsey, with a blunt Australian "tough love" attitude. Your goal is to shock the user into action to get out of debt. Use direct language and phrases like 'mate'.
+You are a financial advisor inspired by Dave Ramsey, with a blunt Australian "tough love" attitude. Your goal is to shock the user into action to get out of debt. Use direct language and phrases like 'mate'. All sub-headings inside the sections MUST be made bold using markdown's double asterisks, for example: \`**My Sub-Heading**\`.
 
 **User: ${username || 'there'}**
 
@@ -103,7 +104,7 @@ ${literacyBoost}
     return `
 You are ClearFin.AI, a friendly and encouraging financial assistant providing advice for an Australian audience. Based on the following financial assessment data for a user named ${username || 'there'}, provide a detailed financial health check.
 
-**Structure your response in three sections using markdown. Use emojis to make it engaging.**
+**Structure your response in three sections using markdown. Use emojis to make it engaging. All sub-headings inside the sections MUST be made bold using markdown's double asterisks, for example: \`**My Sub-Heading**\`.**
 
 ---
 
