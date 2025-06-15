@@ -5,6 +5,10 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { BUDGET_CATEGORIES } from '@/lib/budgetCategories';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { Info } from 'lucide-react';
+
 
 interface ExpenseItem {
     category: string;
@@ -14,6 +18,7 @@ interface ExpenseItem {
 
 interface BudgetPlannerProps {
     expenseItems: ExpenseItem[];
+    totalMonthlyNetIncome: number;
 }
 
 // Helper to normalize amounts to monthly
@@ -31,7 +36,7 @@ const normalizeToMonthly = (amount: number, frequency: string) => {
     }
 };
 
-export default function BudgetPlanner({ expenseItems }: BudgetPlannerProps) {
+export default function BudgetPlanner({ expenseItems, totalMonthlyNetIncome }: BudgetPlannerProps) {
     const normalizedActualExpenses = useMemo(() => {
         return (expenseItems || [])
             .filter(item => item.category && item.amount)
@@ -49,6 +54,14 @@ export default function BudgetPlanner({ expenseItems }: BudgetPlannerProps) {
         }))
     );
     const [showSummary, setShowSummary] = useState(false);
+
+    const categoryInfoMap = useMemo(() => {
+        const map = new Map<string, { minPercent: number, maxPercent: number, notes: string }>();
+        BUDGET_CATEGORIES.forEach(item => {
+            map.set(item.category, { minPercent: item.minPercent, maxPercent: item.maxPercent, notes: item.notes });
+        });
+        return map;
+    }, []);
 
     const handleGoalChange = (index: number, value: string) => {
         const newGoalExpenses = [...goalExpenses];
@@ -96,44 +109,75 @@ export default function BudgetPlanner({ expenseItems }: BudgetPlannerProps) {
             <CardHeader>
                 <CardTitle>Set Your Budget Goal</CardTitle>
                 <CardDescription>
-                    Your current monthly expenses are listed below. Set a goal for each category to see how you can improve your budget.
+                    Your current monthly expenses are listed below. Set a goal for each category to see how you can improve your budget. The suggested amounts are based on your net income.
                 </CardDescription>
             </CardHeader>
             <CardContent>
                 {!showSummary ? (
+                    <TooltipProvider>
                     <div className="space-y-4">
-                        <div className="grid grid-cols-3 items-center gap-4 font-medium px-2">
+                        <div className="grid grid-cols-4 items-center gap-4 font-medium px-2">
                             <span>Category</span>
                             <span className="text-center">Actual / month</span>
+                            <span className="text-center">Suggested</span>
                             <span className="text-center">Goal / month</span>
                         </div>
-                        {goalExpenses.map((item, index) => (
-                            <div key={index} className="grid grid-cols-3 items-center gap-4">
-                                <Label htmlFor={`goal-${index}`}>{item.category}</Label>
-                                <div className="relative">
-                                    <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">$</span>
-                                    <Input
-                                        id={`actual-${index}`}
-                                        type="text"
-                                        readOnly
-                                        value={item.actualAmount.toFixed(2)}
-                                        className="pl-7 bg-muted text-center"
-                                    />
+                        {goalExpenses.map((item, index) => {
+                            const categoryInfo = categoryInfoMap.get(item.category);
+                            const suggestedMin = totalMonthlyNetIncome * (categoryInfo?.minPercent || 0) / 100;
+                            const suggestedMax = totalMonthlyNetIncome * (categoryInfo?.maxPercent || 0) / 100;
+
+                            return (
+                                <div key={index} className="grid grid-cols-4 items-center gap-4">
+                                    <div className="flex items-center gap-1">
+                                        <Label htmlFor={`goal-${index}`}>{item.category}</Label>
+                                         {categoryInfo && (
+                                            <Tooltip>
+                                                <TooltipTrigger asChild>
+                                                    <Info className="h-3 w-3 text-muted-foreground cursor-pointer" />
+                                                </TooltipTrigger>
+                                                <TooltipContent>
+                                                    <p className="max-w-xs">{categoryInfo.notes}</p>
+                                                </TooltipContent>
+                                            </Tooltip>
+                                        )}
+                                    </div>
+                                    <div className="relative">
+                                        <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">$</span>
+                                        <Input
+                                            id={`actual-${index}`}
+                                            type="text"
+                                            readOnly
+                                            value={item.actualAmount.toFixed(2)}
+                                            className="pl-7 bg-muted text-center"
+                                        />
+                                    </div>
+                                    <div className="text-center text-sm text-muted-foreground">
+                                        {categoryInfo && totalMonthlyNetIncome > 0 ? (
+                                            <div>
+                                                <p>${suggestedMin.toFixed(0)} - ${suggestedMax.toFixed(0)}</p>
+                                                <p className="text-xs">({categoryInfo.minPercent}{categoryInfo.minPercent !== categoryInfo.maxPercent ? `-${categoryInfo.maxPercent}`:'' }%)</p>
+                                            </div>
+                                        ) : (
+                                            <span>-</span>
+                                        )}
+                                    </div>
+                                    <div className="relative">
+                                        <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">$</span>
+                                        <Input
+                                            id={`goal-${index}`}
+                                            type="number"
+                                            step="0.01"
+                                            value={item.goalAmount}
+                                            onChange={(e) => handleGoalChange(index, e.target.value)}
+                                            className="pl-7 text-center"
+                                        />
+                                    </div>
                                 </div>
-                                <div className="relative">
-                                     <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">$</span>
-                                    <Input
-                                        id={`goal-${index}`}
-                                        type="number"
-                                        step="0.01"
-                                        value={item.goalAmount}
-                                        onChange={(e) => handleGoalChange(index, e.target.value)}
-                                        className="pl-7 text-center"
-                                    />
-                                </div>
-                            </div>
-                        ))}
+                            )
+                        })}
                     </div>
+                    </TooltipProvider>
                 ) : (
                     <div>
                         <h3 className="text-lg font-semibold mb-2">Budget Summary</h3>

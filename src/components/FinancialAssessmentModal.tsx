@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import {
   Dialog,
@@ -21,6 +22,7 @@ import {
 } from "@/components/ui/select";
 import { X, ArrowRight, ArrowLeft } from "lucide-react";
 import clsx from "clsx";
+import { INCOME_FREQUENCIES, PRELOADED_EXPENSE_CATEGORIES } from "@/lib/budgetCategories";
 
 type EmploymentStatus =
   | "Full-Time"
@@ -79,8 +81,6 @@ const PRELOADED_INCOME_CATEGORIES = [
   "Other",
 ];
 
-const INCOME_FREQUENCIES = ["Weekly", "Fortnightly", "Monthly", "Yearly"];
-
 const steps = [
   "Employment & Income",
   "Budget",
@@ -102,7 +102,7 @@ function FinancialAssessmentModal({
   const [employmentStatus, setEmploymentStatus] = useState<EmploymentStatus | undefined>();
   const [hasRegularIncome, setHasRegularIncome] = useState<boolean | undefined>();
   const [incomeSources, setIncomeSources] = useState([{ category: "", amount: "", frequency: "Monthly" }]);
-  const [expenseItems, setExpenseItems] = useState([{ category: "", amount: "", frequency: "Weekly" }]);
+  const [expenseItems, setExpenseItems] = useState(PRELOADED_EXPENSE_CATEGORIES.map(category => ({ category, amount: "", frequency: "Weekly" })));
   const [uploadBank, setUploadBank] = useState<File | null>(null);
   const [financialKnowledgeLevel, setFinancialKnowledgeLevel] = useState<FinancialKnowledgeLevel | undefined>();
   const [investmentExperience, setInvestmentExperience] = useState<string[]>([]);
@@ -166,7 +166,7 @@ function FinancialAssessmentModal({
     setEmploymentStatus(undefined);
     setHasRegularIncome(undefined);
     setIncomeSources([{ category: "", amount: "", frequency: "Monthly" }]);
-    setExpenseItems([{ category: "", amount: "", frequency: "Weekly" }]);
+    setExpenseItems(PRELOADED_EXPENSE_CATEGORIES.map(category => ({ category, amount: "", frequency: "Weekly" })));
     setUploadBank(null);
     setFinancialKnowledgeLevel(undefined);
     setInvestmentExperience([]);

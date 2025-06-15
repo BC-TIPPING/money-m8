@@ -1,6 +1,23 @@
-
 import { formatForPrompt } from '../utils/formatting.ts';
 import { getGoalSpecificInstructions, getLiteracyBoostSection } from './goalInstructions.ts';
+
+const budgetGuidelines = `
+- **Housing:** 25%-35%
+- **Food & Groceries:** 10%-15%
+- **Transport:** 10%
+- **Health & Medical:** 3%-6%
+- **Debt Repayments (excluding mortgage):** 5%-10%
+- **Savings & Investments:** 10%-20%
+- **Insurance (non-health):** 2%-5%
+- **Children & Education:** 5%-10%
+- **Entertainment & Subscriptions:** 2%-5%
+- **Clothing & Personal Care:** 2%-5%
+- **Pets:** 1%-3%
+- **Travel & Holidays:** 3%-8%
+- **Gifts & Donations:** 1%-3%
+- **Hobbies & Fitness:** 2%-4%
+- **Miscellaneous:** 1%-3%
+`;
 
 export function generateMainPrompt(assessmentData: any, potentialMonthlySavings: number, savingsCallout: string, personality: string = 'default') {
     const {
@@ -104,12 +121,16 @@ ${savingsCallout}
 ### Section 3: Analysis & Scenarios 🔬
 
 - **Financial Literacy Score:** Provide a "Financial Literacy Score" (e.g., Budding Saver, Confident Investor, Financial Pro) based on their self-assessed knowledge and investment experience. Give a one-sentence explanation for the score.
+- **Budget Breakdown vs. Guidelines:** Compare their current expense breakdown (as a percentage of net income) to the guidelines below. Highlight 1-2 areas where they are overspending and what that means for their goal. Be gentle and constructive.
 - **Goal-Specific Scenarios:**
 ${goalSpecificInstructions}
 
 ---
 
 End with a motivational closing statement, encouraging them to take the first step.
+
+**For your analysis (AI), use these guidelines for budget breakdown (do not repeat the list):**
+${budgetGuidelines}
 
 **User's Data:**
 - **Potential Monthly Savings:** $${potentialMonthlySavings.toFixed(2)}

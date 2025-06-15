@@ -10,6 +10,7 @@ import InterestSavedChart from "./index/InterestSavedChart";
 import DebtReductionChart from "./index/DebtReductionChart";
 import BudgetPlanner from "./index/BudgetPlanner";
 import { Card, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { calculateMonthlyAmount, calculateAustralianIncomeTax } from "@/lib/financialCalculations";
 
 const DEBT_GOALS = ['Pay off home loan sooner', 'Reduce debt'];
 
@@ -34,6 +35,11 @@ export default function Index() {
   };
   
   const hasDebtGoal = assessment.goals.some(g => DEBT_GOALS.includes(g));
+
+  const totalMonthlyGrossIncome = calculateMonthlyAmount(assessment.incomeSources);
+  const totalAnnualGrossIncome = totalMonthlyGrossIncome * 12;
+  const annualTax = calculateAustralianIncomeTax(totalAnnualGrossIncome);
+  const totalMonthlyNetIncome = totalAnnualGrossIncome > 0 ? (totalAnnualGrossIncome - annualTax) / 12 : 0;
 
   if (!assessment.showAssessment) {
     return (
@@ -87,7 +93,7 @@ export default function Index() {
                         </Card>
                     )}
                     {assessment.goals.includes('Set a budget') && (
-                        <BudgetPlanner expenseItems={assessment.expenseItems} />
+                        <BudgetPlanner expenseItems={assessment.expenseItems} totalMonthlyNetIncome={totalMonthlyNetIncome} />
                     )}
                     {chartData?.debtReductionData && <DebtReductionChart data={chartData.debtReductionData} />}
                     {chartData?.interestSavedData && <InterestSavedChart data={chartData.interestSavedData} />}

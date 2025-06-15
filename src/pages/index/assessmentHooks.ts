@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { PRELOADED_EXPENSE_CATEGORIES, INCOME_FREQUENCIES as freqs } from "@/lib/budgetCategories";
 
 export type DebtDetail = {
   type: string;
@@ -103,7 +104,7 @@ export const questions = [
     title: "Debt Management Confidence",
     subtitle: "Are you confident in your ability to manage your debts?",
     type: "radio",
-    options: ["Yes", "Somewhat", "No"],
+  options: ["Yes", "Somewhat", "No"],
   },
   {
     id: "additionalNotes",
@@ -113,77 +114,7 @@ export const questions = [
   },
 ];
 
-export const PRELOADED_EXPENSE_CATEGORIES = [
-  "Rent",
-  "Food",
-  "Transport",
-  "Utilities",
-  "Entertainment",
-  "Other",
-];
-
-export const employmentStatuses = [
-  "Full-Time",
-  "Part-Time",
-  "Casual/Contract",
-  "Self-Employed",
-  "Unemployed",
-  "Retired",
-  "Other",
-];
-
-export const financialKnowledgeLevels = ["High", "Medium", "Low"];
-
-export const investmentTypes = [
-  "Stocks or ETFs",
-  "Property",
-  "Cryptocurrency",
-  "Managed Funds",
-  "None",
-];
-
-export const goalOptions = [
-  "Buy a house",
-  "Improve financial literacy",
-  "Set a budget",
-  "Reduce debt",
-  "Grow investments",
-  "Save for a purchase",
-  "Maximise Super",
-  "Pay off home loan sooner",
-  "Other",
-];
-
-export const goalTimeframes = [
-  "0–6 months",
-  "6–12 months",
-  "1–3 years",
-  "3–5 years",
-  "5+ years",
-];
-
-export const debtTypeOptions = [
-  "Credit Card",
-  "Personal Loan",
-  "Car Loan",
-  "Boat/Leisure Loan",
-  "BNPL (e.g. Afterpay)",
-  "Mortgage",
-  "Education Loan",
-  "No current debt",
-];
-
-export const debtConfidenceOptions = ["Yes", "Somewhat", "No"];
-
-export const PRELOADED_INCOME_CATEGORIES = [
-  "Salary",
-  "Investments",
-  "Business Income",
-  "Rental Income",
-  "Other",
-];
-
-export const INCOME_FREQUENCIES = ["Weekly", "Fortnightly", "Monthly", "Yearly"];
+export const INCOME_FREQUENCIES = freqs;
 
 export function useAssessmentState() {
   const [step, setStep] = useState(0);
