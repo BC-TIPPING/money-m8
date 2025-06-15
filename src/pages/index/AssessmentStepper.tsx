@@ -15,7 +15,7 @@ import {
 } from "@/components/ui/select";
 import clsx from "clsx";
 import ProgressMilestones from "./ProgressMilestones";
-// ... import all hooks/config ...
+import AssessmentSummary from "./AssessmentSummary";
 import {
   questions,
   PRELOADED_EXPENSE_CATEGORIES,
@@ -581,18 +581,26 @@ const AssessmentStepper: React.FC<AssessmentStepperProps> = (props) => {
 
   if (step >= questionsWithUpload.length) {
     return (
-      <div className="w-full min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="w-full min-h-screen bg-gray-50 flex items-center justify-center py-12">
         <CenteredCard>
-          <div className="text-center py-12">
-            <h2 className="text-3xl font-bold mb-4 text-gray-900">Thank you!</h2>
-            <div className="text-xl font-semibold mb-4 text-blue-600">Assessment completed 🎉</div>
-            <p className="text-gray-600 mb-6 max-w-md">
-              We're analyzing your responses to personalize your financial profile, tools and action steps.
+          <div className="text-center pb-8">
+            <h2 className="text-3xl font-bold mb-2 text-gray-900">Thank You!</h2>
+            <p className="text-gray-600 mb-6">
+              Your financial assessment is complete. Here is a summary of your responses.
             </p>
-            <div className="bg-blue-50 rounded-lg p-6 mb-8 text-sm text-gray-700">
-              <strong className="text-blue-900">What's next?</strong> You'll soon be able to: review your answers, set detailed budgets/goals, get a personalized roadmap, and play with powerful financial calculators.
-            </div>
-            <Button onClick={() => window.location.reload()}>Close</Button>
+          </div>
+
+          <div className="max-h-[50vh] overflow-y-auto p-6 bg-white rounded-lg border border-gray-200">
+            <AssessmentSummary {...props} />
+          </div>
+
+          <div className="bg-blue-50 rounded-lg p-6 my-8 text-sm text-gray-700 text-left">
+            <strong className="text-blue-900 block mb-2">What's next?</strong>
+            <p>We're analyzing your responses to personalize your financial profile, tools and action steps.</p> 
+            <p className="mt-2">You'll soon be able to: review your answers, set detailed budgets/goals, get a personalized roadmap, and play with powerful financial calculators.</p>
+          </div>
+          <div className="text-center">
+             <Button onClick={() => window.location.reload()}>Start Over</Button>
           </div>
         </CenteredCard>
       </div>
