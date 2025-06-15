@@ -1,4 +1,3 @@
-
 export function calculateMonthlyAmount(items: {amount: string, frequency: string}[]) {
     let totalMonthly = 0;
     if (!items || !Array.isArray(items)) return 0;
@@ -50,4 +49,25 @@ export function calculateInvestmentGrowth(
         portfolioValue: totalValue,
         interestEarned: interestEarned
     };
+}
+
+export function calculateAustralianIncomeTax(income: number) {
+  let tax = 0;
+  // Note: Using 2023-24 tax brackets. These are subject to change.
+  if (income > 180000) {
+    tax += (income - 180000) * 0.45;
+    income = 180000;
+  }
+  if (income > 120000) {
+    tax += (income - 120000) * 0.37;
+    income = 120000;
+  }
+  if (income > 45000) {
+    tax += (income - 45000) * 0.325;
+    income = 45000;
+  }
+  if (income > 18200) {
+    tax += (income - 18200) * 0.19;
+  }
+  return tax;
 }

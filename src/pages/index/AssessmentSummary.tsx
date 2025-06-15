@@ -83,7 +83,7 @@ const AssessmentSummary: React.FC<AssessmentSummaryProps> = (props) => {
       </Section>
 
       {filteredIncomeSources.length > 0 && (
-          <Section title="Income Sources">
+          <Section title="Gross Income Sources">
               <ul className="list-disc list-inside text-gray-800 space-y-1 pl-1">
                 {filteredIncomeSources.map((source, index) => (
                   <li key={index}>

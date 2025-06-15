@@ -223,7 +223,8 @@ function FinancialAssessmentModal({
           <section className="animate-fade-in">
             <DialogTitle className="mb-2 text-xl">Budget (Income & Expenses)</DialogTitle>
             <div className="mb-4">
-              <label className="font-medium mb-2 block">Income Sources</label>
+              <label className="font-medium mb-2 block">Gross Income Sources</label>
+              <p className="text-xs text-muted-foreground -mt-1 mb-2">Enter your income before tax.</p>
               <div className="space-y-2">
                 {incomeSources.map((src, idx) => (
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-2 items-center" key={idx}>

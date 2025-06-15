@@ -1,7 +1,7 @@
 
 import "https://deno.land/x/xhr@0.1.0/mod.ts";
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
-import { calculateMonthlyAmount } from './utils/calculations.ts';
+import { calculateMonthlyAmount, calculateAustralianIncomeTax } from './utils/calculations.ts';
 import { generateMainPrompt } from './prompts/mainPrompt.ts';
 
 const openAIApiKey = Deno.env.get('OPENAI_API_KEY');
@@ -29,15 +29,19 @@ serve(async (req) => {
 
     const { username, income_sources, expense_items } = assessmentData;
 
-    const totalMonthlyIncome = calculateMonthlyAmount(income_sources);
+    const totalMonthlyGrossIncome = calculateMonthlyAmount(income_sources);
+    const totalAnnualGrossIncome = totalMonthlyGrossIncome * 12;
+    const annualTax = calculateAustralianIncomeTax(totalAnnualGrossIncome);
+    const totalMonthlyNetIncome = (totalAnnualGrossIncome - annualTax) / 12;
+    
     const totalMonthlyExpenses = calculateMonthlyAmount(expense_items);
-    const potentialMonthlySavings = totalMonthlyIncome - totalMonthlyExpenses;
+    const potentialMonthlySavings = totalMonthlyNetIncome - totalMonthlyExpenses;
     
     let savingsCallout = '';
     if (potentialMonthlySavings > 0) {
-        savingsCallout = `- Based on the income and expenses you've provided, it looks like you have the potential to save around **$${potentialMonthlySavings.toFixed(0)} per month**. This is a fantastic starting point for reaching your goals!`;
-    } else if (totalMonthlyIncome > 0) {
-        savingsCallout = `- It looks like your expenses might be higher than your income right now. That's okay, we can look at strategies to manage this.`;
+        savingsCallout = `- After estimating taxes, it looks like you have the potential to save around **$${potentialMonthlySavings.toFixed(0)} per month** from your take-home pay. This is a fantastic starting point!`;
+    } else if (totalMonthlyNetIncome > 0) {
+        savingsCallout = `- After estimating taxes, it looks like your expenses might be higher than your take-home pay right now. That's okay, we can look at strategies to manage this.`;
     }
     
     const prompt = generateMainPrompt(assessmentData, potentialMonthlySavings, savingsCallout, personality);
