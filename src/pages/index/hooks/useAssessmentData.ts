@@ -161,6 +161,13 @@ export function useAssessmentData(assessment: AssessmentState) {
     setIsPreloaded(false);
   };
 
+  const handleChangeGoal = () => {
+    setAiSummary(null);
+    setChartData(null);
+    setIsSubmitted(false);
+    assessment.setShowAssessment(false);
+  };
+
   return {
     aiSummary,
     chartData,
@@ -171,5 +178,6 @@ export function useAssessmentData(assessment: AssessmentState) {
     setUsernameToFetch,
     generateSummary,
     handleStartOver,
+    handleChangeGoal,
   };
 }

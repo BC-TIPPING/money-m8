@@ -1,3 +1,4 @@
+
 import LandingSection from "./index/LandingSection";
 import AssessmentStepper from "./index/AssessmentStepper";
 import { useAssessmentState, questions } from "./index/assessmentHooks";
@@ -18,6 +19,7 @@ export default function Index() {
     setUsernameToFetch,
     generateSummary,
     handleStartOver,
+    handleChangeGoal,
   } = useAssessmentData(assessment);
 
   const handleStartAssessment = (goal: string, newUsername: string) => {
@@ -69,6 +71,13 @@ export default function Index() {
                         className="shadow-lg bg-background w-full max-w-sm"
                     >
                         Start Over
+                    </Button>
+                    <Button
+                        onClick={handleChangeGoal}
+                        variant="outline"
+                        className="shadow-lg bg-background w-full max-w-sm"
+                    >
+                        Change Goal
                     </Button>
                     {!aiSummary && (
                         <Button 
