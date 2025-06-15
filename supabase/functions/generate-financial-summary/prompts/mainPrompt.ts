@@ -11,7 +11,7 @@ export function generateMainPrompt(assessmentData: any, potentialMonthlySavings:
     
     const primaryGoal = goals && goals.length > 0 ? goals[0] : 'Not specified';
 
-    let goalSpecificInstructions = getGoalSpecificInstructions(primaryGoal, personality);
+    let goalSpecificInstructions = getGoalSpecificInstructions(primaryGoal, personality, debt_details);
 
     if (personality === 'dave_ramsey') {
         return `

@@ -46,15 +46,20 @@ ${resources}
 `;
 }
 
-function getDebtReductionInstructions(personality: string = 'default') {
+function getDebtReductionInstructions(personality: string = 'default', debtDetails?: any[]) {
     let motivationalSummary = `Provide a motivational summary highlighting how a small extra contribution can save thousands of dollars and years of repayments.`;
     if (personality === 'dave_ramsey') {
         motivationalSummary = `Look at these numbers. This is your ticket out of financial bondage. An extra $100 a week isn't for a coffee, it's for buying back years of your life. Get mad at this debt. Attack it. Sell stuff. Get another job. Do whatever it takes.`;
     }
 
+    const debtRecap = debtDetails && debtDetails.length > 0
+        ? debtDetails.map(d => `- **${d.type}:** $${parseFloat(d.balance).toLocaleString()} balance at ${d.interestRate}% interest.`).join('\n')
+        : `- No debts listed.`;
+
     return `
 **Debt Reduction Scenarios (Snowball Method)**
-- Recap their current debts from the data provided (type, balance, interest rate, and monthly repayment).
+- Here is a summary of your current debts:
+${debtRecap}
 - The "debt snowball" strategy focuses on paying off the debt with the lowest balance first, while making minimum payments on all other debts. Once a debt is paid off, its minimum payment is rolled into the payment for the next-smallest debt.
 
 - **Here is how you MUST calculate the scenarios:**
@@ -80,6 +85,13 @@ function getDebtReductionInstructions(personality: string = 'default') {
   - After running the simulation for each scenario, you will have the total months to be debt-free.
 
 - **Create a markdown table** to show the results. The columns MUST be: "Extra / week", "Time Saved", "Interest Saved", "Debt-Free Date".
+- The table MUST follow this exact structure, including the header separator line:
+  \`\`\`
+  | Extra / week | Time Saved | Interest Saved | Debt-Free Date |
+  |--------------|------------|----------------|----------------|
+  | $0           | -          | -              | e.g. Mar 2031  |
+  | $50          | 2 years    | $1,234         | e.g. Mar 2029  |
+  \`\`\`
 - The values in the "Extra / week" column should be prefixed with a dollar sign (e.g., $50).
 - **"Time Saved"** is the difference in time between the "$0 extra" scenario payoff time and the current scenario's payoff time. It should be in years and months (e.g., "1 year, 2 months"). For the "$0 extra" row, this value should be "-".
 - **"Interest Saved"** is the interest paid in the "$0 extra" scenario minus the interest paid in the current scenario. It should be a whole number, prefixed with a dollar sign and with commas for thousands (e.g., $400, $1,400).
@@ -167,10 +179,10 @@ function getDefaultInstructions(primaryGoal: string) {
 }
 
 
-export function getGoalSpecificInstructions(primaryGoal: string, personality: string = 'default') {
+export function getGoalSpecificInstructions(primaryGoal: string, personality: string = 'default', debtDetails?: any[]) {
     switch (primaryGoal) {
         case 'Reduce debt':
-            return getDebtReductionInstructions(personality);
+            return getDebtReductionInstructions(personality, debtDetails);
         case 'Buy a house':
             return getBuyAHomeInstructions();
         case 'Pay off home loan sooner':
