@@ -529,12 +529,16 @@ export default function Index() {
         />
         <div className="absolute inset-0 z-1 bg-gradient-to-br from-emerald-900/20 via-blue-900/30 to-purple-900/20" />
         <main className="relative z-10 w-full flex flex-col items-center mt-6 md:mt-8 px-2">
-          <h1 className="text-4xl md:text-6xl font-extrabold mb-6 md:mb-8 text-center tracking-tight text-white drop-shadow-2xl">
-            Get a clear picture of your finances – no jargon, no stress
+          {/* New Title & subtitles */}
+          <h1 className="text-4xl md:text-5xl font-extrabold mb-2 md:mb-2 text-center tracking-tight text-white drop-shadow-2xl">
+            Financial health check
           </h1>
-          <p className="text-xl md:text-2xl text-white/90 mb-12 max-w-2xl text-center drop-shadow-lg font-medium">
-            Take control of your finances with a quick assessment tailored for Australians
-          </p>
+          <div className="text-2xl md:text-3xl font-semibold text-white/90 mb-0 mt-2 text-center drop-shadow-lg">
+            Get a clear picture of your finances
+          </div>
+          <div className="text-lg md:text-xl text-white/80 mb-8 mt-2 max-w-2xl text-center drop-shadow font-medium">
+            – no jargon, no stress
+          </div>
           {/* Carousel panel */}
           <section className="w-full max-w-2xl mb-12">
             <Carousel opts={{ align: "center", loop: true }} className="w-full">
