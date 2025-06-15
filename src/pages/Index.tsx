@@ -7,6 +7,8 @@ import { useEffect, useState } from "react";
 import { useMutation } from "@tanstack/react-query";
 import { useToast } from "@/components/ui/use-toast";
 import { type Database } from "@/integrations/supabase/types";
+import { Link } from "react-router-dom";
+import { Button } from "@/components/ui/button";
 
 type AssessmentInsert = Database['public']['Tables']['assessments']['Insert'];
 
@@ -70,6 +72,11 @@ export default function Index() {
     return (
       <div className="relative min-h-screen">
         <LandingSection onStartAssessment={handleStartAssessment} />
+        <div className="absolute bottom-4 right-4">
+            <Button asChild variant="outline">
+                <Link to="/ask-ai">Ask our AI</Link>
+            </Button>
+        </div>
       </div>
     );
   }
