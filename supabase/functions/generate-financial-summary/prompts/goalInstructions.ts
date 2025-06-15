@@ -1,4 +1,3 @@
-
 function getGoalSpecificResources(primaryGoal: string) {
     switch (primaryGoal) {
         case 'Reduce debt':
@@ -74,13 +73,14 @@ function getDebtReductionInstructions() {
     - **Continue this simulation month by month.** When the Credit Card is paid off, its $50 minimum payment gets added to the Car Loan payment. The new Car Loan payment becomes $250 + $217 = $467.
   - After running the simulation for each scenario, you will have the total months to be debt-free.
 
-- **Create a markdown table** to show the results. The columns MUST be: "Extra Weekly Repayment", "Paid off sooner by", "Total Interest Saved", "Debt-Free Date".
-- **"Paid off sooner by"** is the difference in time between the "$0 extra" scenario payoff time and the current scenario's payoff time. It should be in years and months (e.g., "1 year, 2 months"). For the "$0 extra" row, this value should be "-".
-- **"Total Interest Saved"** is the interest paid in the "$0 extra" scenario minus the interest paid in the current scenario.
-- **"Debt-Free Date"** is calculated from today. It should be formatted as Month YYYY (e.g., "Jun 2027").
+- **Create a markdown table** to show the results. The columns MUST be: "Extra / week", "Time Saved", "Interest Saved", "Debt-Free Date".
+- The values in the "Extra / week" column should be prefixed with a dollar sign (e.g., $50).
+- **"Time Saved"** is the difference in time between the "$0 extra" scenario payoff time and the current scenario's payoff time. It should be in years and months (e.g., "1 year, 2 months"). For the "$0 extra" row, this value should be "-".
+- **"Interest Saved"** is the interest paid in the "$0 extra" scenario minus the interest paid in the current scenario. It should be a whole number, prefixed with a dollar sign and with commas for thousands (e.g., $400, $1,400).
+- **"Debt-Free Date"** is calculated from today. It should be formatted as Month YYYY (e.g., "Mar 2031").
 - You **MUST** output real numbers in the table, not placeholders like [Time] or [Amount].
 - Provide a motivational summary highlighting how a small extra contribution can save thousands of dollars and years of repayments.
-- Use Australian currency ($) and provide all monetary values formatted nicely (e.g., $5,123.45).
+- Use Australian currency ($).
 
 - **CHART DATA INSTRUCTIONS (VERY IMPORTANT):**
 - After the entire markdown summary, on a new line, you MUST provide a JSON object prefixed with \`CHART_DATA::\`.
