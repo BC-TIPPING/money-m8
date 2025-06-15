@@ -6,16 +6,16 @@ import { type Database } from "@/integrations/supabase/types";
 
 type AssessmentInsert = Database['public']['Tables']['assessments']['Insert'];
 
-export function useFetchAssessment(usernameToFetch: string | null) {
+export function useFetchAssessment(userId: string | null) {
   const { toast } = useToast();
   return useQuery({
-    queryKey: ['assessment', usernameToFetch],
+    queryKey: ['assessment', userId],
     queryFn: async () => {
-      if (!usernameToFetch) return null;
+      if (!userId) return null;
       const { data, error } = await supabase
         .from('assessments')
         .select('*')
-        .eq('username', usernameToFetch)
+        .eq('user_id', userId)
         .order('created_at', { ascending: false })
         .limit(1)
         .maybeSingle();
@@ -26,7 +26,7 @@ export function useFetchAssessment(usernameToFetch: string | null) {
       }
       return data;
     },
-    enabled: !!usernameToFetch,
+    enabled: !!userId,
     retry: false,
   });
 }

@@ -10,6 +10,8 @@ import { ReactNode } from "react";
 import AskAI from "./pages/AskAI";
 import PayOffHomeLoanPage from "./pages/PayOffHomeLoan";
 import MaximiseSuperPage from "./pages/MaximiseSuper";
+import { AuthProvider } from "./contexts/AuthContext";
+import AuthPage from "./pages/AuthPage";
 
 const queryClient = new QueryClient();
 
@@ -17,6 +19,7 @@ const AppRoutes = () => {
     return (
         <Routes>
             <Route path="/" element={<Index />} />
+            <Route path="/auth" element={<AuthPage />} />
             <Route path="/ask-ai" element={<AskAI />} />
             <Route path="/pay-off-home-loan" element={<PayOffHomeLoanPage />} />
             <Route path="/maximise-super" element={<MaximiseSuperPage />} />
@@ -32,7 +35,9 @@ const App = () => (
       <Toaster />
       <Sonner />
       <BrowserRouter>
-        <AppRoutes />
+        <AuthProvider>
+          <AppRoutes />
+        </AuthProvider>
       </BrowserRouter>
     </TooltipProvider>
   </QueryClientProvider>

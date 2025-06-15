@@ -1,9 +1,9 @@
 
 import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
 import { Loader2 } from "lucide-react";
+import { useAuth } from "@/contexts/AuthContext";
 
 const goalPanels = [
   { title: "Buy a house", description: "Turn your dream of homeownership into a reality with a solid plan.", emoji: "🏠" },
@@ -16,9 +16,9 @@ const goalPanels = [
   { title: "Maximise super", description: "Boost your retirement savings and take advantage of tax benefits.", emoji: "💰" },
 ];
 
-const LandingSection = ({ onStartAssessment, isLoading }: { onStartAssessment: (goal: string, username: string) => void; isLoading: boolean; }) => {
+const LandingSection = ({ onStartAssessment, isLoading }: { onStartAssessment: (goal: string) => void; isLoading: boolean; }) => {
   const [selectedGoal, setSelectedGoal] = useState<string | null>(null);
-  const [username, setUsername] = useState('');
+  const { user } = useAuth();
 
   return (
     <div className="w-full min-h-screen relative flex flex-col items-center justify-center overflow-hidden bg-gradient-to-br from-[#202336] via-[#28365a] to-[#191d29]">
@@ -37,7 +37,7 @@ const LandingSection = ({ onStartAssessment, isLoading }: { onStartAssessment: (
           Get a clear picture of your finances
         </div>
         <div className="text-lg md:text-xl text-white/80 mb-4 mt-2 max-w-2xl text-center drop-shadow font-medium">
-          Select your primary goal and enter your name to get started
+          Select your primary goal to get started
         </div>
         <section className="w-full max-w-3xl mb-8 px-14">
           <Carousel opts={{ align: "center", loop: false }} className="w-full">
@@ -58,34 +58,28 @@ const LandingSection = ({ onStartAssessment, isLoading }: { onStartAssessment: (
             <CarouselNext className="bg-white/20 border-white/30 text-white hover:bg-white/30" />
           </Carousel>
         </section>
-        <div className="w-full max-w-xs mb-6">
-          <Input
-            placeholder="Enter your name"
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
-            className="text-center bg-white/10 text-white placeholder:text-white/60 border-white/20 ring-offset-background focus:ring-emerald-500"
-          />
-        </div>
         <Button 
           size="lg" 
           className="text-xl px-12 py-6 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-semibold shadow-2xl transform hover:scale-105 transition-all disabled:bg-gray-400 disabled:cursor-not-allowed disabled:transform-none"
           onClick={() => {
-            if (selectedGoal && username) {
-              onStartAssessment(selectedGoal, username);
+            if (selectedGoal) {
+              onStartAssessment(selectedGoal);
             }
           }}
-          disabled={!selectedGoal || !username || isLoading}
+          disabled={!selectedGoal || isLoading}
         >
           {isLoading ? (
             <>
               <Loader2 className="mr-2 h-6 w-6 animate-spin" />
               Loading...
             </>
-          ) : (
+          ) : user ? (
             "Let's have a look"
+          ) : (
+            "Login to Start"
           )}
         </Button>
-        {(!selectedGoal || !username) && <p className="text-white/70 mt-4 animate-pulse">Please select a goal and enter your name to continue</p>}
+        {!selectedGoal && <p className="text-white/70 mt-4 animate-pulse">Please select a goal to continue</p>}
       </main>
       <footer className="mt-12 mb-6 text-sm text-white/60 z-10 text-center">
         &copy; {new Date().getFullYear()} ClearFin.AI&nbsp;&nbsp;|&nbsp;&nbsp;Financial clarity for Australians

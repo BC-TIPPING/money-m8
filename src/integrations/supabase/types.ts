@@ -27,7 +27,7 @@ export type Database = {
           income_sources: Json | null
           investment_experience: string[] | null
           other_goal: string | null
-          username: string | null
+          user_id: string
         }
         Insert: {
           created_at?: string
@@ -46,7 +46,7 @@ export type Database = {
           income_sources?: Json | null
           investment_experience?: string[] | null
           other_goal?: string | null
-          username?: string | null
+          user_id: string
         }
         Update: {
           created_at?: string
@@ -65,7 +65,34 @@ export type Database = {
           income_sources?: Json | null
           investment_experience?: string[] | null
           other_goal?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          avatar_url: string | null
+          full_name: string | null
+          id: string
+          updated_at: string | null
+          username: string | null
+          website: string | null
+        }
+        Insert: {
+          avatar_url?: string | null
+          full_name?: string | null
+          id: string
+          updated_at?: string | null
           username?: string | null
+          website?: string | null
+        }
+        Update: {
+          avatar_url?: string | null
+          full_name?: string | null
+          id?: string
+          updated_at?: string | null
+          username?: string | null
+          website?: string | null
         }
         Relationships: []
       }

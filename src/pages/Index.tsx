@@ -1,7 +1,8 @@
+
 import LandingSection from "./index/LandingSection";
 import AssessmentStepper from "./index/AssessmentStepper";
 import { useAssessmentState, questions } from "./index/assessmentHooks";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Loader2 } from "lucide-react";
 import { useAssessmentData } from "./index/hooks/useAssessmentData";
@@ -10,11 +11,16 @@ import DebtReductionChart from "./index/DebtReductionChart";
 import BudgetPlanner from "./index/budget-planner";
 import { Card, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { calculateMonthlyAmount, calculateAustralianIncomeTax } from "@/lib/financialCalculations";
+import { useAuth } from "@/contexts/AuthContext";
+import { useEffect } from "react";
 
 const DEBT_GOALS = ['Pay off home loan sooner', 'Reduce debt'];
 
 export default function Index() {
   const assessment = useAssessmentState();
+  const { user, signOut } = useAuth();
+  const navigate = useNavigate();
+
   const {
     aiSummary,
     chartData,
@@ -22,17 +28,32 @@ export default function Index() {
     isLoadingAssessment,
     isGeneratingSummary,
     isComplete,
-    setUsernameToFetch,
     generateSummary,
     handleStartOver,
     handleChangeGoal,
   } = useAssessmentData(assessment);
 
-  const handleStartAssessment = (goal: string, newUsername: string) => {
+  const handleStartAssessment = (goal: string) => {
+    if (!user) {
+      localStorage.setItem('selectedGoal', goal);
+      navigate('/auth');
+      return;
+    }
     assessment.setGoals([goal]);
-    setUsernameToFetch(newUsername);
+    assessment.setShowAssessment(true);
   };
   
+  useEffect(() => {
+    if (user) {
+        const goal = localStorage.getItem('selectedGoal');
+        if (goal) {
+            assessment.setGoals([goal]);
+            assessment.setShowAssessment(true);
+            localStorage.removeItem('selectedGoal');
+        }
+    }
+  }, [user, assessment]);
+
   const hasDebtGoal = assessment.goals.some(g => DEBT_GOALS.includes(g));
 
   const totalMonthlyGrossIncome = calculateMonthlyAmount(assessment.incomeSources);
@@ -44,7 +65,14 @@ export default function Index() {
     return (
       <div className="relative min-h-screen">
         <LandingSection onStartAssessment={handleStartAssessment} isLoading={isLoadingAssessment} />
-        <div className="absolute bottom-4 right-4">
+        <div className="absolute bottom-4 right-4 flex gap-2">
+            {user ? (
+              <Button onClick={signOut} variant="outline">Sign Out</Button>
+            ) : (
+              <Button asChild variant="outline">
+                  <Link to="/auth">Login</Link>
+              </Button>
+            )}
             <Button asChild variant="outline">
                 <Link to="/ask-ai">Ask our AI</Link>
             </Button>

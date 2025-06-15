@@ -3,25 +3,25 @@ import { useToast } from "@/components/ui/use-toast";
 import { type Database } from "@/integrations/supabase/types";
 import { PRELOADED_EXPENSE_CATEGORIES, questions, useAssessmentState } from "../assessmentHooks";
 import { useFetchAssessment, useSaveAssessment, useGenerateSummary, useUpdateHomeLoanRepayment } from './useAssessmentApi';
+import { useAuth } from "@/contexts/AuthContext";
 
 type AssessmentInsert = Database['public']['Tables']['assessments']['Insert'];
 type AssessmentState = ReturnType<typeof useAssessmentState>;
 
 export function useAssessmentData(assessment: AssessmentState) {
   const { toast } = useToast();
+  const { user } = useAuth();
 
   const [isSubmitted, setIsSubmitted] = useState(false);
-  const [username, setUsername] = useState<string | null>(null);
   const [aiSummary, setAiSummary] = useState<string | null>(null);
   const [chartData, setChartData] = useState<any | null>(null);
-  const [usernameToFetch, setUsernameToFetch] = useState<string | null>(null);
   const [isPreloaded, setIsPreloaded] = useState(false);
   const [assessmentId, setAssessmentId] = useState<string | null>(null);
 
-  const { data: existingAssessment, isLoading: isLoadingAssessment, isSuccess: isFetchSuccess } = useFetchAssessment(usernameToFetch);
+  const { data: existingAssessment, isLoading: isLoadingAssessment, isSuccess: isFetchSuccess } = useFetchAssessment(user?.id ?? null);
 
   const assessmentData: AssessmentInsert = {
-    username,
+    user_id: user!.id,
     employment_status: assessment.employmentStatus,
     has_regular_income: assessment.hasRegularIncome,
     income_sources: assessment.incomeSources,
@@ -54,13 +54,13 @@ export function useAssessmentData(assessment: AssessmentState) {
   const isComplete = assessment.step >= questions.length;
 
   useEffect(() => {
-    if (isComplete && !isSubmitted && !isSaving && username) {
+    if (isComplete && !isSubmitted && !isSaving && user) {
       saveAssessment(assessmentData);
     }
-  }, [isComplete, isSubmitted, isSaving, saveAssessment, assessmentData, username]);
+  }, [isComplete, isSubmitted, isSaving, saveAssessment, assessmentData, user]);
 
   useEffect(() => {
-    if (isFetchSuccess && usernameToFetch) {
+    if (isFetchSuccess && user) {
         if (existingAssessment) {
             const typedAssessment = existingAssessment;
             setAssessmentId(typedAssessment.id);
@@ -92,12 +92,10 @@ export function useAssessmentData(assessment: AssessmentState) {
 
             toast({ title: "Welcome back!", description: "We've pre-filled your previous assessment data." });
             setIsPreloaded(true);
+            assessment.setShowAssessment(true);
         }
-        setUsername(usernameToFetch);
-        assessment.setShowAssessment(true);
-        setUsernameToFetch(null);
     }
-  }, [isFetchSuccess, usernameToFetch, existingAssessment, assessment, toast]);
+  }, [isFetchSuccess, user, existingAssessment, assessment, toast]);
 
   const handleStartOver = () => {
     assessment.setStep(0);
@@ -119,7 +117,6 @@ export function useAssessmentData(assessment: AssessmentState) {
     setIsSubmitted(false);
     setAiSummary(null);
     setChartData(null);
-    setUsername(null);
     setAssessmentId(null);
     setIsPreloaded(false);
   };
@@ -142,7 +139,6 @@ export function useAssessmentData(assessment: AssessmentState) {
     isLoadingAssessment,
     isGeneratingSummary,
     isComplete,
-    setUsernameToFetch,
     generateSummary,
     handleStartOver,
     handleChangeGoal,
