@@ -70,13 +70,15 @@ export default function Index() {
         {isComplete && (
             <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-20 w-full max-w-sm px-4">
                 <div className="flex flex-col items-center gap-4">
-                    <Button 
-                        onClick={handleStartOver}
-                        variant="outline"
-                        className="shadow-lg bg-background w-full"
-                    >
-                        Start Over
-                    </Button>
+                    {aiSummary && (
+                        <Button 
+                            onClick={handleStartOver}
+                            variant="outline"
+                            className="shadow-lg bg-background w-full"
+                        >
+                            Start Over
+                        </Button>
+                    )}
                     <Button
                         onClick={handleChangeGoal}
                         variant="outline"
