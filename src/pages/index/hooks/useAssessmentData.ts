@@ -116,7 +116,7 @@ export function useAssessmentData(assessment: AssessmentState) {
             assessment.setShowAssessment(true);
         }
     }
-  }, [isFetchSuccess, user, existingAssessment, assessment, toast]);
+  }, [isFetchSuccess, user, existingAssessment, toast]);
 
   const handleStartOver = () => {
     assessment.setStep(0);
@@ -146,6 +146,7 @@ export function useAssessmentData(assessment: AssessmentState) {
     setAiSummary(null);
     setChartData(null);
     setIsSubmitted(false);
+    assessment.setGoals([]);
     assessment.setStep(0);
     assessment.setShowAssessment(false);
   };
