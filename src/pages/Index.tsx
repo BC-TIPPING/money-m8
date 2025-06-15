@@ -217,12 +217,13 @@ export default function Index() {
     }
   };
 
+  // Find the current question for milestones display
   const questionsWithUpload = [
-    { 
-      id: "upload", 
-      title: "Import Your Budget (Optional)", 
-      subtitle: "Upload a CSV or PDF to fill in your info faster, or continue manually.", 
-      type: "upload" 
+    {
+      id: "upload",
+      title: "Import Your Budget (Optional)",
+      subtitle: "Upload a CSV or PDF to fill in your info faster, or continue manually.",
+      type: "upload"
     },
     ...questions
   ];
@@ -515,19 +516,14 @@ export default function Index() {
             backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.5)), url('/lovable-uploads/3b4aa2ff-8ca4-4b86-85e7-85b1d027ca73.png')`
           }}
         />
-        
-        {/* Overlay for better text readability */}
         <div className="absolute inset-0 z-1 bg-gradient-to-br from-emerald-900/20 via-blue-900/30 to-purple-900/20" />
-
-        {/* Main content */}
         <main className="relative z-10 w-full flex flex-col items-center mt-6 md:mt-8 px-2">
           <h1 className="text-4xl md:text-6xl font-extrabold mb-6 md:mb-8 text-center tracking-tight text-white drop-shadow-2xl">
-            Master Your Money
+            Get a clear picture of your finances – no jargon, no stress
           </h1>
           <p className="text-xl md:text-2xl text-white/90 mb-12 max-w-2xl text-center drop-shadow-lg font-medium">
             Take control of your finances with a quick assessment tailored for Australians
           </p>
-
           {/* Carousel panel */}
           <section className="w-full max-w-2xl mb-12">
             <Carousel opts={{ align: "center", loop: true }} className="w-full">
@@ -546,16 +542,14 @@ export default function Index() {
               <CarouselNext className="bg-white/20 border-white/30 text-white hover:bg-white/30" />
             </Carousel>
           </section>
-
           <Button 
             size="lg" 
             className="text-xl px-12 py-6 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-semibold shadow-2xl transform hover:scale-105 transition-all"
             onClick={() => setShowAssessment(true)}
           >
-            Start Your Financial Journey
+            Let's have a look
           </Button>
         </main>
-
         <footer className="mt-12 mb-6 text-sm text-white/60 z-10 text-center">
           &copy; {new Date().getFullYear()} ClearFin.AI&nbsp;&nbsp;|&nbsp;&nbsp;Financial clarity for Australians
         </footer>
@@ -596,6 +590,23 @@ export default function Index() {
             <span className="text-sm text-gray-500">{step + 1} of {questionsWithUpload.length}</span>
           </div>
           <Progress value={progress} className="h-2" />
+          {/* Goal Milestones */}
+          <div className="flex flex-row flex-wrap justify-between mt-2 w-full">
+            {questionsWithUpload.map((q, idx) => (
+              <span
+                key={q.id}
+                className={
+                  "text-[10px] md:text-xs text-gray-400 transition-all " +
+                  (step === idx ? "font-bold text-blue-600 scale-110" : "")
+                }
+                style={{ maxWidth: "max(8%,60px)" }}
+                title={q.title}
+              >
+                {/* Only show for certain question ids: skip 'upload', 'additionalNotes' */}
+                {(q.id !== "upload" && q.id !== "additionalNotes") ? q.title.split(" ")[0] : ""}
+              </span>
+            ))}
+          </div>
         </div>
 
         {/* Question content */}
