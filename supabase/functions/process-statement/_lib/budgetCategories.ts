@@ -1,0 +1,19 @@
+
+export const BUDGET_CATEGORIES = [
+  { category: 'Housing', minPercent: 25, maxPercent: 35, notes: 'Rent/mortgage, utilities, rates' },
+  { category: 'Food & Groceries', minPercent: 10, maxPercent: 15, notes: 'Includes groceries and eating out' },
+  { category: 'Transport', minPercent: 10, maxPercent: 10, notes: 'Fuel, public transport, insurance' },
+  { category: 'Health & Medical', minPercent: 3, maxPercent: 6, notes: 'Insurance, GP, dental, pharmacy' },
+  { category: 'Debt Repayments', minPercent: 5, maxPercent: 10, notes: 'Loans, credit cards (excl. mortgage)' },
+  { category: 'Savings & Investments', minPercent: 10, maxPercent: 20, notes: 'Emergency fund, super, investing' },
+  { category: 'Insurance', minPercent: 2, maxPercent: 5, notes: 'Life, home, car (non-health)' },
+  { category: 'Children & Education', minPercent: 5, maxPercent: 10, notes: 'Childcare, school, supplies' },
+  { category: 'Entertainment & Subscriptions', minPercent: 2, maxPercent: 5, notes: 'Streaming, movies, outings' },
+  { category: 'Clothing & Personal Care', minPercent: 2, maxPercent: 5, notes: 'Clothes, grooming, haircuts' },
+  { category: 'Pets', minPercent: 1, maxPercent: 3, notes: 'Food, vet, grooming' },
+  { category: 'Travel & Holidays', minPercent: 3, maxPercent: 8, notes: 'Flights, hotels, local trips' },
+  { category: 'Gifts & Donations', minPercent: 1, maxPercent: 3, notes: 'Birthdays, holidays, charity' },
+  { category: 'Hobbies & Fitness', minPercent: 2, maxPercent: 4, notes: 'Gym, sports, personal hobbies' },
+  { category: 'Miscellaneous', minPercent: 1, maxPercent: 3, notes: 'Buffer for one-offs or unknowns' },
+];
+

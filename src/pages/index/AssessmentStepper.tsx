@@ -25,6 +25,8 @@ import {
   PRELOADED_INCOME_CATEGORIES,
   INCOME_FREQUENCIES,
 } from "./assessmentHooks";
+import { supabase } from "@/integrations/supabase/client";
+import FileAnalysisReport from "./FileAnalysisReport";
 
 const CenteredCard = ({ children }: { children: React.ReactNode }) => (
   <section className="w-full flex flex-col items-center min-h-[100dvh] justify-center px-4 pt-8 pb-10">
@@ -90,6 +92,11 @@ const AssessmentStepper: React.FC<AssessmentStepperProps> = (props) => {
     generateSummary, isGeneratingSummary, aiSummary, chartData
   } = props;
 
+  // Local state for file processing
+  const [isProcessingFile, setIsProcessingFile] = React.useState(false);
+  const [fileProcessingError, setFileProcessingError] = React.useState<string | null>(null);
+  const [fileAnalysisResult, setFileAnalysisResult] = React.useState<any | null>(null);
+
   React.useEffect(() => {
     const newDetails = debtTypes
       .filter(type => type !== "No current debt")
@@ -108,6 +115,55 @@ const AssessmentStepper: React.FC<AssessmentStepperProps> = (props) => {
         setDebtDetails(newDetails);
     }
   }, [debtTypes, debtDetails, setDebtDetails]);
+
+  const handleFileSelect = async (file: File | null) => {
+    if (!file) {
+        setUploadedFile(null);
+        setFileAnalysisResult(null);
+        return;
+    }
+    setUploadedFile(file);
+    setIsProcessingFile(true);
+    setFileProcessingError(null);
+    setFileAnalysisResult(null);
+
+    // Reading file content
+    const reader = new FileReader();
+    reader.onload = async (event) => {
+        const fileContent = event.target?.result;
+        if (typeof fileContent !== 'string') {
+            setFileProcessingError("Could not read file content.");
+            setIsProcessingFile(false);
+            return;
+        }
+
+        try {
+            const { data, error } = await supabase.functions.invoke('process-statement', {
+                body: { fileContent },
+            });
+
+            if (error) throw error;
+            
+            if (!data.categorizedExpenses || !data.analysis) {
+              throw new Error("AI response is not in the expected format.");
+            }
+
+            setFileAnalysisResult(data);
+            setExpenseItems(data.categorizedExpenses);
+
+        } catch (e: any) {
+            console.error(e);
+            setFileProcessingError(`Error processing file: ${e.message}. The AI may have returned an unexpected response. Please try again or enter expenses manually.`);
+        } finally {
+            setIsProcessingFile(false);
+        }
+    };
+    reader.onerror = () => {
+        setFileProcessingError("Failed to read file.");
+        setIsProcessingFile(false);
+    };
+    reader.readAsText(file);
+  };
 
   const handleDebtDetailChange = (idx: number, key: keyof Omit<DebtDetail, "type">, value: string) => {
     setDebtDetails(prev => {
@@ -186,14 +242,17 @@ const AssessmentStepper: React.FC<AssessmentStepperProps> = (props) => {
       return (
         <div className="space-y-6">
           <div className="flex flex-col items-center gap-4">
+             <p className="text-sm text-center text-muted-foreground">
+              For now, we can only process CSV files. PDF support is coming soon!
+            </p>
             <input
               type="file"
-              accept=".csv,application/pdf"
+              accept=".csv"
               className="hidden"
               ref={fileInputRef}
               onChange={e => {
                 if (e.target.files && e.target.files.length > 0) {
-                  setUploadedFile(e.target.files[0]);
+                  handleFileSelect(e.target.files[0]);
                 }
               }}
             />
@@ -201,16 +260,27 @@ const AssessmentStepper: React.FC<AssessmentStepperProps> = (props) => {
               variant="outline"
               className="w-full"
               onClick={() => fileInputRef.current?.click()}
+              disabled={isProcessingFile}
             >
-              {uploadedFile ? `Uploaded: ${uploadedFile.name}` : "Upload CSV or PDF"}
+              {isProcessingFile ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Processing...</> : 
+              uploadedFile ? `Uploaded: ${uploadedFile.name}` : "Upload Bank Statement (CSV)"}
             </Button>
-            <div className="text-gray-500 text-xs">
-              You can import your bank statement, budget, or expenses PDF/CSV.
-            </div>
+            {fileProcessingError && <p className="text-sm text-destructive text-center">{fileProcessingError}</p>}
           </div>
-          <div className="flex items-center justify-center mt-2">
-            <span className="text-gray-500 text-sm">Or</span>
+
+          {fileAnalysisResult && (
+              <FileAnalysisReport result={fileAnalysisResult} />
+          )}
+          
+          <div className="relative my-4">
+              <div className="absolute inset-0 flex items-center" aria-hidden="true">
+                  <div className="w-full border-t border-gray-300" />
+              </div>
+              <div className="relative flex justify-center">
+                  <span className="bg-white px-2 text-sm text-gray-500">Or</span>
+              </div>
           </div>
+
           <div className="mt-2 text-center text-gray-700 text-base">
             Continue to manually enter your financial details.
           </div>
@@ -556,10 +626,18 @@ const AssessmentStepper: React.FC<AssessmentStepperProps> = (props) => {
   }; // end renderQuestion
 
   const handleNext = () => {
-    if (step < questionsWithUpload.length - 1) {
-      setStep(step + 1);
+    let nextStep = step + 1;
+    if (questionsWithUpload[step]?.id === "upload" && fileAnalysisResult) {
+       const expenseStepIndex = questionsWithUpload.findIndex(q => q.id === 'expenses');
+       if (expenseStepIndex === step + 1) {
+         nextStep = step + 2;
+       }
+    }
+    
+    if (nextStep < questionsWithUpload.length) {
+      setStep(nextStep);
     } else {
-      setStep(step + 1);
+      setStep(questionsWithUpload.length);
     }
   };
 
