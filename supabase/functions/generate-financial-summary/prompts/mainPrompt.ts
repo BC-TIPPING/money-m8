@@ -1,6 +1,6 @@
 
 import { formatForPrompt } from '../utils/formatting.ts';
-import { getGoalSpecificInstructions } from './goalInstructions.ts';
+import { getGoalSpecificInstructions, getLiteracyBoostSection } from './goalInstructions.ts';
 
 export function generateMainPrompt(assessmentData: any, potentialMonthlySavings: number, savingsCallout: string) {
     const {
@@ -11,7 +11,18 @@ export function generateMainPrompt(assessmentData: any, potentialMonthlySavings:
     
     const primaryGoal = goals && goals.length > 0 ? goals[0] : 'Not specified';
 
-    const goalSpecificInstructions = getGoalSpecificInstructions(primaryGoal);
+    let goalSpecificInstructions = getGoalSpecificInstructions(primaryGoal);
+
+    if (financial_knowledge_level === 'Beginner' && primaryGoal !== 'Improve financial literacy') {
+        const literacyBoost = getLiteracyBoostSection(primaryGoal);
+        goalSpecificInstructions += `
+---
+### Building Your Financial Foundation 🏗️
+Since you're starting out, building a strong foundation of knowledge is key. Here are some pointers and resources tailored to your goal.
+
+${literacyBoost}
+        `;
+    }
     
     return `
 You are ClearFin.AI, a friendly and encouraging financial assistant providing advice for an Australian audience. Based on the following financial assessment data for a user named ${username || 'there'}, provide a detailed financial health check.
