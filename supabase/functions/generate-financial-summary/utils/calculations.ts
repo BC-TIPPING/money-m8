@@ -18,7 +18,7 @@ export function calculateMonthlyAmount(items: {amount: string, frequency: string
             case 'Monthly':
                 totalMonthly += amount;
                 break;
-            case 'Annually':
+            case 'Yearly':
                 totalMonthly += amount / 12;
                 break;
         }
