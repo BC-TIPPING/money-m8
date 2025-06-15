@@ -1,4 +1,3 @@
-
 import LandingSection from "./index/LandingSection";
 import AssessmentStepper from "./index/AssessmentStepper";
 import { useAssessmentState, questions, PRELOADED_EXPENSE_CATEGORIES } from "./index/assessmentHooks";
@@ -144,6 +143,30 @@ export default function Index() {
     assessment.setGoals([goal]);
     setUsernameToFetch(newUsername);
   };
+
+  const handleStartOver = () => {
+    assessment.setStep(0);
+    assessment.setEmploymentStatus(undefined);
+    assessment.setHasRegularIncome(undefined);
+    assessment.setIncomeSources([{ category: "", amount: "", frequency: "Monthly" }]);
+    assessment.setExpenseItems(PRELOADED_EXPENSE_CATEGORIES.map((c) => ({ category: c, amount: "", frequency: "Weekly" })));
+    assessment.setFinancialKnowledgeLevel(undefined);
+    assessment.setInvestmentExperience([]);
+    assessment.setGoals([]);
+    assessment.setOtherGoal("");
+    assessment.setGoalTimeframe(undefined);
+    assessment.setDebtTypes([]);
+    assessment.setDebtDetails([]);
+    assessment.setDebtManagementConfidence(undefined);
+    assessment.setFreeTextComments("");
+    assessment.setShowAssessment(false);
+
+    setIsSubmitted(false);
+    setAiSummary(null);
+    setChartData(null);
+    setUsername(null);
+    setIsPreloaded(false);
+  };
   
   if (!assessment.showAssessment) {
     return (
@@ -175,6 +198,17 @@ export default function Index() {
                     onClick={() => assessment.setStep(questions.length)}
                 >
                     Skip to My Summary
+                </Button>
+            </div>
+        )}
+        {isComplete && (
+            <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-20">
+                <Button 
+                    onClick={handleStartOver}
+                    variant="secondary"
+                    className="shadow-lg"
+                >
+                    Select a New Goal
                 </Button>
             </div>
         )}
