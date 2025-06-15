@@ -508,16 +508,6 @@ const AssessmentStepper: React.FC<AssessmentStepperProps> = (props) => {
                     <h3 className="font-semibold text-lg text-gray-800">{detail.type}</h3>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Loan Amount</label>
-                        <Input
-                          placeholder="e.g. 20000"
-                          type="number"
-                          min={0}
-                          value={detail.loanAmount}
-                          onChange={e => handleDebtDetailChange(idx, "loanAmount", e.target.value)}
-                        />
-                      </div>
-                      <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1">Current Balance</label>
                         <Input
                           placeholder="e.g. 15000"
