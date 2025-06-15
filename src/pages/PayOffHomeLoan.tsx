@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -42,7 +43,7 @@ interface CalculationResult {
   interestSaved: number;
   originalTerm: string;
   newTerm: string;
-  chartData: { year: number; "Original Loan": number; "With Extra Repayments": number | null }[];
+  chartData: { year: number; originalLoan: number; withExtraRepayments: number | null }[];
   error?: string;
 }
 
@@ -147,8 +148,8 @@ const calculateLoanDetails = (values: CalculatorFormValues): CalculationResult =
     
     return {
       year: originalPoint.year,
-      "Original Loan": originalPoint.balance,
-      "With Extra Repayments": newBalance,
+      originalLoan: originalPoint.balance,
+      withExtraRepayments: newBalance,
     };
   });
 
@@ -305,8 +306,8 @@ export default function PayOffHomeLoanPage() {
                                         <div className="pt-6 mt-6 border-t border-green-200">
                                             <p className="text-lg font-semibold mb-4 text-green-800">Loan Balance Over Time</p>
                                             <ChartContainer config={{
-                                                "Original Loan": { label: "Original Loan", color: "hsl(var(--chart-2))" },
-                                                "With Extra Repayments": { label: "With Extra Repayments", color: "hsl(var(--chart-1))" },
+                                                originalLoan: { label: "Original Loan", color: "#9CA3AF" },
+                                                withExtraRepayments: { label: "With Extra Repayments", color: "#059669" },
                                             }} className="h-[300px] w-full">
                                                 <LineChart data={results.chartData} margin={{ top: 5, right: 20, bottom: 5, left: 0 }}>
                                                     <CartesianGrid vertical={false} strokeDasharray="3 3" />
@@ -321,8 +322,8 @@ export default function PayOffHomeLoanPage() {
                                                         />}
                                                     />
                                                     <Legend />
-                                                    <Line dataKey="Original Loan" type="monotone" stroke="var(--color-Original-Loan)" strokeWidth={2} dot={false} />
-                                                    <Line dataKey="With Extra Repayments" type="monotone" stroke="var(--color-With-Extra-Repayments)" strokeWidth={2} dot={false} />
+                                                    <Line dataKey="originalLoan" type="monotone" stroke="var(--color-originalLoan)" strokeWidth={2} dot={false} />
+                                                    <Line dataKey="withExtraRepayments" type="monotone" stroke="var(--color-withExtraRepayments)" strokeWidth={2} dot={false} />
                                                 </LineChart>
                                             </ChartContainer>
                                         </div>
