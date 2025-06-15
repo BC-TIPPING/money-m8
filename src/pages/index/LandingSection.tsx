@@ -39,11 +39,11 @@ const LandingSection = ({ onStartAssessment, isLoading }: { onStartAssessment: (
         <div className="text-lg md:text-xl text-white/80 mb-4 mt-2 max-w-2xl text-center drop-shadow font-medium">
           Select your primary goal and enter your name to get started
         </div>
-        <section className="w-full max-w-2xl mb-8">
+        <section className="w-full max-w-3xl mb-8 px-14">
           <Carousel opts={{ align: "center", loop: false }} className="w-full">
             <CarouselContent>
               {goalPanels.map((panel, i) => (
-                <CarouselItem key={i} className="px-1 py-4 cursor-pointer md:basis-1/2 lg:basis-1/3" onClick={() => setSelectedGoal(panel.title)}>
+                <CarouselItem key={i} className="py-4 cursor-pointer md:basis-1/2 lg:basis-1/3" onClick={() => setSelectedGoal(panel.title)}>
                   <div className={`bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl shadow-xl p-6 h-full flex flex-col items-center gap-3 transition-all hover:scale-105 hover:bg-white/15 ${selectedGoal === panel.title ? 'ring-4 ring-emerald-500 bg-white/20' : 'ring-transparent'}`}>
                     <span className="text-4xl">{panel.emoji}</span>
                     <span className="font-bold text-xl text-white">{panel.title}</span>
