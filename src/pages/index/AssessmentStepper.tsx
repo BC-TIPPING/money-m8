@@ -45,8 +45,8 @@ interface AssessmentStepperProps {
   uploadedFile: File | null;
   setUploadedFile: (file: File | null) => void;
   fileInputRef: React.RefObject<HTMLInputElement>;
-  expenseItems: { category: string, amount: string }[];
-  setExpenseItems: React.Dispatch<React.SetStateAction<{ category: string, amount: string }[]>>;
+  expenseItems: { category: string, amount: string, frequency: string }[];
+  setExpenseItems: React.Dispatch<React.SetStateAction<{ category: string, amount: string, frequency: string }[]>>;
   step: number;
   setStep: (n: number) => void;
   showAssessment: boolean;
@@ -129,14 +129,15 @@ const AssessmentStepper: React.FC<AssessmentStepperProps> = (props) => {
   const addIncomeSource = () => setIncomeSources([...incomeSources, { category: "", amount: "", frequency: "Monthly" }]);
   const removeIncomeSource = (idx: number) =>
     setIncomeSources(incomeSources.length === 1 ? incomeSources : incomeSources.filter((_, i) => i !== idx));
-  const handleExpenseChange = (idx: number, key: "category" | "amount", value: string) => {
+  const handleExpenseChange = (idx: number, key: "category" | "amount" | "frequency", value: string) => {
     setExpenseItems((prev) => {
       const next = [...prev];
-      next[idx][key] = value;
+      const item = next[idx] as any;
+      item[key] = value;
       return next;
     });
   };
-  const addExpenseItem = () => setExpenseItems([...expenseItems, { category: "", amount: "" }]);
+  const addExpenseItem = () => setExpenseItems([...expenseItems, { category: "", amount: "", frequency: "Weekly" }]);
   const removeExpenseItem = (idx: number) =>
     setExpenseItems(expenseItems.length === 1 ? expenseItems : expenseItems.filter((_, i) => i !== idx));
 
@@ -219,28 +220,54 @@ const AssessmentStepper: React.FC<AssessmentStepperProps> = (props) => {
     }
     // Preloaded categories for expense step
     if (question.type === "expense-list") {
+        const handleAllExpenseFrequenciesChange = (newFrequency: string) => {
+            setExpenseItems(prevItems =>
+              prevItems.map(item => ({ ...item, frequency: newFrequency }))
+            );
+        };
       return (
-        <div className="space-y-4">
-          {expenseItems.map((exp, idx) => (
-            <div className="flex gap-3 items-center" key={exp.category}>
-              <span className="flex-1 text-gray-900">{exp.category}</span>
-              <Input
-                placeholder="Amount ($)"
-                type="number"
-                min={0}
-                value={exp.amount}
-                onChange={e => {
-                  const value = e.target.value;
-                  setExpenseItems(items => {
-                    const arr = [...items];
-                    arr[idx].amount = value;
-                    return arr;
-                  });
-                }}
-                className="w-32"
-              />
+        <div>
+          <div className="flex justify-end items-center gap-2 mb-4">
+            <label className="text-sm font-medium text-gray-700">Set all to:</label>
+            <Select onValueChange={handleAllExpenseFrequenciesChange}>
+              <SelectTrigger className="w-[150px]">
+                <SelectValue placeholder="Select Frequency" />
+              </SelectTrigger>
+              <SelectContent>
+                {INCOME_FREQUENCIES.map((freq) => (
+                  <SelectItem key={freq} value={freq}>
+                    {freq}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+            <div className="space-y-4">
+            {expenseItems.map((exp, idx) => (
+                <div className="grid grid-cols-[1fr_auto_auto] md:grid-cols-[1fr_120px_150px] gap-3 items-center" key={idx}>
+                <span className="flex-1 text-gray-900">{exp.category}</span>
+                <Input
+                    placeholder="Amount ($)"
+                    type="number"
+                    min={0}
+                    value={exp.amount}
+                    onChange={e => handleExpenseChange(idx, "amount", e.target.value)}
+                />
+                <Select value={exp.frequency} onValueChange={val => handleExpenseChange(idx, "frequency", val)}>
+                    <SelectTrigger>
+                    <SelectValue placeholder="Frequency" />
+                    </SelectTrigger>
+                    <SelectContent>
+                    {INCOME_FREQUENCIES.map((freq) => (
+                        <SelectItem key={freq} value={freq}>
+                        {freq}
+                        </SelectItem>
+                    ))}
+                    </SelectContent>
+                </Select>
+                </div>
+            ))}
             </div>
-          ))}
         </div>
       );
     }
@@ -439,6 +466,18 @@ const AssessmentStepper: React.FC<AssessmentStepperProps> = (props) => {
                       onChange={e => handleExpenseChange(idx, "amount", e.target.value)}
                       className="w-32"
                     />
+                     <Select value={exp.frequency} onValueChange={val => handleExpenseChange(idx, "frequency", val)}>
+                      <SelectTrigger className="w-[150px]">
+                        <SelectValue placeholder="Frequency" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {INCOME_FREQUENCIES.map((freq) => (
+                          <SelectItem key={freq} value={freq}>
+                            {freq}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
                     <Button size="icon" variant="ghost" onClick={() => removeExpenseItem(idx)} aria-label="Remove">
                       ×
                     </Button>
@@ -526,6 +565,8 @@ const AssessmentStepper: React.FC<AssessmentStepperProps> = (props) => {
       })()
     );
   }; // end renderQuestion
+
+// ... keep existing code (handleNext, handleBack, completion screen)
 
   const handleNext = () => {
     if (step < questionsWithUpload.length - 1) {

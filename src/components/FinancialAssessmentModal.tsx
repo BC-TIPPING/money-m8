@@ -123,7 +123,7 @@ function FinancialAssessmentModal({
   const [employmentStatus, setEmploymentStatus] = useState<EmploymentStatus | undefined>();
   const [hasRegularIncome, setHasRegularIncome] = useState<boolean | undefined>();
   const [incomeSources, setIncomeSources] = useState([{ category: "", amount: "", frequency: "Monthly" }]);
-  const [expenseItems, setExpenseItems] = useState([{ category: "", amount: "" }]);
+  const [expenseItems, setExpenseItems] = useState([{ category: "", amount: "", frequency: "Weekly" }]);
   const [uploadBank, setUploadBank] = useState<File | null>(null);
   const [financialKnowledgeLevel, setFinancialKnowledgeLevel] = useState<FinancialKnowledgeLevel | undefined>();
   const [investmentExperience, setInvestmentExperience] = useState<string[]>([]);
@@ -147,16 +147,22 @@ function FinancialAssessmentModal({
   const removeIncomeSource = (idx: number) =>
     setIncomeSources(incomeSources.length === 1 ? incomeSources : incomeSources.filter((_, i) => i !== idx));
 
-  const handleExpenseChange = (idx: number, key: "category" | "amount", value: string) => {
+  const handleExpenseChange = (idx: number, key: "category" | "amount" | "frequency", value: string) => {
     setExpenseItems((prev) => {
       const next = [...prev];
-      next[idx][key] = value;
+      (next[idx] as any)[key] = value;
       return next;
     });
   };
-  const addExpenseItem = () => setExpenseItems([...expenseItems, { category: "", amount: "" }]);
+  const addExpenseItem = () => setExpenseItems([...expenseItems, { category: "", amount: "", frequency: "Weekly" }]);
   const removeExpenseItem = (idx: number) =>
     setExpenseItems(expenseItems.length === 1 ? expenseItems : expenseItems.filter((_, i) => i !== idx));
+    
+  const handleAllExpenseFrequenciesChange = (newFrequency: string) => {
+    setExpenseItems(prevItems =>
+        prevItems.map(item => ({ ...item, frequency: newFrequency }))
+    );
+  };
 
   // File upload
   const onBankFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -186,7 +192,7 @@ function FinancialAssessmentModal({
     setEmploymentStatus(undefined);
     setHasRegularIncome(undefined);
     setIncomeSources([{ category: "", amount: "", frequency: "Monthly" }]);
-    setExpenseItems([{ category: "", amount: "" }]);
+    setExpenseItems([{ category: "", amount: "", frequency: "Weekly" }]);
     setUploadBank(null);
     setFinancialKnowledgeLevel(undefined);
     setInvestmentExperience([]);
@@ -298,15 +304,31 @@ function FinancialAssessmentModal({
               </div>
             </div>
             <div className="mb-4">
-              <label className="font-medium mb-2 block">Expenses (by category)</label>
+              <div className="flex justify-between items-center mb-2">
+                <label className="font-medium block">Expenses (by category)</label>
+                <div className="flex items-center gap-2">
+                    <label className="text-sm">Set all to:</label>
+                    <Select onValueChange={handleAllExpenseFrequenciesChange}>
+                        <SelectTrigger className="w-[120px] h-8 text-xs">
+                            <SelectValue placeholder="Frequency" />
+                        </SelectTrigger>
+                        <SelectContent>
+                            {INCOME_FREQUENCIES.map((freq) => (
+                                <SelectItem key={freq} value={freq}>
+                                    {freq}
+                                </SelectItem>
+                            ))}
+                        </SelectContent>
+                    </Select>
+                </div>
+              </div>
               <div className="space-y-2">
                 {expenseItems.map((exp, idx) => (
-                  <div className="flex gap-2" key={idx}>
+                  <div className="grid grid-cols-[1fr_100px_120px_auto] gap-2 items-center" key={idx}>
                     <Input
                       placeholder="Expense category"
                       value={exp.category}
                       onChange={e => handleExpenseChange(idx, "category", e.target.value)}
-                      className="flex-1"
                     />
                     <Input
                       placeholder="Amount"
@@ -314,8 +336,22 @@ function FinancialAssessmentModal({
                       min={0}
                       value={exp.amount}
                       onChange={e => handleExpenseChange(idx, "amount", e.target.value)}
-                      className="w-[120px]"
                     />
+                    <Select
+                        value={exp.frequency}
+                        onValueChange={(val) => handleExpenseChange(idx, "frequency", val)}
+                      >
+                        <SelectTrigger>
+                          <SelectValue placeholder="Frequency" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {INCOME_FREQUENCIES.map((freq) => (
+                            <SelectItem key={freq} value={freq}>
+                              {freq}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
                     <Button size="icon" variant="ghost" onClick={() => removeExpenseItem(idx)} aria-label="Remove expense item">
                       <X size={18} />
                     </Button>
