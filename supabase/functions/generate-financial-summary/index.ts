@@ -9,6 +9,33 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
+function calculateMonthlyAmount(items: {amount: string, frequency: string}[]) {
+    let totalMonthly = 0;
+    if (!items || !Array.isArray(items)) return 0;
+
+    for (const item of items) {
+        if (!item.amount) continue;
+        const amount = parseFloat(item.amount);
+        if (isNaN(amount)) continue;
+
+        switch (item.frequency) {
+            case 'Weekly':
+                totalMonthly += amount * 4.33;
+                break;
+            case 'Fortnightly':
+                totalMonthly += amount * 2.165;
+                break;
+            case 'Monthly':
+                totalMonthly += amount;
+                break;
+            case 'Annually':
+                totalMonthly += amount / 12;
+                break;
+        }
+    }
+    return totalMonthly;
+}
+
 function formatForPrompt(data: any) {
     if (!data) return 'Not provided';
     if (Array.isArray(data) && data.length === 0) return 'None';
@@ -45,6 +72,17 @@ serve(async (req) => {
         expense_items, debt_types, debt_details, debt_management_confidence, 
         financial_knowledge_level, investment_experience, free_text_comments
     } = assessmentData;
+
+    const totalMonthlyIncome = calculateMonthlyAmount(income_sources);
+    const totalMonthlyExpenses = calculateMonthlyAmount(expense_items);
+    const potentialMonthlySavings = totalMonthlyIncome - totalMonthlyExpenses;
+    
+    let savingsCallout = '';
+    if (potentialMonthlySavings > 0) {
+        savingsCallout = `- Based on the income and expenses you've provided, it looks like you have the potential to save around **$${potentialMonthlySavings.toFixed(0)} per month**. This is a fantastic starting point for reaching your goals!`;
+    } else if (totalMonthlyIncome > 0) {
+        savingsCallout = `- It looks like your expenses might be higher than your income right now. That's okay, we can look at strategies to manage this.`;
+    }
 
     const primaryGoal = goals && goals.length > 0 ? goals[0] : 'Not specified';
 
@@ -159,6 +197,7 @@ You are ClearFin.AI, a friendly and encouraging financial assistant providing ad
 ### Section 1: Your Financial Snapshot 📸
 
 - Start with a warm greeting to ${username || 'there'}.
+${savingsCallout}
 - Provide a concise summary of their current financial situation (income, expenses, debt) based on the data provided.
 - Highlight one positive aspect of their current situation.
 - Keep the tone positive and empowering.
@@ -184,6 +223,7 @@ ${goalSpecificInstructions}
 End with a motivational closing statement, encouraging them to take the first step.
 
 **User's Data:**
+- **Potential Monthly Savings:** $${potentialMonthlySavings.toFixed(2)}
 - **Primary Goal(s):** ${formatForPrompt(goals)}
 - **Other Goal:** ${formatForPrompt(other_goal)}
 - **Goal Timeframe:** ${formatForPrompt(goal_timeframe)}
