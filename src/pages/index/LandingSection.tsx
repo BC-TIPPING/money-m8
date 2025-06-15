@@ -44,10 +44,12 @@ const LandingSection = ({ onStartAssessment, isLoading }: { onStartAssessment: (
             <CarouselContent>
               {goalPanels.map((panel, i) => (
                 <CarouselItem key={i} className="py-4 cursor-pointer md:basis-1/2 lg:basis-1/3" onClick={() => setSelectedGoal(panel.title)}>
-                  <div className={`bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl shadow-xl p-6 h-full flex flex-col items-center gap-3 transition-all hover:scale-105 hover:bg-white/15 ${selectedGoal === panel.title ? 'ring-4 ring-emerald-500 bg-white/20' : 'ring-transparent'}`}>
-                    <span className="text-4xl">{panel.emoji}</span>
-                    <span className="font-bold text-xl text-white">{panel.title}</span>
-                    <span className="text-base text-white/80 text-center">{panel.description}</span>
+                  <div className="p-1">
+                    <div className={`bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl shadow-xl p-6 h-full flex flex-col items-center gap-3 transition-all hover:scale-105 hover:bg-white/15 ${selectedGoal === panel.title ? 'ring-4 ring-emerald-500 bg-white/20' : 'ring-transparent'}`}>
+                      <span className="text-4xl">{panel.emoji}</span>
+                      <span className="font-bold text-xl text-white">{panel.title}</span>
+                      <span className="text-base text-white/80 text-center">{panel.description}</span>
+                    </div>
                   </div>
                 </CarouselItem>
               ))}
