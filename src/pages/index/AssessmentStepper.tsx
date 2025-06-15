@@ -21,14 +21,6 @@ import remarkGfm from 'remark-gfm';
 import DebtReductionChart from "./DebtReductionChart";
 import {
   questions,
-  PRELOADED_EXPENSE_CATEGORIES,
-  employmentStatuses,
-  financialKnowledgeLevels,
-  investmentTypes,
-  goalOptions,
-  goalTimeframes,
-  debtTypeOptions,
-  debtConfidenceOptions,
   type DebtDetail,
   PRELOADED_INCOME_CATEGORIES,
   INCOME_FREQUENCIES,

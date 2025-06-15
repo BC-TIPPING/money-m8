@@ -21,3 +21,10 @@ export const PRELOADED_EXPENSE_CATEGORIES = BUDGET_CATEGORIES.map(c => c.categor
 
 export const INCOME_FREQUENCIES = ["Weekly", "Fortnightly", "Monthly", "Yearly"];
 
+export const PRELOADED_INCOME_CATEGORIES = [
+  "Salary/Wages",
+  "Business Income",
+  "Investment Income",
+  "Government Benefits",
+  "Other",
+];

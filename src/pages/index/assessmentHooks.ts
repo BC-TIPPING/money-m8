@@ -1,5 +1,6 @@
+
 import React, { useState } from "react";
-import { PRELOADED_EXPENSE_CATEGORIES, INCOME_FREQUENCIES as freqs } from "@/lib/budgetCategories";
+import { PRELOADED_EXPENSE_CATEGORIES as PreloadedExpenseCategories, INCOME_FREQUENCIES as freqs, PRELOADED_INCOME_CATEGORIES as PreloadedIncomeCategories } from "@/lib/budgetCategories";
 
 export type DebtDetail = {
   type: string;
@@ -115,6 +116,8 @@ export const questions = [
 ];
 
 export const INCOME_FREQUENCIES = freqs;
+export const PRELOADED_INCOME_CATEGORIES = PreloadedIncomeCategories;
+export const PRELOADED_EXPENSE_CATEGORIES = PreloadedExpenseCategories;
 
 export function useAssessmentState() {
   const [step, setStep] = useState(0);
@@ -140,7 +143,7 @@ export function useAssessmentState() {
     amount: string;
     frequency: string;
   }[]>(
-    PRELOADED_EXPENSE_CATEGORIES.map((c) => ({
+    PreloadedExpenseCategories.map((c) => ({
       category: c,
       amount: "",
       frequency: "Weekly",
