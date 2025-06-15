@@ -6,6 +6,14 @@ export const PRELOADED_EXPENSE_CATEGORIES = [
   "Entertainment","Subscriptions","Education","Childcare","Savings/Investments","Other"
 ];
 
+export const PRELOADED_INCOME_CATEGORIES = [
+  "Salary", "Investments", "Business Income", "Rental Income", "Other"
+];
+
+export const INCOME_FREQUENCIES = [
+  "Weekly", "Fortnightly", "Monthly", "Yearly"
+];
+
 export const employmentStatuses = [
   "Full-Time","Part-Time","Casual/Contract","Self-Employed","Unemployed","Retired","Other"
 ];
@@ -133,7 +141,7 @@ export function useAssessmentState() {
 
   const [employmentStatus, setEmploymentStatus] = useState<string | undefined>();
   const [hasRegularIncome, setHasRegularIncome] = useState<boolean | undefined>();
-  const [incomeSources, setIncomeSources] = useState([{ description: "", amount: "" }]);
+  const [incomeSources, setIncomeSources] = useState([{ category: "", amount: "", frequency: "Monthly" }]);
   const [financialKnowledgeLevel, setFinancialKnowledgeLevel] = useState<string | undefined>();
   const [investmentExperience, setInvestmentExperience] = useState<string[]>([]);
   const [goals, setGoals] = useState<string[]>([]);

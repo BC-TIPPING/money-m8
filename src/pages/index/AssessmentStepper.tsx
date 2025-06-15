@@ -6,6 +6,13 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Textarea } from "@/components/ui/textarea";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import clsx from "clsx";
 import ProgressMilestones from "./ProgressMilestones";
 // ... import all hooks/config ...
@@ -20,6 +27,8 @@ import {
   debtTypeOptions,
   debtConfidenceOptions,
   type DebtDetail,
+  PRELOADED_INCOME_CATEGORIES,
+  INCOME_FREQUENCIES,
 } from "./assessmentHooks";
 
 const CenteredCard = ({ children }: { children: React.ReactNode }) => (
@@ -46,8 +55,8 @@ interface AssessmentStepperProps {
   setEmploymentStatus: (val: string) => void;
   hasRegularIncome: boolean | undefined;
   setHasRegularIncome: (val: boolean) => void;
-  incomeSources: { description: string, amount: string }[];
-  setIncomeSources: React.Dispatch<React.SetStateAction<{ description: string, amount: string }[]>>;
+  incomeSources: { category: string; amount: string; frequency: string }[];
+  setIncomeSources: React.Dispatch<React.SetStateAction<{ category: string; amount: string; frequency: string }[]>>;
   financialKnowledgeLevel: string | undefined;
   setFinancialKnowledgeLevel: (val: string) => void;
   investmentExperience: string[];
@@ -109,14 +118,15 @@ const AssessmentStepper: React.FC<AssessmentStepperProps> = (props) => {
   };
 
   // Handler fns as in old file...
-  const handleIncomeChange = (idx: number, key: "description" | "amount", value: string) => {
+  const handleIncomeChange = (idx: number, key: "category" | "amount" | "frequency", value: string) => {
     setIncomeSources((prev) => {
       const next = [...prev];
-      next[idx][key] = value;
+      const source = next[idx] as any;
+      source[key] = value;
       return next;
     });
   };
-  const addIncomeSource = () => setIncomeSources([...incomeSources, { description: "", amount: "" }]);
+  const addIncomeSource = () => setIncomeSources([...incomeSources, { category: "", amount: "", frequency: "Monthly" }]);
   const removeIncomeSource = (idx: number) =>
     setIncomeSources(incomeSources.length === 1 ? incomeSources : incomeSources.filter((_, i) => i !== idx));
   const handleExpenseChange = (idx: number, key: "category" | "amount", value: string) => {
@@ -134,7 +144,7 @@ const AssessmentStepper: React.FC<AssessmentStepperProps> = (props) => {
     switch (questionId) {
       case "employment": return employmentStatus;
       case "regularIncome": return hasRegularIncome;
-      case "incomeSources": return incomeSources.some(src => src.description && src.amount);
+      case "incomeSources": return incomeSources.some(src => src.category && src.amount);
       case "expenses": return expenseItems.some(exp => exp.category && exp.amount);
       case "financialKnowledge": return financialKnowledgeLevel;
       case "investmentExperience": return investmentExperience.length > 0;
@@ -361,24 +371,49 @@ const AssessmentStepper: React.FC<AssessmentStepperProps> = (props) => {
             return (
               <div className="space-y-4">
                 {incomeSources.map((src, idx) => (
-                  <div className="flex gap-3" key={idx}>
-                    <Input
-                      placeholder="Income description (e.g., Salary, Freelance)"
-                      value={src.description}
-                      onChange={e => handleIncomeChange(idx, "description", e.target.value)}
-                      className="flex-1"
-                    />
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-3 items-center" key={idx}>
+                    <Select
+                      value={src.category}
+                      onValueChange={(value) => handleIncomeChange(idx, "category", value)}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select category" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {PRELOADED_INCOME_CATEGORIES.map((cat) => (
+                          <SelectItem key={cat} value={cat}>
+                            {cat}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
                     <Input
                       placeholder="Amount ($)"
                       type="number"
                       min={0}
                       value={src.amount}
-                      onChange={e => handleIncomeChange(idx, "amount", e.target.value)}
-                      className="w-32"
+                      onChange={(e) => handleIncomeChange(idx, "amount", e.target.value)}
                     />
-                    <Button size="icon" variant="ghost" onClick={() => removeIncomeSource(idx)} aria-label="Remove">
-                      ×
-                    </Button>
+                    <div className="flex gap-2 items-center">
+                      <Select
+                        value={src.frequency}
+                        onValueChange={(value) => handleIncomeChange(idx, "frequency", value)}
+                      >
+                        <SelectTrigger>
+                          <SelectValue placeholder="Frequency" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {INCOME_FREQUENCIES.map((freq) => (
+                            <SelectItem key={freq} value={freq}>
+                              {freq}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      <Button size="icon" variant="ghost" onClick={() => removeIncomeSource(idx)} aria-label="Remove">
+                        ×
+                      </Button>
+                    </div>
                   </div>
                 ))}
                 <Button variant="outline" size="sm" onClick={addIncomeSource}>+ Add Income Source</Button>

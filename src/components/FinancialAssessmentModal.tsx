@@ -12,6 +12,13 @@ import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Textarea } from "@/components/ui/textarea";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { X, ArrowRight, ArrowLeft } from "lucide-react";
 import clsx from "clsx";
 
@@ -84,6 +91,16 @@ const debtTypeOptions = [
 
 const debtConfidenceOptions: YesSomewhatNo[] = ["Yes", "Somewhat", "No"];
 
+const PRELOADED_INCOME_CATEGORIES = [
+  "Salary",
+  "Investments",
+  "Business Income",
+  "Rental Income",
+  "Other",
+];
+
+const INCOME_FREQUENCIES = ["Weekly", "Fortnightly", "Monthly", "Yearly"];
+
 const steps = [
   "Employment & Income",
   "Budget",
@@ -105,7 +122,7 @@ function FinancialAssessmentModal({
   // Form State
   const [employmentStatus, setEmploymentStatus] = useState<EmploymentStatus | undefined>();
   const [hasRegularIncome, setHasRegularIncome] = useState<boolean | undefined>();
-  const [incomeSources, setIncomeSources] = useState([{ description: "", amount: "" }]);
+  const [incomeSources, setIncomeSources] = useState([{ category: "", amount: "", frequency: "Monthly" }]);
   const [expenseItems, setExpenseItems] = useState([{ category: "", amount: "" }]);
   const [uploadBank, setUploadBank] = useState<File | null>(null);
   const [financialKnowledgeLevel, setFinancialKnowledgeLevel] = useState<FinancialKnowledgeLevel | undefined>();
@@ -118,14 +135,15 @@ function FinancialAssessmentModal({
   const [freeTextComments, setFreeTextComments] = useState("");
 
   // Budget form manual add income/expense functions
-  const handleIncomeChange = (idx: number, key: "description" | "amount", value: string) => {
+  const handleIncomeChange = (idx: number, key: "category" | "amount" | "frequency", value: string) => {
     setIncomeSources((prev) => {
       const next = [...prev];
-      next[idx][key] = value;
+      const source = next[idx] as any;
+      source[key] = value;
       return next;
     });
   };
-  const addIncomeSource = () => setIncomeSources([...incomeSources, { description: "", amount: "" }]);
+  const addIncomeSource = () => setIncomeSources([...incomeSources, { category: "", amount: "", frequency: "Monthly" }]);
   const removeIncomeSource = (idx: number) =>
     setIncomeSources(incomeSources.length === 1 ? incomeSources : incomeSources.filter((_, i) => i !== idx));
 
@@ -151,7 +169,7 @@ function FinancialAssessmentModal({
     step === 0
       ? employmentStatus && hasRegularIncome !== undefined
       : step === 1
-      ? (incomeSources.some((src) => src.description && src.amount) ||
+      ? (incomeSources.some((src) => src.category && src.amount) ||
           expenseItems.some((item) => item.category && item.amount) ||
           !!uploadBank)
       : step === 2
@@ -167,7 +185,7 @@ function FinancialAssessmentModal({
     setStep(0);
     setEmploymentStatus(undefined);
     setHasRegularIncome(undefined);
-    setIncomeSources([{ description: "", amount: "" }]);
+    setIncomeSources([{ category: "", amount: "", frequency: "Monthly" }]);
     setExpenseItems([{ category: "", amount: "" }]);
     setUploadBank(null);
     setFinancialKnowledgeLevel(undefined);
@@ -231,24 +249,49 @@ function FinancialAssessmentModal({
               <label className="font-medium mb-2 block">Income Sources</label>
               <div className="space-y-2">
                 {incomeSources.map((src, idx) => (
-                  <div className="flex gap-2" key={idx}>
-                    <Input
-                      placeholder="Income description"
-                      value={src.description}
-                      onChange={e => handleIncomeChange(idx, "description", e.target.value)}
-                      className="flex-1"
-                    />
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-2 items-center" key={idx}>
+                    <Select
+                      value={src.category}
+                      onValueChange={(val) => handleIncomeChange(idx, "category", val)}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select Category" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {PRELOADED_INCOME_CATEGORIES.map((cat) => (
+                          <SelectItem key={cat} value={cat}>
+                            {cat}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
                     <Input
                       placeholder="Amount"
                       type="number"
                       min={0}
                       value={src.amount}
-                      onChange={e => handleIncomeChange(idx, "amount", e.target.value)}
-                      className="w-[120px]"
+                      onChange={(e) => handleIncomeChange(idx, "amount", e.target.value)}
                     />
-                    <Button size="icon" variant="ghost" onClick={() => removeIncomeSource(idx)} aria-label="Remove income source">
-                      <X size={18} />
-                    </Button>
+                    <div className="flex gap-2 items-center">
+                      <Select
+                        value={src.frequency}
+                        onValueChange={(val) => handleIncomeChange(idx, "frequency", val)}
+                      >
+                        <SelectTrigger>
+                          <SelectValue placeholder="Frequency" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {INCOME_FREQUENCIES.map((freq) => (
+                            <SelectItem key={freq} value={freq}>
+                              {freq}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      <Button size="icon" variant="ghost" onClick={() => removeIncomeSource(idx)} aria-label="Remove income source">
+                        <X size={18} />
+                      </Button>
+                    </div>
                   </div>
                 ))}
                 <Button variant="outline" className="mt-1" size="sm" onClick={addIncomeSource}>+ Add Income Source</Button>
