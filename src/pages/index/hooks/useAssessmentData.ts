@@ -1,9 +1,8 @@
 import { useState, useEffect } from "react";
-import { useMutation, useQuery } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/components/ui/use-toast";
 import { type Database } from "@/integrations/supabase/types";
 import { PRELOADED_EXPENSE_CATEGORIES, questions, useAssessmentState } from "../assessmentHooks";
+import { useFetchAssessment, useSaveAssessment, useGenerateSummary, useUpdateHomeLoanRepayment } from './useAssessmentApi';
 
 type AssessmentInsert = Database['public']['Tables']['assessments']['Insert'];
 type AssessmentState = ReturnType<typeof useAssessmentState>;
@@ -19,27 +18,7 @@ export function useAssessmentData(assessment: AssessmentState) {
   const [isPreloaded, setIsPreloaded] = useState(false);
   const [assessmentId, setAssessmentId] = useState<string | null>(null);
 
-  const { data: existingAssessment, isLoading: isLoadingAssessment, isSuccess: isFetchSuccess } = useQuery({
-    queryKey: ['assessment', usernameToFetch],
-    queryFn: async () => {
-      if (!usernameToFetch) return null;
-      const { data, error } = await supabase
-        .from('assessments')
-        .select('*')
-        .eq('username', usernameToFetch)
-        .order('created_at', { ascending: false })
-        .limit(1)
-        .maybeSingle();
-
-      if (error) {
-        toast({ title: "Error fetching assessment", description: error.message, variant: 'destructive' });
-        return null;
-      }
-      return data;
-    },
-    enabled: !!usernameToFetch,
-    retry: false,
-  });
+  const { data: existingAssessment, isLoading: isLoadingAssessment, isSuccess: isFetchSuccess } = useFetchAssessment(usernameToFetch);
 
   const assessmentData: AssessmentInsert = {
     username,
@@ -58,71 +37,18 @@ export function useAssessmentData(assessment: AssessmentState) {
     free_text_comments: assessment.freeTextComments,
   };
 
-  const { mutate: saveAssessment, isPending: isSaving } = useMutation({
-    mutationFn: async (assessmentData: AssessmentInsert) => {
-      const { data, error } = await supabase
-        .from('assessments')
-        .insert([assessmentData])
-        .select();
-
-      if (error) throw error;
-      return data;
-    },
-    onSuccess: (data) => {
-        setIsSubmitted(true);
-        if (data && data.length > 0) {
-            setAssessmentId(data[0].id);
-        }
-        toast({ title: "Success", description: "Your assessment has been saved successfully!" });
-    },
-    onError: (error) => {
-        toast({ title: "Error saving assessment", description: error.message, variant: 'destructive' });
+  const { mutate: saveAssessment, isPending: isSaving } = useSaveAssessment((data) => {
+    setIsSubmitted(true);
+    if (data && data.length > 0) {
+        setAssessmentId(data[0].id);
     }
   });
 
-  const { mutate: updateHomeLoanExtraRepayment, isPending: isUpdatingRepayment } = useMutation({
-    mutationFn: async ({ id, amount }: { id: string, amount: number | null }) => {
-      const { data, error } = await supabase
-        .from('assessments')
-        .update({ home_loan_extra_repayment: amount })
-        .eq('id', id)
-        .select();
-
-      if (error) throw error;
-      return data;
-    },
-    onSuccess: () => {
-        toast({ title: "Success", description: "Extra repayment amount has been updated!" });
-    },
-    onError: (error) => {
-        toast({ title: "Error updating", description: error.message, variant: 'destructive' });
-    }
-  });
-
-  const { mutate: generateSummary, isPending: isGeneratingSummary } = useMutation({
-    mutationFn: async ({ personality = 'default' }: { personality?: string } = {}) => {
-      const { data, error } = await supabase.functions.invoke('generate-financial-summary', {
-        body: { assessmentData, personality },
-      });
-
-      if (error) {
-        throw new Error(error.message);
-      }
-      
-      if (data.error) {
-        throw new Error(data.error);
-      }
-
-      return data;
-    },
-    onSuccess: (data) => {
-      setAiSummary(data.summary);
-      setChartData(data.chartData);
-      toast({ title: "Summary Generated!", description: "Your personalized summary is ready." });
-    },
-    onError: (error) => {
-        toast({ title: "Error generating summary", description: error.message, variant: 'destructive' });
-    }
+  const { mutate: updateHomeLoanExtraRepayment, isPending: isUpdatingRepayment } = useUpdateHomeLoanRepayment();
+  
+  const { mutate: generateSummaryMutation, isPending: isGeneratingSummary } = useGenerateSummary((data) => {
+    setAiSummary(data.summary);
+    setChartData(data.chartData);
   });
 
   const isComplete = assessment.step >= questions.length;
@@ -203,6 +129,10 @@ export function useAssessmentData(assessment: AssessmentState) {
     setChartData(null);
     setIsSubmitted(false);
     assessment.setShowAssessment(false);
+  };
+
+  const generateSummary = ({ personality = 'default' }: { personality?: string } = {}) => {
+    generateSummaryMutation({ assessmentData, personality });
   };
 
   return {
