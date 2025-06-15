@@ -1,4 +1,3 @@
-
 import LandingSection from "./index/LandingSection";
 import AssessmentStepper from "./index/AssessmentStepper";
 import { useAssessmentState, questions } from "./index/assessmentHooks";
@@ -62,13 +61,20 @@ export default function Index() {
             </div>
         )}
         {isComplete && (
-            <footer className="w-full p-6 bg-secondary">
-                <div className="flex gap-4 justify-center">
+            <div className="w-full p-6">
+                <div className="flex flex-col items-center gap-4">
+                    <Button 
+                        onClick={handleStartOver}
+                        variant="outline"
+                        className="shadow-lg bg-background w-full max-w-sm"
+                    >
+                        Start Over
+                    </Button>
                     {!aiSummary && (
                         <Button 
                             onClick={() => generateSummary({ personality: 'dave_ramsey' })}
                             variant="destructive"
-                            className="shadow-lg"
+                            className="shadow-lg w-full max-w-sm"
                             disabled={isGeneratingSummary}
                         >
                             {isGeneratingSummary ? (
@@ -79,17 +85,8 @@ export default function Index() {
                             ) : "Tough Love"}
                         </Button>
                     )}
-                    {aiSummary && (
-                        <Button 
-                            onClick={handleStartOver}
-                            variant="outline"
-                            className="shadow-lg bg-background"
-                        >
-                            Start Over
-                        </Button>
-                    )}
                 </div>
-            </footer>
+            </div>
         )}
     </div>
   );
