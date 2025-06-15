@@ -4,7 +4,7 @@ import AssessmentStepper from "./index/AssessmentStepper";
 import { useAssessmentState, questions } from "./index/assessmentHooks";
 import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Loader2, LogIn, LogOut } from "lucide-react";
+import { Loader2, LogIn, LogOut, FileText } from "lucide-react";
 import { useAssessmentData } from "./index/hooks/useAssessmentData";
 import InterestSavedChart from "./index/InterestSavedChart";
 import DebtReductionChart from "./index/DebtReductionChart";
@@ -13,6 +13,8 @@ import { Card, CardDescription, CardFooter, CardHeader, CardTitle } from "@/comp
 import { calculateMonthlyAmount, calculateAustralianIncomeTax } from "@/lib/financialCalculations";
 import { useAuth } from "@/contexts/AuthContext";
 import { useEffect } from "react";
+import { jsPDF } from "jspdf";
+import html2canvas from "html2canvas";
 
 const DEBT_GOALS = ['Pay off home loan sooner', 'Reduce debt'];
 
@@ -54,6 +56,49 @@ export default function Index() {
     }
   }, [user, assessment]);
 
+  const handleExportToPDF = () => {
+    const input = document.getElementById('export-content');
+    if (!input) {
+      console.error("The element to export was not found.");
+      return;
+    };
+
+    // We make the background white because html2canvas default is transparent
+    // and when saving a PNG from canvas with transparent background, it can become black.
+    const originalBackgroundColor = input.style.backgroundColor;
+    input.style.backgroundColor = 'white';
+
+    html2canvas(input, { scale: 2, useCORS: true }).then((canvas) => {
+      // Restore original background color
+      input.style.backgroundColor = originalBackgroundColor;
+
+      const imgData = canvas.toDataURL('image/png');
+      const pdf = new jsPDF('p', 'mm', 'a4');
+      const pdfWidth = pdf.internal.pageSize.getWidth();
+      const pdfHeight = pdf.internal.pageSize.getHeight();
+
+      const canvasWidth = canvas.width;
+      const canvasHeight = canvas.height;
+      
+      const ratio = canvasWidth / canvasHeight;
+      const imgHeightOnPdf = pdfWidth / ratio;
+      
+      let heightLeft = imgHeightOnPdf;
+      let position = 0;
+
+      pdf.addImage(imgData, 'PNG', 0, position, pdfWidth, imgHeightOnPdf);
+      heightLeft -= pdfHeight;
+
+      while (heightLeft > 0) {
+        position = -heightLeft;
+        pdf.addPage();
+        pdf.addImage(imgData, 'PNG', 0, position, pdfWidth, imgHeightOnPdf);
+        heightLeft -= pdfHeight;
+      }
+      pdf.save('financial-assessment.pdf');
+    });
+  };
+
   const hasDebtGoal = assessment.goals.some(g => DEBT_GOALS.includes(g));
 
   const totalMonthlyGrossIncome = calculateMonthlyAmount(assessment.incomeSources);
@@ -86,7 +131,7 @@ export default function Index() {
         <LandingSection onStartAssessment={handleStartAssessment} isLoading={isLoadingAssessment} />
       ) : (
         <>
-          <div className={`flex-grow ${isComplete ? 'pb-52' : ''}`}>
+          <div id="export-content" className={`flex-grow ${isComplete ? 'pb-52' : ''}`}>
             <AssessmentStepper 
               {...assessment} 
               generateSummary={() => generateSummary({})}
@@ -144,6 +189,12 @@ export default function Index() {
           {isComplete && (
               <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-20 w-full max-w-sm px-4">
                   <div className="flex flex-col items-center gap-4">
+                      {aiSummary && (
+                          <Button onClick={handleExportToPDF} variant="outline" className="shadow-lg bg-background w-full">
+                            <FileText className="mr-2 h-4 w-4" />
+                            Export to PDF
+                          </Button>
+                      )}
                       {aiSummary && (
                           <Button 
                               onClick={handleStartOver}
