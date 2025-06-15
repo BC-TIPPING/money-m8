@@ -4,7 +4,7 @@ import AssessmentStepper from "./index/AssessmentStepper";
 import { useAssessmentState, questions } from "./index/assessmentHooks";
 import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Loader2 } from "lucide-react";
+import { Loader2, LogIn, LogOut } from "lucide-react";
 import { useAssessmentData } from "./index/hooks/useAssessmentData";
 import InterestSavedChart from "./index/InterestSavedChart";
 import DebtReductionChart from "./index/DebtReductionChart";
@@ -61,29 +61,32 @@ export default function Index() {
   const annualTax = calculateAustralianIncomeTax(totalAnnualGrossIncome);
   const totalMonthlyNetIncome = totalAnnualGrossIncome > 0 ? (totalAnnualGrossIncome - annualTax) / 12 : 0;
 
-  if (!assessment.showAssessment) {
-    return (
-      <div className="relative min-h-screen">
-        <LandingSection onStartAssessment={handleStartAssessment} isLoading={isLoadingAssessment} />
-        <div className="absolute bottom-4 right-4 flex gap-2">
-            {user ? (
-              <Button onClick={signOut} variant="outline">Sign Out</Button>
-            ) : (
-              <Button asChild variant="outline">
-                  <Link to="/auth">Login</Link>
-              </Button>
-            )}
-            <Button asChild variant="outline">
-                <Link to="/ask-ai">Ask our AI</Link>
-            </Button>
-        </div>
-      </div>
-    );
-  }
-
   return (
-    <div className="relative flex flex-col min-h-screen">
-        <div className={`flex-grow ${isComplete ? 'pb-52' : ''}`}>
+    <div className="relative min-h-screen">
+      <div className="absolute top-4 right-4 flex gap-2 z-50">
+        {user ? (
+          <Button onClick={signOut} variant="outline" className="bg-background/80 backdrop-blur-sm">
+            <LogOut className="mr-2 h-4 w-4" />
+            Sign Out
+          </Button>
+        ) : (
+          <Button asChild variant="outline" className="bg-background/80 backdrop-blur-sm">
+            <Link to="/auth">
+              <LogIn className="mr-2 h-4 w-4" />
+              Login
+            </Link>
+          </Button>
+        )}
+        <Button asChild variant="outline" className="bg-background/80 backdrop-blur-sm">
+          <Link to="/ask-ai">Ask our AI</Link>
+        </Button>
+      </div>
+
+      {!assessment.showAssessment ? (
+        <LandingSection onStartAssessment={handleStartAssessment} isLoading={isLoadingAssessment} />
+      ) : (
+        <>
+          <div className={`flex-grow ${isComplete ? 'pb-52' : ''}`}>
             <AssessmentStepper 
               {...assessment} 
               generateSummary={() => generateSummary({})}
@@ -126,55 +129,57 @@ export default function Index() {
                     {chartData?.interestSavedData && <InterestSavedChart data={chartData.interestSavedData} />}
                 </div>
             )}
-        </div>
-        {isPreloaded && !isComplete && (
-            <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-20">
-                <Button 
-                    variant="secondary"
-                    className="shadow-lg"
-                    onClick={() => assessment.setStep(questions.length)}
-                >
-                    Skip to My Summary
-                </Button>
-            </div>
-        )}
-        {isComplete && (
-            <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-20 w-full max-w-sm px-4">
-                <div className="flex flex-col items-center gap-4">
-                    {aiSummary && (
-                        <Button 
-                            onClick={handleStartOver}
-                            variant="outline"
-                            className="shadow-lg bg-background w-full"
-                        >
-                            Start Over
-                        </Button>
-                    )}
-                    <Button
-                        onClick={handleChangeGoal}
-                        variant="outline"
-                        className="shadow-lg bg-background w-full"
-                    >
-                        Change Goal
-                    </Button>
-                    {!aiSummary && hasDebtGoal && (
-                        <Button 
-                            onClick={() => generateSummary({ personality: 'dave_ramsey' })}
-                            variant="destructive"
-                            className="shadow-lg w-full"
-                            disabled={isGeneratingSummary}
-                        >
-                            {isGeneratingSummary ? (
-                                <>
-                                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                                    Getting tough...
-                                </>
-                            ) : "Tough Love"}
-                        </Button>
-                    )}
-                </div>
-            </div>
-        )}
+          </div>
+          {isPreloaded && !isComplete && (
+              <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-20">
+                  <Button 
+                      variant="secondary"
+                      className="shadow-lg"
+                      onClick={() => assessment.setStep(questions.length)}
+                  >
+                      Skip to My Summary
+                  </Button>
+              </div>
+          )}
+          {isComplete && (
+              <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-20 w-full max-w-sm px-4">
+                  <div className="flex flex-col items-center gap-4">
+                      {aiSummary && (
+                          <Button 
+                              onClick={handleStartOver}
+                              variant="outline"
+                              className="shadow-lg bg-background w-full"
+                          >
+                              Start Over
+                          </Button>
+                      )}
+                      <Button
+                          onClick={handleChangeGoal}
+                          variant="outline"
+                          className="shadow-lg bg-background w-full"
+                      >
+                          Change Goal
+                      </Button>
+                      {!aiSummary && hasDebtGoal && (
+                          <Button 
+                              onClick={() => generateSummary({ personality: 'dave_ramsey' })}
+                              variant="destructive"
+                              className="shadow-lg w-full"
+                              disabled={isGeneratingSummary}
+                          >
+                              {isGeneratingSummary ? (
+                                  <>
+                                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                      Getting tough...
+                                  </>
+                              ) : "Tough Love"}
+                          </Button>
+                      )}
+                  </div>
+              </div>
+          )}
+        </>
+      )}
     </div>
   );
 }
