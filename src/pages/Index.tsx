@@ -7,7 +7,7 @@ import { Loader2 } from "lucide-react";
 import { useAssessmentData } from "./index/hooks/useAssessmentData";
 import InterestSavedChart from "./index/InterestSavedChart";
 import DebtReductionChart from "./index/DebtReductionChart";
-import BudgetPlanner from "./index/BudgetPlanner";
+import BudgetPlanner from "./index/budget-planner";
 import { Card, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { calculateMonthlyAmount, calculateAustralianIncomeTax } from "@/lib/financialCalculations";
 
