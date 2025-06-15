@@ -129,7 +129,7 @@ ${savingsCallout}
 ## Section 3: Analysis & Scenarios 🔬
 
 - **Financial Literacy Score:** Provide a "Financial Literacy Score" (e.g., Budding Saver, Confident Investor, Financial Pro) based on their self-assessed knowledge and investment experience. Give a one-sentence explanation for the score.
-- **Budget Breakdown vs. Guidelines:** Create a markdown table that compares their current spending for each category (as a percentage of total monthly net income) to the recommended guidelines. The table MUST have three columns: 'Category', 'Your Spending %', and 'Guideline %'. After the table, highlight 1-2 areas where they are overspending and what that means for their goal. Be gentle and constructive.
+- **Budget Breakdown vs. Guidelines:** Based on the user's monthly expenses and their total monthly net income, calculate the spending percentage for each expense category. Create a markdown table that shows these percentages. The table MUST have three columns: 'Category', 'Your Spending %', and 'Guideline %'. For the 'Your Spending %' column, you must calculate the value for each category by taking that category's monthly expense amount, dividing it by the 'Monthly Net Income (Take-Home Pay)', and multiplying by 100. Display it as a percentage (e.g., '15.2%'). Round to one decimal place. Do not use placeholders like X% or Y%. After the table, highlight 1-2 areas where they are overspending and what that means for their goal. Be gentle and constructive.
 - **Goal-Specific Scenarios:**
 ${goalSpecificInstructions}
 

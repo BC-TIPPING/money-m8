@@ -1,3 +1,4 @@
+
 import { useState, useEffect, useMemo } from "react";
 import { useToast } from "@/components/ui/use-toast";
 import { type Database } from "@/integrations/supabase/types";
@@ -145,6 +146,7 @@ export function useAssessmentData(assessment: AssessmentState) {
     setAiSummary(null);
     setChartData(null);
     setIsSubmitted(false);
+    assessment.setStep(0);
     assessment.setShowAssessment(false);
   };
 
