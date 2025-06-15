@@ -1,3 +1,4 @@
+
 export function getDebtReductionInstructions(personality: string = 'default', debtDetails?: any[]) {
     let motivationalSummary = `Provide a motivational summary highlighting how a small extra contribution can save thousands of dollars and years of repayments.`;
     if (personality === 'dave_ramsey') {
@@ -68,5 +69,5 @@ ${debtRecap}
   - The data must continue until the debt is fully paid off in the longest scenario (\`no_extra\`).
 - **Example JSON output (do not wrap in a code block):**
 CHART_DATA::{"debtReductionData": [{"month": 0, "no_extra": 20000, "50_extra": 20000, "100_extra": 20000, "200_extra": 20000, "500_extra": 20000}, {"month": 1, "no_extra": 19800, "50_extra": 19600, "100_extra": 19400, "200_extra": 19000, "500_extra": 18200}], "interestSavedData": [{"month": 0, "50_extra": 0, "100_extra": 0, "200_extra": 0, "500_extra": 0}, {"month": 1, "50_extra": 10, "100_extra": 20, "200_extra": 40, "500_extra": 80}]}
-\`\`\`
-            `;
+`;
+}
