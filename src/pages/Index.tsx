@@ -10,6 +10,8 @@ import InterestSavedChart from "./index/InterestSavedChart";
 import DebtReductionChart from "./index/DebtReductionChart";
 import HomeLoanCalculator from "./index/HomeLoanCalculator";
 
+const DEBT_GOALS = ['Pay off home loan sooner'];
+
 export default function Index() {
   const assessment = useAssessmentState();
   const {
@@ -33,6 +35,8 @@ export default function Index() {
     setUsernameToFetch(newUsername);
   };
   
+  const hasDebtGoal = assessment.goals.some(g => DEBT_GOALS.includes(g));
+
   if (!assessment.showAssessment) {
     return (
       <div className="relative min-h-screen">
@@ -101,7 +105,7 @@ export default function Index() {
                     >
                         Change Goal
                     </Button>
-                    {!aiSummary && (
+                    {!aiSummary && hasDebtGoal && (
                         <Button 
                             onClick={() => generateSummary({ personality: 'dave_ramsey' })}
                             variant="destructive"
