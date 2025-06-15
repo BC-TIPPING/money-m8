@@ -93,7 +93,7 @@ const calculateSuperDetails = (values: CalculatorFormValues): CalculationResult 
   }
 
   const totalConcessionalContribution = employerContribution + annualExtraContribution;
-  const roomToContribute = CONCESSIONAL_CAP - employerContribution;
+  const roomToContribute = CONCESSIONAL_CAP - totalConcessionalContribution;
   const capExceeded = totalConcessionalContribution > CONCESSIONAL_CAP;
 
   // Tax calculations for salary sacrifice
