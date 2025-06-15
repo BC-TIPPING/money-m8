@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import {
   Dialog,
@@ -37,8 +36,6 @@ const employmentStatuses: EmploymentStatus[] = [
   "Retired",
   "Other",
 ];
-
-const incomeConfidenceOptions: YesSomewhatNo[] = ["Yes", "Somewhat", "No"];
 
 const financialKnowledgeLevels: FinancialKnowledgeLevel[] = [
   "High",
@@ -108,7 +105,6 @@ function FinancialAssessmentModal({
   // Form State
   const [employmentStatus, setEmploymentStatus] = useState<EmploymentStatus | undefined>();
   const [hasRegularIncome, setHasRegularIncome] = useState<boolean | undefined>();
-  const [incomeConfidence, setIncomeConfidence] = useState<YesSomewhatNo | undefined>();
   const [incomeSources, setIncomeSources] = useState([{ description: "", amount: "" }]);
   const [expenseItems, setExpenseItems] = useState([{ category: "", amount: "" }]);
   const [uploadBank, setUploadBank] = useState<File | null>(null);
@@ -153,7 +149,7 @@ function FinancialAssessmentModal({
   // Step logic
   const canGoNext =
     step === 0
-      ? employmentStatus && hasRegularIncome !== undefined && incomeConfidence
+      ? employmentStatus && hasRegularIncome !== undefined
       : step === 1
       ? (incomeSources.some((src) => src.description && src.amount) ||
           expenseItems.some((item) => item.category && item.amount) ||
@@ -171,7 +167,6 @@ function FinancialAssessmentModal({
     setStep(0);
     setEmploymentStatus(undefined);
     setHasRegularIncome(undefined);
-    setIncomeConfidence(undefined);
     setIncomeSources([{ description: "", amount: "" }]);
     setExpenseItems([{ category: "", amount: "" }]);
     setUploadBank(null);
@@ -224,18 +219,6 @@ function FinancialAssessmentModal({
                     No
                   </Button>
                 </div>
-              </div>
-              <div>
-                <span className="font-medium mb-1 block">Are you confident in your income stability?</span>
-                <RadioGroup value={incomeConfidence} onValueChange={val => setIncomeConfidence(val as YesSomewhatNo)} className="flex gap-2">
-                  {incomeConfidenceOptions.map(opt => (
-                    <RadioGroupItem
-                      key={opt}
-                      value={opt}
-                      className={clsx("rounded p-2", incomeConfidence === opt && "border-primary ring-2 ring-primary")}
-                    >{opt}</RadioGroupItem>
-                  ))}
-                </RadioGroup>
               </div>
             </div>
           </section>

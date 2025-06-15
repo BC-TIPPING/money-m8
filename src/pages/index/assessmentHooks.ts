@@ -1,4 +1,3 @@
-
 import { useState, useRef } from "react";
 
 // All config, enums and initial arrays moved here for reuse
@@ -10,7 +9,6 @@ export const PRELOADED_EXPENSE_CATEGORIES = [
 export const employmentStatuses = [
   "Full-Time","Part-Time","Casual/Contract","Self-Employed","Unemployed","Retired","Other"
 ];
-export const incomeConfidenceOptions = ["Yes", "Somewhat", "No"];
 export const financialKnowledgeLevels = ["High", "Medium", "Low"];
 export const investmentTypes = [
   "Stocks or ETFs","Property","Cryptocurrency","Managed Funds","None"
@@ -48,13 +46,6 @@ export const questions = [
     title: "Do you have a regular income?",
     subtitle: "Regular income helps with financial planning",
     type: "boolean"
-  },
-  {
-    id: "incomeConfidence",
-    title: "Are you confident in your income stability?",
-    subtitle: "Understanding your confidence helps us tailor advice",
-    type: "radio",
-    options: incomeConfidenceOptions
   },
   {
     id: "incomeSources",
@@ -142,7 +133,6 @@ export function useAssessmentState() {
 
   const [employmentStatus, setEmploymentStatus] = useState<string | undefined>();
   const [hasRegularIncome, setHasRegularIncome] = useState<boolean | undefined>();
-  const [incomeConfidence, setIncomeConfidence] = useState<string | undefined>();
   const [incomeSources, setIncomeSources] = useState([{ description: "", amount: "" }]);
   const [financialKnowledgeLevel, setFinancialKnowledgeLevel] = useState<string | undefined>();
   const [investmentExperience, setInvestmentExperience] = useState<string[]>([]);
@@ -158,7 +148,7 @@ export function useAssessmentState() {
     uploadedFile, setUploadedFile, fileInputRef, expenseItems, setExpenseItems,
     step, setStep, showAssessment, setShowAssessment,
     employmentStatus, setEmploymentStatus, hasRegularIncome, setHasRegularIncome,
-    incomeConfidence, setIncomeConfidence, incomeSources, setIncomeSources,
+    incomeSources, setIncomeSources,
     financialKnowledgeLevel, setFinancialKnowledgeLevel, investmentExperience, setInvestmentExperience,
     goals, setGoals, otherGoal, setOtherGoal, goalTimeframe, setGoalTimeframe,
     debtTypes, setDebtTypes, debtDetails, setDebtDetails, debtManagementConfidence, setDebtManagementConfidence,

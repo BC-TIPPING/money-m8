@@ -13,7 +13,6 @@ import {
   questions,
   PRELOADED_EXPENSE_CATEGORIES,
   employmentStatuses,
-  incomeConfidenceOptions,
   financialKnowledgeLevels,
   investmentTypes,
   goalOptions,
@@ -47,8 +46,6 @@ interface AssessmentStepperProps {
   setEmploymentStatus: (val: string) => void;
   hasRegularIncome: boolean | undefined;
   setHasRegularIncome: (val: boolean) => void;
-  incomeConfidence: string | undefined;
-  setIncomeConfidence: (val: string) => void;
   incomeSources: { description: string, amount: string }[];
   setIncomeSources: React.Dispatch<React.SetStateAction<{ description: string, amount: string }[]>>;
   financialKnowledgeLevel: string | undefined;
@@ -77,7 +74,7 @@ const AssessmentStepper: React.FC<AssessmentStepperProps> = (props) => {
     uploadedFile, setUploadedFile, fileInputRef, expenseItems, setExpenseItems,
     step, setStep, showAssessment, setShowAssessment,
     employmentStatus, setEmploymentStatus, hasRegularIncome, setHasRegularIncome,
-    incomeConfidence, setIncomeConfidence, incomeSources, setIncomeSources,
+    incomeSources, setIncomeSources,
     financialKnowledgeLevel, setFinancialKnowledgeLevel, investmentExperience, setInvestmentExperience,
     goals, setGoals, otherGoal, setOtherGoal, goalTimeframe, setGoalTimeframe,
     debtTypes, setDebtTypes, debtDetails, setDebtDetails, debtManagementConfidence, setDebtManagementConfidence,
@@ -137,7 +134,6 @@ const AssessmentStepper: React.FC<AssessmentStepperProps> = (props) => {
     switch (questionId) {
       case "employment": return employmentStatus;
       case "regularIncome": return hasRegularIncome;
-      case "incomeConfidence": return incomeConfidence;
       case "incomeSources": return incomeSources.some(src => src.description && src.amount);
       case "expenses": return expenseItems.some(exp => exp.category && exp.amount);
       case "financialKnowledge": return financialKnowledgeLevel;
@@ -245,13 +241,11 @@ const AssessmentStepper: React.FC<AssessmentStepperProps> = (props) => {
             return (
               <RadioGroup 
                 value={question.id === "employment" ? employmentStatus : 
-                       question.id === "incomeConfidence" ? incomeConfidence :
                        question.id === "financialKnowledge" ? financialKnowledgeLevel :
                        question.id === "goalTimeframe" ? goalTimeframe :
                        question.id === "debtConfidence" ? debtManagementConfidence : ""} 
                 onValueChange={(value) => {
                   if (question.id === "employment") setEmploymentStatus(value);
-                  else if (question.id === "incomeConfidence") setIncomeConfidence(value);
                   else if (question.id === "financialKnowledge") setFinancialKnowledgeLevel(value);
                   else if (question.id === "goalTimeframe") setGoalTimeframe(value);
                   else if (question.id === "debtConfidence") setDebtManagementConfidence(value);
