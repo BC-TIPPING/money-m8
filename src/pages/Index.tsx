@@ -217,7 +217,7 @@ export default function Index() {
     }
   };
 
-  // Find the current question for milestones display
+  // Determine if we've reached or passed the goals step
   const questionsWithUpload = [
     {
       id: "upload",
@@ -227,6 +227,17 @@ export default function Index() {
     },
     ...questions
   ];
+
+  // Find the index of the goals question
+  const goalsStepIdx = questionsWithUpload.findIndex(q => q.id === "goals");
+  const pastGoalsStep = step >= goalsStepIdx && goals.length > 0;
+
+  // Milestones to show: user goals after they've selected, otherwise default ("Step 1", "Step 2"...)
+  const progressMilestones = pastGoalsStep
+    ? goals
+    : questionsWithUpload
+        .filter(q => q.id !== "upload" && q.id !== "additionalNotes")
+        .map((q, idx) => `Step ${idx + 1}`);
 
   const canGoNext = (() => {
     // For upload step, always allow (it's optional)
@@ -592,18 +603,20 @@ export default function Index() {
           <Progress value={progress} className="h-2" />
           {/* Goal Milestones */}
           <div className="flex flex-row flex-wrap justify-between mt-2 w-full">
-            {questionsWithUpload.map((q, idx) => (
+            {progressMilestones.map((goal, idx) => (
               <span
-                key={q.id}
+                key={goal + idx}
                 className={
                   "text-[10px] md:text-xs text-gray-400 transition-all " +
-                  (step === idx ? "font-bold text-blue-600 scale-110" : "")
+                  // Highlight the corresponding milestone if past goals step
+                  ((pastGoalsStep && step - goalsStepIdx === idx) || (!pastGoalsStep && step === idx)
+                    ? "font-bold text-blue-600 scale-110"
+                    : "")
                 }
-                style={{ maxWidth: "max(8%,60px)" }}
-                title={q.title}
+                style={{ maxWidth: "max(8%,80px)" }}
+                title={goal}
               >
-                {/* Only show for certain question ids: skip 'upload', 'additionalNotes' */}
-                {(q.id !== "upload" && q.id !== "additionalNotes") ? q.title.split(" ")[0] : ""}
+                {goal}
               </span>
             ))}
           </div>
