@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Loader2 } from "lucide-react";
 import { useAssessmentData } from "./index/hooks/useAssessmentData";
 import InterestSavedChart from "./index/InterestSavedChart";
+import DebtReductionChart from "./index/DebtReductionChart";
 
 export default function Index() {
   const assessment = useAssessmentState();
@@ -50,9 +51,10 @@ export default function Index() {
               aiSummary={aiSummary}
               chartData={chartData}
             />
-            {isComplete && chartData?.interestSavedData && (
-                <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-6">
-                    <InterestSavedChart data={chartData.interestSavedData} />
+            {isComplete && (chartData?.debtReductionData || chartData?.interestSavedData) && (
+                <div className="container mx-auto grid gap-6 px-4 py-6 sm:px-6 lg:grid-cols-2 lg:px-8">
+                    {chartData.debtReductionData && <DebtReductionChart data={chartData.debtReductionData} />}
+                    {chartData.interestSavedData && <InterestSavedChart data={chartData.interestSavedData} />}
                 </div>
             )}
         </div>
