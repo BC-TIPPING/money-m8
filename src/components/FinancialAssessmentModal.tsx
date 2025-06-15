@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import {
   Dialog,
@@ -102,7 +101,7 @@ function FinancialAssessmentModal({
   const [employmentStatus, setEmploymentStatus] = useState<EmploymentStatus | undefined>();
   const [hasRegularIncome, setHasRegularIncome] = useState<boolean | undefined>();
   const [incomeSources, setIncomeSources] = useState([{ category: "", amount: "", frequency: "Monthly" }]);
-  const [expenseItems, setExpenseItems] = useState(PRELOADED_EXPENSE_CATEGORIES.map(category => ({ category, amount: "", frequency: "Weekly" })));
+  const [expenseItems, setExpenseItems] = useState(PRELOADED_EXPENSE_CATEGORIES.map(category => ({ category, amount: "", frequency: "Monthly" })));
   const [uploadBank, setUploadBank] = useState<File | null>(null);
   const [financialKnowledgeLevel, setFinancialKnowledgeLevel] = useState<FinancialKnowledgeLevel | undefined>();
   const [investmentExperience, setInvestmentExperience] = useState<string[]>([]);
@@ -130,7 +129,7 @@ function FinancialAssessmentModal({
       return next;
     });
   };
-  const addExpenseItem = () => setExpenseItems([...expenseItems, { category: "", amount: "", frequency: "Weekly" }]);
+  const addExpenseItem = () => setExpenseItems([...expenseItems, { category: "", amount: "", frequency: "Monthly" }]);
   const removeExpenseItem = (idx: number) =>
     setExpenseItems(expenseItems.length === 1 ? expenseItems : expenseItems.filter((_, i) => i !== idx));
     
@@ -166,7 +165,7 @@ function FinancialAssessmentModal({
     setEmploymentStatus(undefined);
     setHasRegularIncome(undefined);
     setIncomeSources([{ category: "", amount: "", frequency: "Monthly" }]);
-    setExpenseItems(PRELOADED_EXPENSE_CATEGORIES.map(category => ({ category, amount: "", frequency: "Weekly" })));
+    setExpenseItems(PRELOADED_EXPENSE_CATEGORIES.map(category => ({ category, amount: "", frequency: "Monthly" })));
     setUploadBank(null);
     setFinancialKnowledgeLevel(undefined);
     setInvestmentExperience([]);

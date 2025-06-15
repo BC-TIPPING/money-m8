@@ -11,6 +11,8 @@ import DebtReductionChart from "./index/DebtReductionChart";
 import BudgetPlanner from "./index/BudgetPlanner";
 import { Card, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { calculateMonthlyAmount, calculateAustralianIncomeTax } from "@/lib/financialCalculations";
+import { useEffect } from "react";
+import { PRELOADED_EXPENSE_CATEGORIES } from "@/lib/budgetCategories";
 
 const DEBT_GOALS = ['Pay off home loan sooner', 'Reduce debt'];
 
@@ -28,6 +30,30 @@ export default function Index() {
     handleStartOver,
     handleChangeGoal,
   } = useAssessmentData(assessment);
+
+  useEffect(() => {
+    const currentCategories = assessment.expenseItems.map(item => item.category);
+    // The presence of "Utilities" is a good indicator of the old structure.
+    const needsUpdate = currentCategories.includes('Utilities'); 
+
+    if (needsUpdate) {
+      console.log('Old expense categories detected in local storage. Updating...');
+      
+      const preservedData = new Map(assessment.expenseItems.map(item => [item.category, item]));
+
+      const newExpenseItems = PRELOADED_EXPENSE_CATEGORIES.map(category => {
+          const oldItem = preservedData.get(category);
+          return {
+              category,
+              amount: oldItem?.amount || '',
+              frequency: oldItem?.frequency || 'Monthly',
+          };
+      });
+
+      assessment.setExpenseItems(newExpenseItems);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const handleStartAssessment = (goal: string, newUsername: string) => {
     assessment.setGoals([goal]);
