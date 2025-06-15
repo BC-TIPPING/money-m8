@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import AssessmentStepper from "./index/AssessmentStepper";
 import { useAssessmentState } from "./index/assessmentHooks";
 import { useAssessmentApi } from "./index/hooks/useAssessmentApi";
-import { PRELOADED_INCOME_CATEGORIES, PRELOADED_EXPENSE_CATEGORIES } from "@/lib/budgetCategories";
+import { PRELOADED_EXPENSE_CATEGORIES } from "@/lib/budgetCategories";
 import ResultsDisplay from "./index/ResultsDisplay";
 import LandingSection from "./index/LandingSection";
 import FileAnalysisReport from "./index/FileAnalysisReport";
@@ -13,14 +13,14 @@ export type AssessmentData = ReturnType<typeof useAssessmentState>;
 
 export default function IndexPage() {
   const assessmentState = useAssessmentState();
-  const { showAssessment, setShowAssessment } = assessmentState;
+  const { showAssessment, setShowAssessment, setUsername, setGoals } = assessmentState;
 
   const { isGenerating, assessmentResult, error, generateFinancialSummary, setAssessmentResult } = useAssessmentApi();
   const [personality, setPersonality] = useState('default');
-  const [analysisReport, setAnalysisReport] = useState(null);
+  const [analysisReport, setAnalysisReport] = useState<any>(null);
 
 
-  const handleSubmit = (selectedPersonality: string) => {
+  const handleSubmit = () => {
     const dataToSubmit = { ...assessmentState };
     // Let's remove things we don't want to send to the backend
     delete (dataToSubmit as any).setStep;
@@ -33,6 +33,8 @@ export default function IndexPage() {
       setShowAssessment,
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       setGoals,
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      setUsername,
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       setOtherGoal,
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -65,7 +67,7 @@ export default function IndexPage() {
     } = assessmentState;
 
 
-    generateFinancialSummary(data, selectedPersonality);
+    generateFinancialSummary(data, personality);
     setShowAssessment(false);
   };
 
@@ -88,16 +90,23 @@ export default function IndexPage() {
     assessmentState.setUploadedFile(null);
     setAssessmentResult(null);
     setAnalysisReport(null);
+    setShowAssessment(false);
   };
+
+  const handleStartAssessment = (goal: string, username: string) => {
+    setGoals([goal]);
+    setUsername(username);
+    setShowAssessment(true);
+  }
 
   return (
     <div className="container mx-auto px-4 py-8">
       <div className="w-full max-w-4xl mx-auto space-y-8">
         {!showAssessment && !assessmentResult && !isGenerating && !analysisReport && (
-          <LandingSection onStart={() => setShowAssessment(true)} />
+          <LandingSection onStartAssessment={handleStartAssessment} isLoading={isGenerating} />
         )}
 
-        {(showAssessment || (assessmentResult && !isGenerating)) && (
+        {(showAssessment || (assessmentResult && !isGenerating) || analysisReport) && (
             <div className="flex justify-end">
                 <Button variant="ghost" onClick={handleStartOver}>Start Over</Button>
             </div>
@@ -105,11 +114,17 @@ export default function IndexPage() {
 
         {showAssessment && !assessmentResult && (
           <AssessmentStepper 
-            assessmentState={assessmentState} 
+            {...assessmentState}
             onSubmit={handleSubmit}
             personality={personality}
             setPersonality={setPersonality}
-            setAnalysisReport={setAnalysisReport}
+            setAnalysisReport={(report) => {
+              setAnalysisReport(report);
+              setShowAssessment(false);
+            }}
+            isGeneratingSummary={isGenerating}
+            aiSummary={assessmentResult?.summary ?? null}
+            chartData={assessmentResult?.chartData ?? null}
           />
         )}
 
@@ -122,12 +137,25 @@ export default function IndexPage() {
         {error && <div className="text-red-500 text-center p-4">{error}</div>}
 
         {analysisReport && !assessmentResult && (
-          <FileAnalysisReport report={analysisReport} onAccept={() => {
-            assessmentState.setIncomeSources(analysisReport.income_sources);
-            assessmentState.setExpenseItems(analysisReport.expense_items);
-            handleSubmit(personality);
-            setAnalysisReport(null);
-          }} onReconfigure={() => setAnalysisReport(null)} />
+          <div>
+            <FileAnalysisReport result={analysisReport} />
+            <div className="mt-8 text-center space-x-4">
+              <Button onClick={() => {
+                if (analysisReport.income_sources) {
+                  assessmentState.setIncomeSources(analysisReport.income_sources);
+                }
+                if (analysisReport.expense_items) {
+                  assessmentState.setExpenseItems(analysisReport.expense_items);
+                }
+                handleSubmit();
+                setAnalysisReport(null);
+              }}>Accept & Proceed</Button>
+              <Button variant="outline" onClick={() => {
+                setAnalysisReport(null);
+                setShowAssessment(true);
+              }}>Reconfigure Manually</Button>
+            </div>
+          </div>
         )}
 
         {assessmentResult && !isGenerating && (
