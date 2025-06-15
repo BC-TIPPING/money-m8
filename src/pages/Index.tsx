@@ -20,6 +20,7 @@ export default function Index() {
   const [aiSummary, setAiSummary] = useState<string | null>(null);
   const [chartData, setChartData] = useState<any | null>(null);
   const [usernameToFetch, setUsernameToFetch] = useState<string | null>(null);
+  const [isPreloaded, setIsPreloaded] = useState(false);
 
   const { data: existingAssessment, isLoading: isLoadingAssessment, isSuccess: isFetchSuccess } = useQuery({
     queryKey: ['assessment', usernameToFetch],
@@ -131,6 +132,7 @@ export default function Index() {
             assessment.setFreeTextComments(typedAssessment.free_text_comments ?? "");
 
             toast({ title: "Welcome back!", description: "We've pre-filled your previous assessment data." });
+            setIsPreloaded(true);
         }
         setUsername(usernameToFetch);
         assessment.setShowAssessment(true);
@@ -165,6 +167,17 @@ export default function Index() {
           aiSummary={aiSummary}
           chartData={chartData}
         />
+        {isPreloaded && !isComplete && (
+            <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-20">
+                <Button 
+                    variant="secondary"
+                    className="shadow-lg"
+                    onClick={() => assessment.setStep(questions.length)}
+                >
+                    Skip to My Summary
+                </Button>
+            </div>
+        )}
     </div>
   );
 }
