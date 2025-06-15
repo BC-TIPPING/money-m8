@@ -8,6 +8,7 @@ import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 import { ReactNode } from "react";
 import AskAI from "./pages/AskAI";
+import PayOffHomeLoanPage from "./pages/PayOffHomeLoan";
 
 const queryClient = new QueryClient();
 
@@ -16,6 +17,7 @@ const AppRoutes = () => {
         <Routes>
             <Route path="/" element={<Index />} />
             <Route path="/ask-ai" element={<AskAI />} />
+            <Route path="/pay-off-home-loan" element={<PayOffHomeLoanPage />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
         </Routes>

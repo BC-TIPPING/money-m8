@@ -1,4 +1,3 @@
-
 import LandingSection from "./index/LandingSection";
 import AssessmentStepper from "./index/AssessmentStepper";
 import { useAssessmentState, questions } from "./index/assessmentHooks";
@@ -8,8 +7,8 @@ import { Loader2 } from "lucide-react";
 import { useAssessmentData } from "./index/hooks/useAssessmentData";
 import InterestSavedChart from "./index/InterestSavedChart";
 import DebtReductionChart from "./index/DebtReductionChart";
-import HomeLoanCalculator from "./index/HomeLoanCalculator";
 import BudgetPlanner from "./index/BudgetPlanner";
+import { Card, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 
 const DEBT_GOALS = ['Pay off home loan sooner', 'Reduce debt'];
 
@@ -26,9 +25,6 @@ export default function Index() {
     generateSummary,
     handleStartOver,
     handleChangeGoal,
-    assessmentId,
-    updateHomeLoanExtraRepayment,
-    isUpdatingRepayment,
   } = useAssessmentData(assessment);
 
   const handleStartAssessment = (goal: string, newUsername: string) => {
@@ -64,12 +60,17 @@ export default function Index() {
             {isComplete && (
                 <div className="container mx-auto grid gap-6 px-4 py-6 sm:px-6 lg:grid-cols-2 lg:px-8">
                     {assessment.goals.includes('Pay off home loan sooner') && (
-                        <HomeLoanCalculator 
-                            debtDetails={assessment.debtDetails}
-                            assessmentId={assessmentId}
-                            updateHomeLoanExtraRepayment={updateHomeLoanExtraRepayment}
-                            isUpdatingRepayment={isUpdatingRepayment}
-                        />
+                        <Card>
+                            <CardHeader>
+                                <CardTitle>Pay Off Home Loan Sooner 🚀</CardTitle>
+                                <CardDescription>Use our calculator to see how extra repayments can save you thousands!</CardDescription>
+                            </CardHeader>
+                            <CardFooter>
+                                <Button asChild>
+                                    <Link to="/pay-off-home-loan">Open Calculator</Link>
+                                </Button>
+                            </CardFooter>
+                        </Card>
                     )}
                     {assessment.goals.includes('Set a budget') && (
                         <BudgetPlanner expenseItems={assessment.expenseItems} />
