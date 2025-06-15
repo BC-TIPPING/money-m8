@@ -70,9 +70,12 @@ export default function BudgetPlanner({ expenseItems, totalMonthlyNetIncome }: B
     return (
         <Card className="lg:col-span-2">
             <CardHeader>
-                <CardTitle>Set Your Budget Goal</CardTitle>
+                <CardTitle>{showSummary ? 'Budget Analysis' : 'Set Your Budget Goal'}</CardTitle>
                 <CardDescription>
-                    Your current monthly expenses are listed below. Set a goal for each category to see how you can improve your budget. The suggested amounts are based on your net income.
+                    {showSummary 
+                        ? "Here's how your current spending compares to general budget guidelines. Over-budget items are highlighted."
+                        : "Your current monthly expenses are listed below. Set a goal for each category to see how you can improve your budget. The suggested amounts are based on your net income."
+                    }
                 </CardDescription>
             </CardHeader>
             <CardContent>
@@ -84,7 +87,11 @@ export default function BudgetPlanner({ expenseItems, totalMonthlyNetIncome }: B
                         totalMonthlyNetIncome={totalMonthlyNetIncome}
                     />
                 ) : (
-                    <BudgetSummary goalExpenses={goalExpenses} />
+                    <BudgetSummary 
+                        goalExpenses={goalExpenses} 
+                        totalMonthlyNetIncome={totalMonthlyNetIncome}
+                        categoryInfoMap={categoryInfoMap}
+                    />
                 )}
             </CardContent>
             <CardFooter className="flex justify-between items-center bg-muted/50 py-4 px-6 rounded-b-lg">
