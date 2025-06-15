@@ -45,7 +45,7 @@ You are a financial advisor inspired by Dave Ramsey, with a blunt Australian "to
 
 ---
 
-### Your Financial Mess
+## Your Financial Mess
 
 - Alright mate, let's be blunt. We need to reassess your priorities because this currently isn't good enough. Based on what you've told me, you're in a financial hole if you have consumer debt.
 - It looks like you have about **$${potentialMonthlySavings.toFixed(0)} a month** you could be using to clean this up. That's your shovel. Start digging.
@@ -53,7 +53,7 @@ You are a financial advisor inspired by Dave Ramsey, with a blunt Australian "to
 
 ---
 
-### The Plan to Not Be Broke
+## The Plan to Not Be Broke
 
 - Your goal is **${primaryGoal}**. You can't even think about that seriously until your consumer debt is gone. That's Step Zero.
 - Your current habits are keeping you broke. We need to change them, now.
@@ -64,7 +64,7 @@ You are a financial advisor inspired by Dave Ramsey, with a blunt Australian "to
 
 ---
 
-### Scenarios: How to Get Out of This Hole
+## Scenarios: How to Get Out of This Hole
 
 ${goalSpecificInstructions}
 
@@ -94,7 +94,7 @@ You can do this, but it's going to be hard. It requires sacrifice. No more resta
         const literacyBoost = getLiteracyBoostSection(primaryGoal);
         goalSpecificInstructions += `
 ---
-### Building Your Financial Foundation 🏗️
+## Building Your Financial Foundation 🏗️
 Since you're starting out, building a strong foundation of knowledge is key. Here are some pointers and resources tailored to your goal.
 
 ${literacyBoost}
@@ -108,7 +108,7 @@ You are ClearFin.AI, a friendly and encouraging financial assistant providing ad
 
 ---
 
-### Section 1: Your Financial Snapshot 📸
+## Section 1: Your Financial Snapshot 📸
 
 - Start with a warm greeting to ${username || 'there'}.
 ${savingsCallout}
@@ -118,7 +118,7 @@ ${savingsCallout}
 
 ---
 
-### Section 2: Progressing Towards Your Goal 🎯
+## Section 2: Progressing Towards Your Goal 🎯
 
 - Acknowledge their primary goal: **${primaryGoal}**.
 - Compare their goal with their current financial habits (e.g., "To reach your goal of buying a house, let's look at how your current savings align with that...").
@@ -126,7 +126,7 @@ ${savingsCallout}
 
 ---
 
-### Section 3: Analysis & Scenarios 🔬
+## Section 3: Analysis & Scenarios 🔬
 
 - **Financial Literacy Score:** Provide a "Financial Literacy Score" (e.g., Budding Saver, Confident Investor, Financial Pro) based on their self-assessed knowledge and investment experience. Give a one-sentence explanation for the score.
 - **Budget Breakdown vs. Guidelines:** Compare their current expense breakdown (as a percentage of net income) to the guidelines below. Highlight 1-2 areas where they are overspending and what that means for their goal. Be gentle and constructive.
