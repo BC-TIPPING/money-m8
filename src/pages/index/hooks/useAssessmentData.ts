@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
@@ -18,6 +17,7 @@ export function useAssessmentData(assessment: AssessmentState) {
   const [chartData, setChartData] = useState<any | null>(null);
   const [usernameToFetch, setUsernameToFetch] = useState<string | null>(null);
   const [isPreloaded, setIsPreloaded] = useState(false);
+  const [assessmentId, setAssessmentId] = useState<string | null>(null);
 
   const { data: existingAssessment, isLoading: isLoadingAssessment, isSuccess: isFetchSuccess } = useQuery({
     queryKey: ['assessment', usernameToFetch],
@@ -68,12 +68,34 @@ export function useAssessmentData(assessment: AssessmentState) {
       if (error) throw error;
       return data;
     },
-    onSuccess: () => {
+    onSuccess: (data) => {
         setIsSubmitted(true);
+        if (data && data.length > 0) {
+            setAssessmentId(data[0].id);
+        }
         toast({ title: "Success", description: "Your assessment has been saved successfully!" });
     },
     onError: (error) => {
         toast({ title: "Error saving assessment", description: error.message, variant: 'destructive' });
+    }
+  });
+
+  const { mutate: updateHomeLoanExtraRepayment, isPending: isUpdatingRepayment } = useMutation({
+    mutationFn: async ({ id, amount }: { id: string, amount: number | null }) => {
+      const { data, error } = await supabase
+        .from('assessments')
+        .update({ home_loan_extra_repayment: amount })
+        .eq('id', id)
+        .select();
+
+      if (error) throw error;
+      return data;
+    },
+    onSuccess: () => {
+        toast({ title: "Success", description: "Extra repayment amount has been updated!" });
+    },
+    onError: (error) => {
+        toast({ title: "Error updating", description: error.message, variant: 'destructive' });
     }
   });
 
@@ -115,6 +137,7 @@ export function useAssessmentData(assessment: AssessmentState) {
     if (isFetchSuccess && usernameToFetch) {
         if (existingAssessment) {
             const typedAssessment = existingAssessment;
+            setAssessmentId(typedAssessment.id);
             assessment.setEmploymentStatus(typedAssessment.employment_status ?? undefined);
             assessment.setHasRegularIncome(typedAssessment.has_regular_income ?? undefined);
             assessment.setIncomeSources((typedAssessment.income_sources as any) || [{ category: "", amount: "", frequency: "Monthly" }]);
@@ -158,6 +181,7 @@ export function useAssessmentData(assessment: AssessmentState) {
     setAiSummary(null);
     setChartData(null);
     setUsername(null);
+    setAssessmentId(null);
     setIsPreloaded(false);
   };
 
@@ -179,5 +203,8 @@ export function useAssessmentData(assessment: AssessmentState) {
     generateSummary,
     handleStartOver,
     handleChangeGoal,
+    assessmentId,
+    updateHomeLoanExtraRepayment,
+    isUpdatingRepayment,
   };
 }

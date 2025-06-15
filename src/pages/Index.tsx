@@ -1,3 +1,4 @@
+
 import LandingSection from "./index/LandingSection";
 import AssessmentStepper from "./index/AssessmentStepper";
 import { useAssessmentState, questions } from "./index/assessmentHooks";
@@ -7,6 +8,7 @@ import { Loader2 } from "lucide-react";
 import { useAssessmentData } from "./index/hooks/useAssessmentData";
 import InterestSavedChart from "./index/InterestSavedChart";
 import DebtReductionChart from "./index/DebtReductionChart";
+import HomeLoanCalculator from "./index/HomeLoanCalculator";
 
 export default function Index() {
   const assessment = useAssessmentState();
@@ -21,6 +23,9 @@ export default function Index() {
     generateSummary,
     handleStartOver,
     handleChangeGoal,
+    assessmentId,
+    updateHomeLoanExtraRepayment,
+    isUpdatingRepayment,
   } = useAssessmentData(assessment);
 
   const handleStartAssessment = (goal: string, newUsername: string) => {
@@ -51,10 +56,18 @@ export default function Index() {
               aiSummary={aiSummary}
               chartData={chartData}
             />
-            {isComplete && (chartData?.debtReductionData || chartData?.interestSavedData) && (
+            {isComplete && (
                 <div className="container mx-auto grid gap-6 px-4 py-6 sm:px-6 lg:grid-cols-2 lg:px-8">
-                    {chartData.debtReductionData && <DebtReductionChart data={chartData.debtReductionData} />}
-                    {chartData.interestSavedData && <InterestSavedChart data={chartData.interestSavedData} />}
+                    {assessment.goals.includes('Pay off home loan sooner') && (
+                        <HomeLoanCalculator 
+                            debtDetails={assessment.debtDetails}
+                            assessmentId={assessmentId}
+                            updateHomeLoanExtraRepayment={updateHomeLoanExtraRepayment}
+                            isUpdatingRepayment={isUpdatingRepayment}
+                        />
+                    )}
+                    {chartData?.debtReductionData && <DebtReductionChart data={chartData.debtReductionData} />}
+                    {chartData?.interestSavedData && <InterestSavedChart data={chartData.interestSavedData} />}
                 </div>
             )}
         </div>

@@ -22,6 +22,7 @@ export type Database = {
           goal_timeframe: string | null
           goals: string[] | null
           has_regular_income: boolean | null
+          home_loan_extra_repayment: number | null
           id: string
           income_sources: Json | null
           investment_experience: string[] | null
@@ -40,6 +41,7 @@ export type Database = {
           goal_timeframe?: string | null
           goals?: string[] | null
           has_regular_income?: boolean | null
+          home_loan_extra_repayment?: number | null
           id?: string
           income_sources?: Json | null
           investment_experience?: string[] | null
@@ -58,6 +60,7 @@ export type Database = {
           goal_timeframe?: string | null
           goals?: string[] | null
           has_regular_income?: boolean | null
+          home_loan_extra_repayment?: number | null
           id?: string
           income_sources?: Json | null
           investment_experience?: string[] | null
