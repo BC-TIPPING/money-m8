@@ -9,8 +9,9 @@ import { useAssessmentData } from "./index/hooks/useAssessmentData";
 import InterestSavedChart from "./index/InterestSavedChart";
 import DebtReductionChart from "./index/DebtReductionChart";
 import HomeLoanCalculator from "./index/HomeLoanCalculator";
+import BudgetPlanner from "./index/BudgetPlanner";
 
-const DEBT_GOALS = ['Pay off home loan sooner'];
+const DEBT_GOALS = ['Pay off home loan sooner', 'Reduce debt'];
 
 export default function Index() {
   const assessment = useAssessmentState();
@@ -69,6 +70,9 @@ export default function Index() {
                             updateHomeLoanExtraRepayment={updateHomeLoanExtraRepayment}
                             isUpdatingRepayment={isUpdatingRepayment}
                         />
+                    )}
+                    {assessment.goals.includes('Set a budget') && (
+                        <BudgetPlanner expenseItems={assessment.expenseItems} />
                     )}
                     {chartData?.debtReductionData && <DebtReductionChart data={chartData.debtReductionData} />}
                     {chartData?.interestSavedData && <InterestSavedChart data={chartData.interestSavedData} />}
