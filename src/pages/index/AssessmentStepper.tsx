@@ -1,6 +1,6 @@
 import React from "react";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, ArrowLeft } from "lucide-react";
+import { ArrowRight, ArrowLeft, Loader2 } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
@@ -16,6 +16,8 @@ import {
 import clsx from "clsx";
 import ProgressMilestones from "./ProgressMilestones";
 import AssessmentSummary from "./AssessmentSummary";
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 import {
   questions,
   PRELOADED_EXPENSE_CATEGORIES,
@@ -75,6 +77,9 @@ interface AssessmentStepperProps {
   setDebtManagementConfidence: (val: string) => void;
   freeTextComments: string;
   setFreeTextComments: (val: string) => void;
+  generateSummary: () => void;
+  isGeneratingSummary: boolean;
+  aiSummary: string | null;
 }
 
 const AssessmentStepper: React.FC<AssessmentStepperProps> = (props) => {
@@ -87,7 +92,8 @@ const AssessmentStepper: React.FC<AssessmentStepperProps> = (props) => {
     financialKnowledgeLevel, setFinancialKnowledgeLevel, investmentExperience, setInvestmentExperience,
     goals, setGoals, otherGoal, setOtherGoal, goalTimeframe, setGoalTimeframe,
     debtTypes, setDebtTypes, debtDetails, setDebtDetails, debtManagementConfidence, setDebtManagementConfidence,
-    freeTextComments, setFreeTextComments
+    freeTextComments, setFreeTextComments,
+    generateSummary, isGeneratingSummary, aiSummary
   } = props;
 
   React.useEffect(() => {
@@ -565,8 +571,6 @@ const AssessmentStepper: React.FC<AssessmentStepperProps> = (props) => {
     );
   }; // end renderQuestion
 
-// ... keep existing code (handleNext, handleBack, completion screen)
-
   const handleNext = () => {
     if (step < questionsWithUpload.length - 1) {
       setStep(step + 1);
@@ -590,17 +594,45 @@ const AssessmentStepper: React.FC<AssessmentStepperProps> = (props) => {
             </p>
           </div>
 
-          <div className="max-h-[50vh] overflow-y-auto p-6 bg-white rounded-lg border border-gray-200">
+          <div className="max-h-[40vh] overflow-y-auto p-4 bg-white rounded-lg border border-gray-200">
             <AssessmentSummary {...props} />
           </div>
 
-          <div className="bg-blue-50 rounded-lg p-6 my-8 text-sm text-gray-700 text-left">
-            <strong className="text-blue-900 block mb-2">What's next?</strong>
-            <p>We're analyzing your responses to personalize your financial profile, tools and action steps.</p> 
-            <p className="mt-2">You'll soon be able to: review your answers, set detailed budgets/goals, get a personalized roadmap, and play with powerful financial calculators.</p>
-          </div>
-          <div className="text-center">
-             <Button onClick={() => window.location.reload()}>Start Over</Button>
+          {aiSummary ? (
+            <div className="mt-8 p-6 bg-blue-50 rounded-lg border border-blue-200">
+              <h3 className="text-xl font-bold text-blue-900 mb-4">Your Personalized Summary</h3>
+              <div className="text-sm text-gray-800 space-y-4">
+                <ReactMarkdown
+                  remarkPlugins={[remarkGfm]}
+                  components={{
+                    p: ({node, ...props}) => <p className="leading-relaxed" {...props} />,
+                    ul: ({node, ...props}) => <ul className="list-disc list-inside space-y-1" {...props} />,
+                    strong: ({node, ...props}) => <strong className="font-semibold text-blue-900" {...props} />,
+                  }}
+                >
+                  {aiSummary}
+                </ReactMarkdown>
+              </div>
+            </div>
+          ) : (
+            <div className="bg-blue-50 rounded-lg p-6 my-8 text-sm text-gray-700 text-left">
+              <strong className="text-blue-900 block mb-2">What's next?</strong>
+              <p>Get a personalized summary of your financial goals and a comparison to what you've entered.</p> 
+              <div className="text-center mt-6">
+                 <Button onClick={generateSummary} disabled={isGeneratingSummary}>
+                  {isGeneratingSummary ? (
+                    <>
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      Generating...
+                    </>
+                  ) : "Generate My Financial Summary"}
+                </Button>
+              </div>
+            </div>
+          )}
+
+          <div className="text-center mt-8">
+             <Button variant="outline" onClick={() => window.location.reload()}>Start Over</Button>
           </div>
         </CenteredCard>
       </div>
