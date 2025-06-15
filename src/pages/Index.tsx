@@ -1,4 +1,3 @@
-
 import LandingSection from "./index/LandingSection";
 import AssessmentStepper from "./index/AssessmentStepper";
 import { useAssessmentState, questions } from "./index/assessmentHooks";
@@ -6,6 +5,7 @@ import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Loader2 } from "lucide-react";
 import { useAssessmentData } from "./index/hooks/useAssessmentData";
+import InterestSavedChart from "./index/InterestSavedChart";
 
 export default function Index() {
   const assessment = useAssessmentState();
@@ -50,6 +50,11 @@ export default function Index() {
               aiSummary={aiSummary}
               chartData={chartData}
             />
+            {isComplete && chartData?.interestSavedData && (
+                <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-6">
+                    <InterestSavedChart data={chartData.interestSavedData} />
+                </div>
+            )}
         </div>
         {isPreloaded && !isComplete && (
             <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-20">
