@@ -22,6 +22,9 @@ import {
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Link } from "react-router-dom";
 import { ArrowLeft } from "lucide-react";
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend } from "recharts";
+import { ChartContainer, ChartTooltipContent, type ChartConfig } from "@/components/ui/chart";
+
 
 const formSchema = z.object({
   loanAmount: z.coerce.number({ required_error: "Loan amount is required." }).min(1, "Loan amount must be positive."),
@@ -39,6 +42,7 @@ interface CalculationResult {
   interestSaved: number;
   originalTerm: string;
   newTerm: string;
+  chartData: { year: number; "Original Loan": number; "With Extra Repayments": number | null }[];
   error?: string;
 }
 
@@ -89,13 +93,14 @@ const calculateLoanDetails = (values: CalculatorFormValues): CalculationResult =
     let months = 0;
     let totalInterest = 0;
     const totalMonthlyPayment = mp + mer;
+    const amortizationData: { year: number, balance: number }[] = [{ year: 0, balance: p }];
 
     if (totalMonthlyPayment <= 0 && p > 0) {
-        return { months: Infinity, totalInterest: Infinity };
+        return { months: Infinity, totalInterest: Infinity, data: [] };
     }
     
     if (mr > 0 && totalMonthlyPayment <= p * mr) {
-        return { months: Infinity, totalInterest: Infinity };
+        return { months: Infinity, totalInterest: Infinity, data: [] };
     }
 
     while (balance > 0) {
@@ -104,18 +109,28 @@ const calculateLoanDetails = (values: CalculatorFormValues): CalculationResult =
       balance += interestForMonth;
       balance -= totalMonthlyPayment;
       months++;
+
+      if (months % 12 === 0) {
+        amortizationData.push({ year: months / 12, balance: Math.max(0, balance) });
+      }
+
       if (months > 40 * 12 * 2) {
-        return { months: Infinity, totalInterest: Infinity };
+        return { months: Infinity, totalInterest: Infinity, data: [] };
       }
     }
-    return { months, totalInterest };
+    
+    if (months % 12 !== 0 && amortizationData[amortizationData.length - 1].balance > 0) {
+        amortizationData.push({ year: months / 12, balance: 0 });
+    }
+
+    return { months, totalInterest, data: amortizationData };
   };
 
   const baseline = calculateAmortization(principal, monthlyPayment, 0, monthlyRate);
   const withExtra = calculateAmortization(principal, monthlyPayment, monthlyExtraRepayment, monthlyRate);
 
   if (withExtra.months === Infinity) {
-      return { error: "With the given repayments, the loan will never be paid off. Please increase the repayment amount.", monthlyPayment: 0, timeSaved: "", interestSaved: 0, originalTerm: "", newTerm: "" };
+      return { error: "With the given repayments, the loan will never be paid off. Please increase the repayment amount.", monthlyPayment: 0, timeSaved: "", interestSaved: 0, originalTerm: "", newTerm: "", chartData: [] };
   }
 
   const yearsSaved = Math.floor((baseline.months - withExtra.months) / 12);
@@ -126,12 +141,24 @@ const calculateLoanDetails = (values: CalculatorFormValues): CalculationResult =
   const newTermYears = Math.floor(withExtra.months / 12);
   const newTermMonths = Math.round(withExtra.months % 12);
 
+  const chartData = baseline.data.map(originalPoint => {
+    const newPoint = withExtra.data.find(p => p.year === originalPoint.year);
+    const newBalance = newPoint ? newPoint.balance : 0;
+    
+    return {
+      year: originalPoint.year,
+      "Original Loan": originalPoint.balance,
+      "With Extra Repayments": newBalance,
+    };
+  });
+
   return {
     monthlyPayment,
     timeSaved: formatTerm(yearsSaved, monthsSaved),
     interestSaved: interestSaved,
     originalTerm: formatTerm(originalTermYears, originalTermMonths),
     newTerm: formatTerm(newTermYears, newTermMonths),
+    chartData,
   };
 };
 
@@ -274,6 +301,32 @@ export default function PayOffHomeLoanPage() {
                                         <p><strong>Original Loan Term:</strong> {results.originalTerm}</p>
                                         <p><strong>New Loan Term (with extra repayments):</strong> {results.newTerm}</p>
                                     </div>
+                                    {results.chartData && results.chartData.length > 1 && (
+                                        <div className="pt-6 mt-6 border-t border-green-200">
+                                            <p className="text-lg font-semibold mb-4 text-green-800">Loan Balance Over Time</p>
+                                            <ChartContainer config={{
+                                                "Original Loan": { label: "Original Loan", color: "hsl(var(--chart-2))" },
+                                                "With Extra Repayments": { label: "With Extra Repayments", color: "hsl(var(--chart-1))" },
+                                            }} className="h-[300px] w-full">
+                                                <LineChart data={results.chartData} margin={{ top: 5, right: 20, bottom: 5, left: 0 }}>
+                                                    <CartesianGrid vertical={false} strokeDasharray="3 3" />
+                                                    <XAxis dataKey="year" tickLine={false} axisLine={false} tickMargin={8} tickFormatter={(value) => `Yr ${value}`} />
+                                                    <YAxis tickLine={false} axisLine={false} tickMargin={8} tickFormatter={(value) => `$${(value / 1000)}k`} domain={['auto', 'auto']} />
+                                                    <Tooltip
+                                                        cursor={true}
+                                                        content={<ChartTooltipContent
+                                                            indicator="dot"
+                                                            formatter={(value) => value.toLocaleString('en-AU', { style: 'currency', currency: 'AUD', minimumFractionDigits: 0 })}
+                                                            labelFormatter={(label) => `Year ${label}`}
+                                                        />}
+                                                    />
+                                                    <Legend />
+                                                    <Line dataKey="Original Loan" type="monotone" stroke="var(--color-Original-Loan)" strokeWidth={2} dot={false} />
+                                                    <Line dataKey="With Extra Repayments" type="monotone" stroke="var(--color-With-Extra-Repayments)" strokeWidth={2} dot={false} />
+                                                </LineChart>
+                                            </ChartContainer>
+                                        </div>
+                                    )}
                                 </>
                             )}
                         </CardContent>
