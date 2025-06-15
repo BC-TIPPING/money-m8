@@ -42,7 +42,7 @@ export default function Index() {
 
   return (
     <div className="relative flex flex-col min-h-screen">
-        <div className="flex-grow">
+        <div className={`flex-grow ${isComplete ? 'pb-52' : ''}`}>
             <AssessmentStepper 
               {...assessment} 
               generateSummary={() => generateSummary({})}
@@ -63,19 +63,19 @@ export default function Index() {
             </div>
         )}
         {isComplete && (
-            <div className="w-full p-6">
+            <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-20 w-full max-w-sm px-4">
                 <div className="flex flex-col items-center gap-4">
                     <Button 
                         onClick={handleStartOver}
                         variant="outline"
-                        className="shadow-lg bg-background w-full max-w-sm"
+                        className="shadow-lg bg-background w-full"
                     >
                         Start Over
                     </Button>
                     <Button
                         onClick={handleChangeGoal}
                         variant="outline"
-                        className="shadow-lg bg-background w-full max-w-sm"
+                        className="shadow-lg bg-background w-full"
                     >
                         Change Goal
                     </Button>
@@ -83,7 +83,7 @@ export default function Index() {
                         <Button 
                             onClick={() => generateSummary({ personality: 'dave_ramsey' })}
                             variant="destructive"
-                            className="shadow-lg w-full max-w-sm"
+                            className="shadow-lg w-full"
                             disabled={isGeneratingSummary}
                         >
                             {isGeneratingSummary ? (
