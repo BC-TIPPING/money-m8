@@ -1,3 +1,4 @@
+
 import LandingSection from "./index/LandingSection";
 import AssessmentStepper from "./index/AssessmentStepper";
 import { useAssessmentState, questions } from "./index/assessmentHooks";
@@ -68,6 +69,19 @@ export default function Index() {
                             <CardFooter>
                                 <Button asChild>
                                     <Link to="/pay-off-home-loan">Open Calculator</Link>
+                                </Button>
+                            </CardFooter>
+                        </Card>
+                    )}
+                    {assessment.goals.includes('Maximise super') && (
+                        <Card>
+                            <CardHeader>
+                                <CardTitle>Maximise Super 💰</CardTitle>
+                                <CardDescription>Use our calculator to see how extra contributions can boost your retirement savings and lower your tax.</CardDescription>
+                            </CardHeader>
+                            <CardFooter>
+                                <Button asChild>
+                                    <Link to="/maximise-super">Open Calculator</Link>
                                 </Button>
                             </CardFooter>
                         </Card>

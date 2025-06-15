@@ -9,6 +9,7 @@ import NotFound from "./pages/NotFound";
 import { ReactNode } from "react";
 import AskAI from "./pages/AskAI";
 import PayOffHomeLoanPage from "./pages/PayOffHomeLoan";
+import MaximiseSuperPage from "./pages/MaximiseSuper";
 
 const queryClient = new QueryClient();
 
@@ -18,6 +19,7 @@ const AppRoutes = () => {
             <Route path="/" element={<Index />} />
             <Route path="/ask-ai" element={<AskAI />} />
             <Route path="/pay-off-home-loan" element={<PayOffHomeLoanPage />} />
+            <Route path="/maximise-super" element={<MaximiseSuperPage />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
         </Routes>

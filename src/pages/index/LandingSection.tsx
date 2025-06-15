@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -12,6 +13,7 @@ const goalPanels = [
   { title: "Grow investments", description: "Make your money work for you and build long-term wealth.", emoji: "📈" },
   { title: "Save for a purchase", description: "Whether it's a car or a holiday, we'll help you reach your savings goals.", emoji: "🎯" },
   { title: "Pay off home loan sooner", description: "Learn strategies to clear your mortgage faster and save thousands.", emoji: "🏡" },
+  { title: "Maximise super", description: "Boost your retirement savings and take advantage of tax benefits.", emoji: "💰" },
 ];
 
 const LandingSection = ({ onStartAssessment, isLoading }: { onStartAssessment: (goal: string, username: string) => void; isLoading: boolean; }) => {
@@ -41,8 +43,8 @@ const LandingSection = ({ onStartAssessment, isLoading }: { onStartAssessment: (
           <Carousel opts={{ align: "center", loop: false }} className="w-full">
             <CarouselContent>
               {goalPanels.map((panel, i) => (
-                <CarouselItem key={i} className="px-1 py-4 cursor-pointer" onClick={() => setSelectedGoal(panel.title)}>
-                  <div className={`bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl shadow-xl p-6 flex flex-col items-center gap-3 transition-all hover:scale-105 hover:bg-white/15 ${selectedGoal === panel.title ? 'ring-4 ring-emerald-500 bg-white/20' : 'ring-transparent'}`}>
+                <CarouselItem key={i} className="px-1 py-4 cursor-pointer md:basis-1/2 lg:basis-1/3" onClick={() => setSelectedGoal(panel.title)}>
+                  <div className={`bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl shadow-xl p-6 h-full flex flex-col items-center gap-3 transition-all hover:scale-105 hover:bg-white/15 ${selectedGoal === panel.title ? 'ring-4 ring-emerald-500 bg-white/20' : 'ring-transparent'}`}>
                     <span className="text-4xl">{panel.emoji}</span>
                     <span className="font-bold text-xl text-white">{panel.title}</span>
                     <span className="text-base text-white/80 text-center">{panel.description}</span>
