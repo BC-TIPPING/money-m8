@@ -1,7 +1,7 @@
 
 import LandingSection from "./index/LandingSection";
 import AssessmentStepper from "./index/AssessmentStepper";
-import { useAssessmentState } from "./index/assessmentHooks";
+import { useAssessmentState, questions } from "./index/assessmentHooks";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
@@ -17,6 +17,8 @@ export default function Index() {
   const { user } = useAuth();
   const { toast } = useToast();
   const [isSubmitted, setIsSubmitted] = useState(false);
+
+  const isComplete = assessment.step >= questions.length;
 
   const { mutate: saveAssessment, isPending: isSaving } = useMutation({
     mutationFn: async (assessmentData: Omit<AssessmentInsert, 'user_id' | 'id' | 'created_at'>) => {
@@ -40,7 +42,7 @@ export default function Index() {
   });
 
   useEffect(() => {
-    if (assessment.isComplete && !isSubmitted && !isSaving) {
+    if (isComplete && !isSubmitted && !isSaving) {
       const dbData: Omit<AssessmentInsert, 'user_id' | 'id' | 'created_at'> = {
         employment_status: assessment.employmentStatus,
         has_regular_income: assessment.hasRegularIncome,
@@ -58,7 +60,7 @@ export default function Index() {
       };
       saveAssessment(dbData);
     }
-  }, [assessment.isComplete, isSubmitted, isSaving, saveAssessment, assessment, user]);
+  }, [isComplete, isSubmitted, isSaving, saveAssessment, assessment, user]);
 
 
   const handleStartAssessment = (goal: string) => {
