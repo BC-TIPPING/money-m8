@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useToast } from "@/components/ui/use-toast";
 import { type Database } from "@/integrations/supabase/types";
 import { PRELOADED_EXPENSE_CATEGORIES, questions, useAssessmentState } from "../assessmentHooks";
@@ -20,22 +20,42 @@ export function useAssessmentData(assessment: AssessmentState) {
 
   const { data: existingAssessment, isLoading: isLoadingAssessment, isSuccess: isFetchSuccess } = useFetchAssessment(user?.id ?? null);
 
-  const assessmentData: AssessmentInsert = {
-    user_id: user!.id,
-    employment_status: assessment.employmentStatus,
-    has_regular_income: assessment.hasRegularIncome,
-    income_sources: assessment.incomeSources,
-    expense_items: assessment.expenseItems,
-    financial_knowledge_level: assessment.financialKnowledgeLevel,
-    investment_experience: assessment.investmentExperience,
-    goals: assessment.goals,
-    other_goal: assessment.otherGoal,
-    goal_timeframe: assessment.goalTimeframe,
-    debt_types: assessment.debtTypes,
-    debt_details: assessment.debtDetails,
-    debt_management_confidence: assessment.debtManagementConfidence,
-    free_text_comments: assessment.freeTextComments,
-  };
+  const assessmentData: AssessmentInsert | null = useMemo(() => {
+    if (!user) {
+      return null;
+    }
+    return {
+      user_id: user.id,
+      employment_status: assessment.employmentStatus,
+      has_regular_income: assessment.hasRegularIncome,
+      income_sources: assessment.incomeSources,
+      expense_items: assessment.expenseItems,
+      financial_knowledge_level: assessment.financialKnowledgeLevel,
+      investment_experience: assessment.investmentExperience,
+      goals: assessment.goals,
+      other_goal: assessment.otherGoal,
+      goal_timeframe: assessment.goalTimeframe,
+      debt_types: assessment.debtTypes,
+      debt_details: assessment.debtDetails,
+      debt_management_confidence: assessment.debtManagementConfidence,
+      free_text_comments: assessment.freeTextComments,
+    };
+  }, [
+    user,
+    assessment.employmentStatus,
+    assessment.hasRegularIncome,
+    assessment.incomeSources,
+    assessment.expenseItems,
+    assessment.financialKnowledgeLevel,
+    assessment.investmentExperience,
+    assessment.goals,
+    assessment.otherGoal,
+    assessment.goalTimeframe,
+    assessment.debtTypes,
+    assessment.debtDetails,
+    assessment.debtManagementConfidence,
+    assessment.freeTextComments,
+  ]);
 
   const { mutate: saveAssessment, isPending: isSaving } = useSaveAssessment((data) => {
     setIsSubmitted(true);
@@ -54,10 +74,10 @@ export function useAssessmentData(assessment: AssessmentState) {
   const isComplete = assessment.step >= questions.length;
 
   useEffect(() => {
-    if (isComplete && !isSubmitted && !isSaving && user) {
+    if (isComplete && !isSubmitted && !isSaving && assessmentData) {
       saveAssessment(assessmentData);
     }
-  }, [isComplete, isSubmitted, isSaving, saveAssessment, assessmentData, user]);
+  }, [isComplete, isSubmitted, isSaving, saveAssessment, assessmentData]);
 
   useEffect(() => {
     if (isFetchSuccess && user) {
@@ -129,7 +149,9 @@ export function useAssessmentData(assessment: AssessmentState) {
   };
 
   const generateSummary = ({ personality = 'default' }: { personality?: string } = {}) => {
-    generateSummaryMutation({ assessmentData, personality });
+    if (assessmentData) {
+      generateSummaryMutation({ assessmentData, personality });
+    }
   };
 
   return {
