@@ -58,26 +58,6 @@ const investmentTypes = [
   "None",
 ];
 
-const goalOptions = [
-  "Buy a house",
-  "Improve financial literacy",
-  "Set a budget",
-  "Reduce debt",
-  "Grow investments",
-  "Save for a purchase",
-  "Maximise Super",
-  "Pay off home loan sooner",
-  "Other",
-];
-
-const goalTimeframes = [
-  "0–6 months",
-  "6–12 months",
-  "1–3 years",
-  "3–5 years",
-  "5+ years",
-];
-
 const debtTypeOptions = [
   "Credit Card",
   "Personal Loan",
@@ -105,7 +85,6 @@ const steps = [
   "Employment & Income",
   "Budget",
   "Financial Knowledge",
-  "Financial Goals",
   "Debts & Liabilities",
   "Additional Notes",
 ];
@@ -127,9 +106,6 @@ function FinancialAssessmentModal({
   const [uploadBank, setUploadBank] = useState<File | null>(null);
   const [financialKnowledgeLevel, setFinancialKnowledgeLevel] = useState<FinancialKnowledgeLevel | undefined>();
   const [investmentExperience, setInvestmentExperience] = useState<string[]>([]);
-  const [goals, setGoals] = useState<string[]>([]);
-  const [otherGoal, setOtherGoal] = useState("");
-  const [goalTimeframe, setGoalTimeframe] = useState<string | undefined>();
   const [debtTypes, setDebtTypes] = useState<string[]>([]);
   const [debtManagementConfidence, setDebtManagementConfidence] = useState<YesSomewhatNo | undefined>();
   const [freeTextComments, setFreeTextComments] = useState("");
@@ -181,8 +157,6 @@ function FinancialAssessmentModal({
       : step === 2
       ? financialKnowledgeLevel
       : step === 3
-      ? (goals.length > 0 && goalTimeframe)
-      : step === 4
       ? debtTypes.length > 0 && debtManagementConfidence
       : true;
 
@@ -196,9 +170,6 @@ function FinancialAssessmentModal({
     setUploadBank(null);
     setFinancialKnowledgeLevel(undefined);
     setInvestmentExperience([]);
-    setGoals([]);
-    setOtherGoal("");
-    setGoalTimeframe(undefined);
     setDebtTypes([]);
     setDebtManagementConfidence(undefined);
     setFreeTextComments("");
@@ -419,59 +390,6 @@ function FinancialAssessmentModal({
       case 3:
         return (
           <section className="animate-fade-in">
-            <DialogTitle className="mb-2 text-xl">Financial Goals</DialogTitle>
-            <div className="mb-4">
-              <span className="block font-medium mb-1">What are your current financial goals?</span>
-              <div className="flex flex-wrap gap-2">
-                {goalOptions.map(goal => (
-                  goal === "Other" ? (
-                    <label key={goal} className="flex items-center gap-1">
-                      <Checkbox
-                        checked={goals.includes("Other")}
-                        onCheckedChange={checked =>
-                          setGoals(checked
-                            ? [...goals, "Other"]
-                            : goals.filter(g => g !== "Other"))
-                        }
-                      />
-                      <span>Other</span>
-                      {goals.includes("Other") && (
-                        <Input className="ml-1" value={otherGoal} onChange={e => setOtherGoal(e.target.value)} placeholder="Describe your goal" />
-                      )}
-                    </label>
-                  ) : (
-                    <label className="flex items-center gap-1" key={goal}>
-                      <Checkbox
-                        checked={goals.includes(goal)}
-                        onCheckedChange={checked =>
-                          setGoals(checked
-                            ? [...goals, goal]
-                            : goals.filter(g => g !== goal))
-                        }
-                      />
-                      <span>{goal}</span>
-                    </label>
-                  )
-                ))}
-              </div>
-            </div>
-            <div className="mb-4">
-              <span className="block font-medium mb-1">What is your goal timeframe?</span>
-              <RadioGroup value={goalTimeframe} onValueChange={(val) => setGoalTimeframe(val)} className="flex flex-wrap gap-2">
-                {goalTimeframes.map(g => (
-                  <RadioGroupItem
-                    key={g}
-                    value={g}
-                    className={clsx("rounded p-2", goalTimeframe === g && "border-primary ring-2 ring-primary")}
-                  >{g}</RadioGroupItem>
-                ))}
-              </RadioGroup>
-            </div>
-          </section>
-        );
-      case 4:
-        return (
-          <section className="animate-fade-in">
             <DialogTitle className="mb-2 text-xl">Debts & Liabilities</DialogTitle>
             <div className="mb-4">
               <span className="block font-medium mb-1">Which debts/liabilities do you currently hold?</span>
@@ -505,7 +423,7 @@ function FinancialAssessmentModal({
             </div>
           </section>
         );
-      case 5:
+      case 4:
         return (
           <section className="animate-fade-in">
             <DialogTitle className="mb-2 text-xl">Additional Notes</DialogTitle>
@@ -536,7 +454,7 @@ function FinancialAssessmentModal({
   };
 
   // Show completion after all steps are done
-  if (step > 5)
+  if (step > 4)
     return (
       <Dialog open={open} onOpenChange={handleClose}>
         <DialogContent className="max-w-2xl">

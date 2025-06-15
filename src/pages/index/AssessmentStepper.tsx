@@ -161,8 +161,7 @@ const AssessmentStepper: React.FC<AssessmentStepperProps> = (props) => {
 
   const questionsWithUpload = questions;
 
-  const goalsStepIdx = questionsWithUpload.findIndex(q => q.id === "goals");
-  const pastGoalsStep = step >= goalsStepIdx && goals.length > 0;
+  const pastGoalsStep = goals.length > 0;
 
   const progressMilestones = pastGoalsStep ? goals :
     questionsWithUpload.filter(q => q.id !== "upload" && q.id !== "additionalNotes").map((q, idx) => `Step ${idx + 1}`);
@@ -177,7 +176,7 @@ const AssessmentStepper: React.FC<AssessmentStepperProps> = (props) => {
 
   const progress = ((step + 1) / questionsWithUpload.length) * 100;
   const currentMilestoneIdx = pastGoalsStep
-    ? Math.min(goals.length - 1, step - goalsStepIdx)
+    ? 0
     : step;
 
   // ... renderQuestion (entire switch/case) logic from main file ...

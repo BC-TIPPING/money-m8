@@ -1,4 +1,4 @@
-import { useState } from "react";
+import React, { useState } from "react";
 
 export type DebtDetail = {
   type: string;
@@ -67,23 +67,6 @@ export const questions = [
       "Cryptocurrency",
       "Managed Funds",
       "None",
-    ],
-  },
-  {
-    id: "goals",
-    title: "Financial Goals",
-    subtitle: "What are your current financial goals?",
-    type: "checkbox",
-    options: [
-      "Buy a house",
-      "Improve financial literacy",
-      "Set a budget",
-      "Reduce debt",
-      "Grow investments",
-      "Save for a purchase",
-      "Maximise Super",
-      "Pay off home loan sooner",
-      "Other",
     ],
   },
   {
