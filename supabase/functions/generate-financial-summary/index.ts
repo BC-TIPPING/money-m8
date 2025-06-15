@@ -212,7 +212,7 @@ ${savingsCallout}
 
 ---
 
-### Section 3: AI Analysis & Scenarios 🔬
+### Section 3: Analysis & Scenarios 🔬
 
 - **Financial Literacy Score:** Provide a "Financial Literacy Score" (e.g., Budding Saver, Confident Investor, Financial Pro) based on their self-assessed knowledge and investment experience. Give a one-sentence explanation for the score.
 - **Goal-Specific Scenarios:**
