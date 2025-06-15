@@ -1,4 +1,3 @@
-
 import "https://deno.land/x/xhr@0.1.0/mod.ts";
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 
@@ -58,7 +57,7 @@ serve(async (req) => {
 - The "debt snowball" strategy focuses on paying off the debt with the lowest balance first, while making minimum payments on all other debts. Once a debt is paid off, its minimum payment is rolled into the payment for the next-smallest debt.
 
 - **Here is how you MUST calculate the scenarios:**
-  - For each extra weekly repayment scenario ($0, $25, $50, $75), you must perform a month-by-month simulation.
+  - For each extra weekly repayment scenario ($0, $10, $25, $50, $100), you must perform a month-by-month simulation.
   - Convert the extra weekly payment to a monthly amount by multiplying by 4.33.
   - The total monthly payment for debts is the sum of all minimum monthly repayments plus the extra monthly amount.
   - **Simulation Example:** Let's say we have two debts:
@@ -85,6 +84,18 @@ serve(async (req) => {
 - You **MUST** output real numbers in the table, not placeholders like [Time] or [Amount].
 - Provide a motivational summary highlighting how a small extra contribution can save thousands of dollars and years of repayments.
 - Use Australian currency ($) and provide all monetary values formatted nicely (e.g., $5,123.45).
+
+- **CHART DATA INSTRUCTIONS (VERY IMPORTANT):**
+- After the entire markdown summary, on a new line, you MUST provide a JSON object prefixed with \`CHART_DATA::\`.
+- This JSON object must contain a key \`debtReductionData\`, which is an array of objects for the chart.
+- Each object in the array represents a month in the simulation.
+- Each object MUST have a \`month\` key (0, 1, 2, ...) and keys for the remaining total debt balance for each scenario.
+- The keys for the scenarios MUST be: \`no_extra\`, \`10_extra\`, \`25_extra\`, \`50_extra\`, \`100_extra\`.
+- The data must continue until the debt is fully paid off in the longest scenario (\`no_extra\`).
+- **Example JSON output:**
+\`\`\`json
+CHART_DATA::{"debtReductionData": [{"month": 0, "no_extra": 20000, "10_extra": 20000, "25_extra": 20000, "50_extra": 20000, "100_extra": 20000}, {"month": 1, "no_extra": 19800, "10_extra": 19750, "25_extra": 19700, "50_extra": 19600, "100_extra": 19500}]}
+\`\`\`
             `;
             break;
         case 'Buy a house':
@@ -211,9 +222,23 @@ End with a motivational closing statement, encouraging them to take the first st
     }
 
     const data = await response.json();
-    const summary = data.choices[0].message.content;
+    const rawContent = data.choices[0].message.content;
+    let summary = rawContent;
+    let chartData = null;
 
-    return new Response(JSON.stringify({ summary }), {
+    if (rawContent.includes('CHART_DATA::')) {
+        const parts = rawContent.split('CHART_DATA::');
+        summary = parts[0].trim();
+        try {
+            const jsonString = parts[1].trim().replace(/^```json|```$/g, '').trim();
+            chartData = JSON.parse(jsonString);
+        } catch (e) {
+            console.error("Failed to parse chart data JSON:", e);
+            console.error("Problematic JSON string:", parts[1]);
+        }
+    }
+
+    return new Response(JSON.stringify({ summary, chartData }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
   } catch (error) {

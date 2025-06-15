@@ -1,3 +1,4 @@
+
 import LandingSection from "./index/LandingSection";
 import AssessmentStepper from "./index/AssessmentStepper";
 import { useAssessmentState, questions, PRELOADED_EXPENSE_CATEGORIES } from "./index/assessmentHooks";
@@ -17,6 +18,7 @@ export default function Index() {
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [username, setUsername] = useState<string | null>(null);
   const [aiSummary, setAiSummary] = useState<string | null>(null);
+  const [chartData, setChartData] = useState<any | null>(null);
   const [usernameToFetch, setUsernameToFetch] = useState<string | null>(null);
 
   const { data: existingAssessment, isLoading: isLoadingAssessment, isSuccess: isFetchSuccess } = useQuery({
@@ -93,10 +95,11 @@ export default function Index() {
         throw new Error(data.error);
       }
 
-      return data.summary;
+      return data;
     },
     onSuccess: (data) => {
-      setAiSummary(data);
+      setAiSummary(data.summary);
+      setChartData(data.chartData);
       toast({ title: "Summary Generated!", description: "Your personalized summary is ready." });
     },
     onError: (error) => {
@@ -160,6 +163,7 @@ export default function Index() {
           generateSummary={() => generateSummary(assessmentData)}
           isGeneratingSummary={isGeneratingSummary}
           aiSummary={aiSummary}
+          chartData={chartData}
         />
     </div>
   );

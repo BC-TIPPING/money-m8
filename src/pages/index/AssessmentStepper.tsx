@@ -18,6 +18,7 @@ import ProgressMilestones from "./ProgressMilestones";
 import AssessmentSummary from "./AssessmentSummary";
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
+import DebtReductionChart from "./DebtReductionChart";
 import {
   questions,
   PRELOADED_EXPENSE_CATEGORIES,
@@ -80,6 +81,7 @@ interface AssessmentStepperProps {
   generateSummary: () => void;
   isGeneratingSummary: boolean;
   aiSummary: string | null;
+  chartData: any | null;
 }
 
 const AssessmentStepper: React.FC<AssessmentStepperProps> = (props) => {
@@ -93,7 +95,7 @@ const AssessmentStepper: React.FC<AssessmentStepperProps> = (props) => {
     goals, setGoals, otherGoal, setOtherGoal, goalTimeframe, setGoalTimeframe,
     debtTypes, setDebtTypes, debtDetails, setDebtDetails, debtManagementConfidence, setDebtManagementConfidence,
     freeTextComments, setFreeTextComments,
-    generateSummary, isGeneratingSummary, aiSummary
+    generateSummary, isGeneratingSummary, aiSummary, chartData
   } = props;
 
   React.useEffect(() => {
@@ -589,21 +591,28 @@ const AssessmentStepper: React.FC<AssessmentStepperProps> = (props) => {
           </div>
 
           {aiSummary ? (
-            <div className="mt-8 p-6 bg-blue-50 rounded-lg border border-blue-200">
-              <h3 className="text-xl font-bold text-blue-900 mb-4">Your Personalized Summary</h3>
-              <div className="text-sm text-gray-800 space-y-4">
-                <ReactMarkdown
-                  remarkPlugins={[remarkGfm]}
-                  components={{
-                    p: ({node, ...props}) => <p className="leading-relaxed" {...props} />,
-                    ul: ({node, ...props}) => <ul className="list-disc list-inside space-y-1" {...props} />,
-                    strong: ({node, ...props}) => <strong className="font-semibold text-blue-900" {...props} />,
-                  }}
-                >
-                  {aiSummary}
-                </ReactMarkdown>
+            <>
+              <div className="mt-8 p-6 bg-blue-50 rounded-lg border border-blue-200">
+                <h3 className="text-xl font-bold text-blue-900 mb-4">Your Personalized Summary</h3>
+                <div className="text-sm text-gray-800 space-y-4">
+                  <ReactMarkdown
+                    remarkPlugins={[remarkGfm]}
+                    components={{
+                      p: ({node, ...props}) => <p className="leading-relaxed" {...props} />,
+                      ul: ({node, ...props}) => <ul className="list-disc list-inside space-y-1" {...props} />,
+                      strong: ({node, ...props}) => <strong className="font-semibold text-blue-900" {...props} />,
+                    }}
+                  >
+                    {aiSummary}
+                  </ReactMarkdown>
+                </div>
               </div>
-            </div>
+              {chartData && chartData.debtReductionData && (
+                 <div className="mt-8">
+                    <DebtReductionChart data={chartData.debtReductionData} />
+                 </div>
+              )}
+            </>
           ) : (
             <div className="bg-blue-50 rounded-lg p-6 my-8 text-sm text-gray-700 text-left">
               <strong className="text-blue-900 block mb-2">What's next?</strong>
