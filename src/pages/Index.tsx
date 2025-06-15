@@ -1,9 +1,9 @@
 import LandingSection from "./index/LandingSection";
 import AssessmentStepper from "./index/AssessmentStepper";
-import { useAssessmentState, questions } from "./index/assessmentHooks";
+import { useAssessmentState, questions, PRELOADED_EXPENSE_CATEGORIES } from "./index/assessmentHooks";
 import { supabase } from "@/integrations/supabase/client";
 import { useEffect, useState } from "react";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { useToast } from "@/components/ui/use-toast";
 import { type Database } from "@/integrations/supabase/types";
 import { Link } from "react-router-dom";
@@ -17,6 +17,29 @@ export default function Index() {
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [username, setUsername] = useState<string | null>(null);
   const [aiSummary, setAiSummary] = useState<string | null>(null);
+  const [usernameToFetch, setUsernameToFetch] = useState<string | null>(null);
+
+  const { data: existingAssessment, isLoading: isLoadingAssessment, isSuccess: isFetchSuccess } = useQuery({
+    queryKey: ['assessment', usernameToFetch],
+    queryFn: async () => {
+      if (!usernameToFetch) return null;
+      const { data, error } = await supabase
+        .from('assessments')
+        .select('*')
+        .eq('username', usernameToFetch)
+        .order('created_at', { ascending: false })
+        .limit(1)
+        .maybeSingle();
+
+      if (error) {
+        toast({ title: "Error fetching assessment", description: error.message, variant: 'destructive' });
+        return null;
+      }
+      return data;
+    },
+    enabled: !!usernameToFetch,
+    retry: false,
+  });
 
   const isComplete = assessment.step >= questions.length;
 
@@ -87,17 +110,40 @@ export default function Index() {
     }
   }, [isComplete, isSubmitted, isSaving, saveAssessment, assessmentData, username]);
 
+  useEffect(() => {
+    if (isFetchSuccess && usernameToFetch) {
+        if (existingAssessment) {
+            const typedAssessment = existingAssessment;
+            assessment.setEmploymentStatus(typedAssessment.employment_status ?? undefined);
+            assessment.setHasRegularIncome(typedAssessment.has_regular_income ?? undefined);
+            assessment.setIncomeSources((typedAssessment.income_sources as any) || [{ category: "", amount: "", frequency: "Monthly" }]);
+            assessment.setExpenseItems((typedAssessment.expense_items as any) || PRELOADED_EXPENSE_CATEGORIES.map((c) => ({ category: c, amount: "", frequency: "Weekly" })));
+            assessment.setFinancialKnowledgeLevel(typedAssessment.financial_knowledge_level ?? undefined);
+            assessment.setInvestmentExperience(typedAssessment.investment_experience ?? []);
+            assessment.setOtherGoal(typedAssessment.other_goal ?? "");
+            assessment.setGoalTimeframe(typedAssessment.goal_timeframe ?? undefined);
+            assessment.setDebtTypes(typedAssessment.debt_types ?? []);
+            assessment.setDebtDetails((typedAssessment.debt_details as any) || []);
+            assessment.setDebtManagementConfidence(typedAssessment.debt_management_confidence ?? undefined);
+            assessment.setFreeTextComments(typedAssessment.free_text_comments ?? "");
+
+            toast({ title: "Welcome back!", description: "We've pre-filled your previous assessment data." });
+        }
+        setUsername(usernameToFetch);
+        assessment.setShowAssessment(true);
+        setUsernameToFetch(null);
+    }
+  }, [isFetchSuccess, usernameToFetch, existingAssessment, assessment, toast]);
 
   const handleStartAssessment = (goal: string, newUsername: string) => {
     assessment.setGoals([goal]);
-    setUsername(newUsername);
-    assessment.setShowAssessment(true);
+    setUsernameToFetch(newUsername);
   };
   
   if (!assessment.showAssessment) {
     return (
       <div className="relative min-h-screen">
-        <LandingSection onStartAssessment={handleStartAssessment} />
+        <LandingSection onStartAssessment={handleStartAssessment} isLoading={isLoadingAssessment} />
         <div className="absolute bottom-4 right-4">
             <Button asChild variant="outline">
                 <Link to="/ask-ai">Ask our AI</Link>

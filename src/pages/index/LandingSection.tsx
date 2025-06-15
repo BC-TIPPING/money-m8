@@ -1,8 +1,8 @@
-
 import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
+import { Loader2 } from "lucide-react";
 
 const goalPanels = [
   { title: "Buy a house", description: "Turn your dream of homeownership into a reality with a solid plan.", emoji: "🏠" },
@@ -14,7 +14,7 @@ const goalPanels = [
   { title: "Pay off home loan sooner", description: "Learn strategies to clear your mortgage faster and save thousands.", emoji: "🏡" },
 ];
 
-const LandingSection = ({ onStartAssessment }: { onStartAssessment: (goal: string, username: string) => void }) => {
+const LandingSection = ({ onStartAssessment, isLoading }: { onStartAssessment: (goal: string, username: string) => void; isLoading: boolean; }) => {
   const [selectedGoal, setSelectedGoal] = useState<string | null>(null);
   const [username, setUsername] = useState('');
 
@@ -70,9 +70,16 @@ const LandingSection = ({ onStartAssessment }: { onStartAssessment: (goal: strin
               onStartAssessment(selectedGoal, username);
             }
           }}
-          disabled={!selectedGoal || !username}
+          disabled={!selectedGoal || !username || isLoading}
         >
-          Let's have a look
+          {isLoading ? (
+            <>
+              <Loader2 className="mr-2 h-6 w-6 animate-spin" />
+              Loading...
+            </>
+          ) : (
+            "Let's have a look"
+          )}
         </Button>
         {(!selectedGoal || !username) && <p className="text-white/70 mt-4 animate-pulse">Please select a goal and enter your name to continue</p>}
       </main>
