@@ -1,3 +1,4 @@
+
 import LandingSection from "./index/LandingSection";
 import AssessmentStepper from "./index/AssessmentStepper";
 import { useAssessmentState, questions } from "./index/assessmentHooks";
@@ -105,6 +106,7 @@ export default function Index() {
   };
 
   const handleContinueAnonymous = () => {
+    console.log('Continue anonymous clicked');
     setShowSavePrompt(false);
   };
 
@@ -151,7 +153,12 @@ export default function Index() {
                 <Save className="mr-2 h-4 w-4" />
                 Save Results (Create Account)
               </Button>
-              <Button onClick={handleContinueAnonymous} variant="outline" className="w-full">
+              <Button 
+                onClick={handleContinueAnonymous} 
+                variant="outline" 
+                className="w-full"
+                type="button"
+              >
                 Continue Without Saving
               </Button>
             </CardFooter>
