@@ -4,7 +4,7 @@ import AssessmentStepper from "./index/AssessmentStepper";
 import { useAssessmentState, questions } from "./index/assessmentHooks";
 import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Loader2, LogIn, LogOut, FileText } from "lucide-react";
+import { Loader2, LogIn, LogOut, FileText, Save } from "lucide-react";
 import { useAssessmentData } from "./index/hooks/useAssessmentData";
 import InterestSavedChart from "./index/InterestSavedChart";
 import DebtReductionChart from "./index/DebtReductionChart";
@@ -12,7 +12,7 @@ import BudgetPlanner from "./index/budget-planner";
 import { Card, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { calculateMonthlyAmount, calculateAustralianIncomeTax } from "@/lib/financialCalculations";
 import { useAuth } from "@/contexts/AuthContext";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { jsPDF } from "jspdf";
 import html2canvas from "html2canvas";
 
@@ -22,6 +22,7 @@ export default function Index() {
   const assessment = useAssessmentState();
   const { user, signOut } = useAuth();
   const navigate = useNavigate();
+  const [showSavePrompt, setShowSavePrompt] = useState(false);
 
   const {
     aiSummary,
@@ -36,25 +37,29 @@ export default function Index() {
   } = useAssessmentData(assessment);
 
   const handleStartAssessment = (goal: string) => {
-    if (!user) {
-      localStorage.setItem('selectedGoal', goal);
-      navigate('/auth');
-      return;
-    }
+    // Allow anonymous users to start assessment immediately
     assessment.setGoals([goal]);
     assessment.setShowAssessment(true);
   };
   
+  // Remove the localStorage goal handling since we're allowing anonymous access
   useEffect(() => {
     if (user) {
-        const goal = localStorage.getItem('selectedGoal');
-        if (goal) {
-            assessment.setGoals([goal]);
-            assessment.setShowAssessment(true);
-            localStorage.removeItem('selectedGoal');
-        }
+      const goal = localStorage.getItem('selectedGoal');
+      if (goal) {
+        assessment.setGoals([goal]);
+        assessment.setShowAssessment(true);
+        localStorage.removeItem('selectedGoal');
+      }
     }
   }, [user, assessment]);
+
+  // Show save prompt when assessment is complete and user is not logged in
+  useEffect(() => {
+    if (isComplete && !user && !showSavePrompt) {
+      setShowSavePrompt(true);
+    }
+  }, [isComplete, user, showSavePrompt]);
 
   const handleExportToPDF = () => {
     const input = document.getElementById('export-content');
@@ -63,13 +68,10 @@ export default function Index() {
       return;
     };
 
-    // We make the background white because html2canvas default is transparent
-    // and when saving a PNG from canvas with transparent background, it can become black.
     const originalBackgroundColor = input.style.backgroundColor;
     input.style.backgroundColor = 'white';
 
     html2canvas(input, { scale: 2, useCORS: true }).then((canvas) => {
-      // Restore original background color
       input.style.backgroundColor = originalBackgroundColor;
 
       const imgData = canvas.toDataURL('image/png');
@@ -99,6 +101,14 @@ export default function Index() {
     });
   };
 
+  const handleSaveResults = () => {
+    navigate('/auth');
+  };
+
+  const handleContinueAnonymous = () => {
+    setShowSavePrompt(false);
+  };
+
   const hasDebtGoal = assessment.goals.some(g => DEBT_GOALS.includes(g));
 
   const totalMonthlyGrossIncome = calculateMonthlyAmount(assessment.incomeSources);
@@ -126,6 +136,29 @@ export default function Index() {
           <Link to="/ask-ai">Ask our AI</Link>
         </Button>
       </div>
+
+      {/* Save Results Prompt for Anonymous Users */}
+      {showSavePrompt && !user && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <Card className="w-full max-w-md">
+            <CardHeader>
+              <CardTitle>Save Your Results?</CardTitle>
+              <CardDescription>
+                Your assessment is complete! Would you like to create an account to save your results and access them later?
+              </CardDescription>
+            </CardHeader>
+            <CardFooter className="flex flex-col gap-2">
+              <Button onClick={handleSaveResults} className="w-full">
+                <Save className="mr-2 h-4 w-4" />
+                Save Results (Create Account)
+              </Button>
+              <Button onClick={handleContinueAnonymous} variant="outline" className="w-full">
+                Continue Without Saving
+              </Button>
+            </CardFooter>
+          </Card>
+        </div>
+      )}
 
       {!assessment.showAssessment ? (
         <LandingSection onStartAssessment={handleStartAssessment} isLoading={isLoadingAssessment} />
@@ -189,21 +222,26 @@ export default function Index() {
           {isComplete && (
               <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-20 w-full max-w-sm px-4">
                   <div className="flex flex-col items-center gap-4">
-                      {aiSummary && (
-                          <Button onClick={handleExportToPDF} variant="outline" className="shadow-lg bg-background w-full">
-                            <FileText className="mr-2 h-4 w-4" />
-                            Export to PDF
-                          </Button>
-                      )}
-                      {aiSummary && (
+                      <Button onClick={handleExportToPDF} variant="outline" className="shadow-lg bg-background w-full">
+                        <FileText className="mr-2 h-4 w-4" />
+                        Export to PDF
+                      </Button>
+                      {!user && (
                           <Button 
-                              onClick={handleStartOver}
-                              variant="outline"
-                              className="shadow-lg bg-background w-full"
+                              onClick={handleSaveResults}
+                              className="shadow-lg w-full"
                           >
-                              Start Over
+                              <Save className="mr-2 h-4 w-4" />
+                              Save Results
                           </Button>
                       )}
+                      <Button
+                          onClick={handleStartOver}
+                          variant="outline"
+                          className="shadow-lg bg-background w-full"
+                      >
+                          Start Over
+                      </Button>
                       <Button
                           onClick={handleChangeGoal}
                           variant="outline"

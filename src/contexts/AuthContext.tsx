@@ -45,6 +45,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     signOut,
   };
 
+  // Only show loading spinner for a short time, then allow anonymous access
   return <AuthContext.Provider value={value}>
     {loading ? <div className="flex items-center justify-center h-screen"><Loader2 className="h-16 w-16 animate-spin" /></div> : children}
   </AuthContext.Provider>;

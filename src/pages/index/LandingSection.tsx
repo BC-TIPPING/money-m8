@@ -3,7 +3,6 @@ import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
 import { Loader2 } from "lucide-react";
-import { useAuth } from "@/contexts/AuthContext";
 
 const goalPanels = [
   { title: "Buy a house", description: "Turn your dream of homeownership into a reality with a solid plan.", emoji: "🏠" },
@@ -18,7 +17,6 @@ const goalPanels = [
 
 const LandingSection = ({ onStartAssessment, isLoading }: { onStartAssessment: (goal: string) => void; isLoading: boolean; }) => {
   const [selectedGoal, setSelectedGoal] = useState<string | null>(null);
-  const { user } = useAuth();
 
   return (
     <div className="w-full min-h-screen relative flex flex-col items-center justify-center overflow-hidden bg-gradient-to-br from-[#202336] via-[#28365a] to-[#191d29]">
@@ -37,7 +35,7 @@ const LandingSection = ({ onStartAssessment, isLoading }: { onStartAssessment: (
           Get a clear picture of your finances
         </div>
         <div className="text-lg md:text-xl text-white/80 mb-4 mt-2 max-w-2xl text-center drop-shadow font-medium">
-          Select your primary goal to get started
+          Select your primary goal to get started - no sign up required!
         </div>
         <section className="w-full max-w-3xl mb-8 px-14">
           <Carousel opts={{ align: "center", loop: false }} className="w-full">
@@ -73,13 +71,14 @@ const LandingSection = ({ onStartAssessment, isLoading }: { onStartAssessment: (
               <Loader2 className="mr-2 h-6 w-6 animate-spin" />
               Loading...
             </>
-          ) : user ? (
-            "Let's have a look"
           ) : (
-            "Login to Start"
+            "Start Assessment"
           )}
         </Button>
         {!selectedGoal && <p className="text-white/70 mt-4 animate-pulse">Please select a goal to continue</p>}
+        <p className="text-white/60 mt-6 text-sm text-center max-w-lg">
+          Try our assessment anonymously or <span className="underline">sign in</span> to save your results for later
+        </p>
       </main>
       <footer className="mt-12 mb-6 text-sm text-white/60 z-10 text-center">
         &copy; {new Date().getFullYear()} ClearFin.AI&nbsp;&nbsp;|&nbsp;&nbsp;Financial clarity for Australians
