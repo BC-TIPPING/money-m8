@@ -1,4 +1,3 @@
-
 import LandingSection from "./index/LandingSection";
 import AssessmentStepper from "./index/AssessmentStepper";
 import { useAssessmentState, questions } from "./index/assessmentHooks";
@@ -107,7 +106,10 @@ export default function Index() {
     navigate('/auth');
   };
 
-  const handleContinueAnonymous = () => {
+  const handleContinueAnonymous = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    console.log('Continue anonymous clicked');
     setShowSavePrompt(false);
   };
 
@@ -141,8 +143,8 @@ export default function Index() {
 
       {/* Save Results Prompt for Anonymous Users */}
       {showSavePrompt && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-          <Card className="w-full max-w-md">
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-[100] p-4">
+          <Card className="w-full max-w-md relative z-[101]">
             <CardHeader>
               <CardTitle>Save Your Results?</CardTitle>
               <CardDescription>
@@ -155,6 +157,7 @@ export default function Index() {
                 Save Results (Create Account)
               </Button>
               <Button 
+                type="button"
                 onClick={handleContinueAnonymous} 
                 variant="outline" 
                 className="w-full"
