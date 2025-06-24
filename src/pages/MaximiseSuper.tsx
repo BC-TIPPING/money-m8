@@ -1,254 +1,231 @@
 
-import { useState } from "react";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import * as z from "zod";
+import React, { useState } from 'react';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { Link } from "react-router-dom";
-import { ArrowLeft, AlertCircle } from "lucide-react";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { Label } from "@/components/ui/label";
+import { ArrowLeft, Calculator, TrendingUp } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import SuperannuationChart from './SuperannuationChart';
 
-const formSchema = z.object({
-  grossAnnualIncome: z.coerce.number({ required_error: "Gross annual income is required." }).min(1, "Income must be positive."),
-  extraContribution: z.coerce.number().min(0, "Extra contribution cannot be negative.").default(0),
-  contributionFrequency: z.enum(["weekly", "fortnightly", "monthly", "yearly"]).default("monthly"),
-});
+export default function MaximiseSuper() {
+  const [currentAge, setCurrentAge] = useState(30);
+  const [retirementAge, setRetirementAge] = useState(67);
+  const [currentBalance, setCurrentBalance] = useState(50000);
+  const [currentSalary, setCurrentSalary] = useState(80000);
+  const [additionalContributions, setAdditionalContributions] = useState(2000);
+  const [salaryPackaging, setSalaryPackaging] = useState(0);
 
-type CalculatorFormValues = z.infer<typeof formSchema>;
-
-interface CalculationResult {
-  employerContribution: number;
-  annualExtraContribution: number;
-  totalConcessionalContribution: number;
-  roomToContribute: number;
-  capExceeded: boolean;
-  incomeTaxSaved: number;
-  netBenefit: number;
-  weeklyTaxDecrease: number;
-}
-
-const SUPER_GUARANTEE_RATE = 0.12;
-const CONCESSIONAL_CAP = 27500;
-const SUPER_CONTRIBUTION_TAX = 0.15;
-
-const calculateIncomeTax = (income: number) => {
-  let tax = 0;
-  // Note: Using 2023-24 tax brackets. These are subject to change.
-  if (income > 180000) {
-    tax += (income - 180000) * 0.45;
-    income = 180000;
-  }
-  if (income > 120000) {
-    tax += (income - 120000) * 0.37;
-    income = 120000;
-  }
-  if (income > 45000) {
-    tax += (income - 45000) * 0.325;
-    income = 45000;
-  }
-  if (income > 18200) {
-    tax += (income - 18200) * 0.19;
-  }
-  return tax;
-};
-
-
-const calculateSuperDetails = (values: CalculatorFormValues): CalculationResult => {
-  const { grossAnnualIncome, extraContribution, contributionFrequency } = values;
-
-  const employerContribution = grossAnnualIncome * SUPER_GUARANTEE_RATE;
-
-  let annualExtraContribution = 0;
-  switch (contributionFrequency) {
-    case 'weekly':
-      annualExtraContribution = extraContribution * 52;
-      break;
-    case 'fortnightly':
-      annualExtraContribution = extraContribution * 26;
-      break;
-    case 'monthly':
-      annualExtraContribution = extraContribution * 12;
-      break;
-    case 'yearly':
-    default:
-      annualExtraContribution = extraContribution;
-      break;
-  }
-
-  const totalConcessionalContribution = employerContribution + annualExtraContribution;
-  const roomToContribute = CONCESSIONAL_CAP - totalConcessionalContribution;
-  const capExceeded = totalConcessionalContribution > CONCESSIONAL_CAP;
-
-  // Tax calculations for salary sacrifice
-  const taxBefore = calculateIncomeTax(grossAnnualIncome);
-  const newTaxableIncome = grossAnnualIncome - annualExtraContribution;
-  const taxAfter = calculateIncomeTax(newTaxableIncome);
-
-  const incomeTaxSaved = taxBefore - taxAfter;
-  const taxOnSuperContribution = annualExtraContribution * SUPER_CONTRIBUTION_TAX;
-  const netBenefit = incomeTaxSaved - taxOnSuperContribution;
-  const weeklyTaxDecrease = incomeTaxSaved / 52;
-
-  return {
-    employerContribution,
-    annualExtraContribution,
-    totalConcessionalContribution,
-    roomToContribute,
-    capExceeded,
-    incomeTaxSaved,
-    netBenefit,
-    weeklyTaxDecrease,
-  };
-};
-
-const formatCurrency = (value: number) => value.toLocaleString('en-AU', { style: 'currency', currency: 'AUD', minimumFractionDigits: 0 });
-
-export default function MaximiseSuperPage() {
-    const [results, setResults] = useState<CalculationResult | null>(null);
-
-    const form = useForm<CalculatorFormValues>({
-        resolver: zodResolver(formSchema),
-        defaultValues: {
-            grossAnnualIncome: 80000,
-            extraContribution: 0,
-            contributionFrequency: "monthly",
-        },
-    });
-
-    function onSubmit(values: CalculatorFormValues) {
-        const result = calculateSuperDetails(values);
-        setResults(result);
+  // Calculate projections
+  const yearsToRetirement = retirementAge - currentAge;
+  const compulsoryRate = 0.115; // 11.5%
+  const returnRate = 0.07; // 7% average return
+  
+  // Calculate final balances
+  const calculateFinalBalance = (extraContributions: number) => {
+    let balance = currentBalance;
+    for (let year = 0; year < yearsToRetirement; year++) {
+      const compulsoryContribution = currentSalary * compulsoryRate;
+      balance = balance * (1 + returnRate) + compulsoryContribution + extraContributions;
     }
+    return balance;
+  };
+  
+  const balanceWithoutExtra = calculateFinalBalance(0);
+  const balanceWithExtra = calculateFinalBalance(additionalContributions);
+  const extraBenefit = balanceWithExtra - balanceWithoutExtra;
+  
+  // Calculate tax savings
+  const marginalTaxRate = currentSalary > 120000 ? 0.37 : currentSalary > 45000 ? 0.325 : 0.19;
+  const superTaxRate = 0.15;
+  const taxSavingsPerYear = (additionalContributions + salaryPackaging) * (marginalTaxRate - superTaxRate);
+  const totalTaxSavings = taxSavingsPerYear * yearsToRetirement;
 
-    return (
-        <div className="container mx-auto px-4 py-8">
-            <div className="mb-6">
-                <Button asChild variant="ghost">
-                    <Link to="/"><ArrowLeft className="mr-2 h-4 w-4" /> Back to Dashboard</Link>
-                </Button>
-            </div>
-            <div className="grid gap-8 md:grid-cols-2">
-                <Card>
-                    <CardHeader>
-                        <CardTitle>Superannuation Contribution Calculator</CardTitle>
-                        <CardDescription>See how extra contributions can boost your retirement savings and lower your tax.</CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                        <Form {...form}>
-                            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-                                <FormField
-                                    control={form.control}
-                                    name="grossAnnualIncome"
-                                    render={({ field }) => (
-                                        <FormItem>
-                                            <FormLabel>Gross Annual Income ($)</FormLabel>
-                                            <FormControl>
-                                                <Input type="number" placeholder="e.g. 80000" {...field} />
-                                            </FormControl>
-                                            <FormMessage />
-                                        </FormItem>
-                                    )}
-                                />
-                                <FormField
-                                    control={form.control}
-                                    name="extraContribution"
-                                    render={({ field }) => (
-                                        <FormItem>
-                                            <FormLabel>Additional Contribution ($)</FormLabel>
-                                            <FormControl>
-                                                <Input type="number" placeholder="e.g. 200" {...field} />
-                                            </FormControl>
-                                            <FormMessage />
-                                        </FormItem>
-                                    )}
-                                />
-                                <FormField
-                                    control={form.control}
-                                    name="contributionFrequency"
-                                    render={({ field }) => (
-                                        <FormItem>
-                                            <FormLabel>Contribution Frequency</FormLabel>
-                                            <Select onValueChange={field.onChange} defaultValue={field.value}>
-                                                <FormControl>
-                                                    <SelectTrigger>
-                                                        <SelectValue placeholder="Select frequency" />
-                                                    </SelectTrigger>
-                                                </FormControl>
-                                                <SelectContent>
-                                                    <SelectItem value="weekly">Weekly</SelectItem>
-                                                    <SelectItem value="fortnightly">Fortnightly</SelectItem>
-                                                    <SelectItem value="monthly">Monthly</SelectItem>
-                                                    <SelectItem value="yearly">Yearly</SelectItem>
-                                                </SelectContent>
-                                            </Select>
-                                            <FormMessage />
-                                        </FormItem>
-                                    )}
-                                />
-                                <Button type="submit" className="w-full">Calculate</Button>
-                            </form>
-                        </Form>
-                    </CardContent>
-                </Card>
-
-                {results && (
-                     <Card className="bg-sky-50">
-                        <CardHeader>
-                            <CardTitle className="text-sky-800">Your Super Potential 💰</CardTitle>
-                        </CardHeader>
-                        <CardContent className="space-y-4 text-sky-700">
-                             <div>
-                                <p className="text-lg font-semibold">Net Annual Benefit</p>
-                                <p className="text-2xl font-bold">{formatCurrency(results.netBenefit)}</p>
-                                <p className="text-sm">This is your tax saving minus the 15% tax on contributions.</p>
-                            </div>
-                            <div>
-                                <p className="text-lg font-semibold">Weekly Tax Reduction</p>
-                                <p className="text-2xl font-bold">{formatCurrency(results.weeklyTaxDecrease)}</p>
-                                <p className="text-sm">The amount of income tax saved from your pay each week.</p>
-                            </div>
-
-                            <div className="pt-4 border-t border-sky-200 space-y-2">
-                                <p><strong>Employer Contribution (est.):</strong> {formatCurrency(results.employerContribution)}</p>
-                                <p><strong>Your Additional Contribution (annual):</strong> {formatCurrency(results.annualExtraContribution)}</p>
-                                <p className="font-bold"><strong>Total Annual Contribution:</strong> {formatCurrency(results.totalConcessionalContribution)}</p>
-                                <p><strong>Concessional Cap:</strong> {formatCurrency(CONCESSIONAL_CAP)}</p>
-                                {results.capExceeded ? (
-                                     <Alert variant="destructive">
-                                        <AlertCircle className="h-4 w-4" />
-                                        <AlertTitle>Warning</AlertTitle>
-                                        <AlertDescription>
-                                            Your total contributions exceed the concessional cap. Additional tax may apply.
-                                        </AlertDescription>
-                                    </Alert>
-                                ) : (
-                                    <p><strong>Room remaining in cap:</strong> {formatCurrency(results.roomToContribute > 0 ? results.roomToContribute : 0)}</p>
-                                )}
-                            </div>
-                             <div className="pt-4 text-xs text-slate-500">
-                                <p>Disclaimer: Calculations are estimates based on 2023/24 income tax rates, a 12% Super Guarantee, and a $27,500 concessional contributions cap. These figures are subject to change. This is not financial advice.</p>
-                            </div>
-                        </CardContent>
-                    </Card>
-                )}
-            </div>
+  return (
+    <div className="min-h-screen bg-gray-50 py-8">
+      <div className="container mx-auto px-4 max-w-6xl">
+        <div className="mb-6">
+          <Button asChild variant="outline" className="mb-4">
+            <Link to="/">
+              <ArrowLeft className="mr-2 h-4 w-4" />
+              Back to Assessment
+            </Link>
+          </Button>
+          <h1 className="text-3xl font-bold text-gray-900 mb-2">Maximise Your Super 💰</h1>
+          <p className="text-gray-600">
+            Discover how extra super contributions can boost your retirement savings and reduce your tax.
+          </p>
         </div>
-    );
+
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          {/* Input Panel */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Calculator className="h-5 w-5" />
+                Your Details
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div>
+                <Label htmlFor="currentAge">Current Age</Label>
+                <Input
+                  id="currentAge"
+                  type="number"
+                  value={currentAge}
+                  onChange={(e) => setCurrentAge(Number(e.target.value))}
+                />
+              </div>
+              <div>
+                <Label htmlFor="retirementAge">Retirement Age</Label>
+                <Input
+                  id="retirementAge"
+                  type="number"
+                  value={retirementAge}
+                  onChange={(e) => setRetirementAge(Number(e.target.value))}
+                />
+              </div>
+              <div>
+                <Label htmlFor="currentBalance">Current Super Balance</Label>
+                <Input
+                  id="currentBalance"
+                  type="number"
+                  value={currentBalance}
+                  onChange={(e) => setCurrentBalance(Number(e.target.value))}
+                />
+              </div>
+              <div>
+                <Label htmlFor="currentSalary">Current Salary</Label>
+                <Input
+                  id="currentSalary"
+                  type="number"
+                  value={currentSalary}
+                  onChange={(e) => setCurrentSalary(Number(e.target.value))}
+                />
+              </div>
+              <div>
+                <Label htmlFor="additionalContributions">Extra Annual Contributions</Label>
+                <Input
+                  id="additionalContributions"
+                  type="number"
+                  value={additionalContributions}
+                  onChange={(e) => setAdditionalContributions(Number(e.target.value))}
+                />
+              </div>
+              <div>
+                <Label htmlFor="salaryPackaging">Salary Packaging to Super</Label>
+                <Input
+                  id="salaryPackaging"
+                  type="number"
+                  value={salaryPackaging}
+                  onChange={(e) => setSalaryPackaging(Number(e.target.value))}
+                />
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Results Panel */}
+          <Card className="lg:col-span-2">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <TrendingUp className="h-5 w-5" />
+                Your Super Projection
+              </CardTitle>
+              <CardDescription>
+                See how your super will grow with and without extra contributions
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <SuperannuationChart
+                currentAge={currentAge}
+                retirementAge={retirementAge}
+                currentBalance={currentBalance}
+                currentSalary={currentSalary}
+                additionalContributions={additionalContributions}
+              />
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Summary Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-6">
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-lg">Extra Retirement Benefit</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="text-3xl font-bold text-green-600">
+                ${extraBenefit.toLocaleString('en-US', { maximumFractionDigits: 0 })}
+              </p>
+              <p className="text-sm text-gray-600 mt-2">
+                Additional super balance at retirement
+              </p>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-lg">Annual Tax Savings</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="text-3xl font-bold text-blue-600">
+                ${taxSavingsPerYear.toLocaleString('en-US', { maximumFractionDigits: 0 })}
+              </p>
+              <p className="text-sm text-gray-600 mt-2">
+                Tax you'll save each year
+              </p>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-lg">Total Tax Savings</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="text-3xl font-bold text-purple-600">
+                ${totalTaxSavings.toLocaleString('en-US', { maximumFractionDigits: 0 })}
+              </p>
+              <p className="text-sm text-gray-600 mt-2">
+                Lifetime tax savings to retirement
+              </p>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Recommendations */}
+        <Card className="mt-6">
+          <CardHeader>
+            <CardTitle>Recommendations</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-4">
+              <div className="p-4 bg-green-50 rounded-lg">
+                <h3 className="font-semibold text-green-900 mb-2">Salary Sacrifice Strategy</h3>
+                <p className="text-green-800 text-sm">
+                  Consider salary sacrificing ${(additionalContributions / 12).toFixed(0)} per month to super. 
+                  This reduces your taxable income and boosts your retirement savings.
+                </p>
+              </div>
+              
+              <div className="p-4 bg-blue-50 rounded-lg">
+                <h3 className="font-semibold text-blue-900 mb-2">Concessional Contribution Limits</h3>
+                <p className="text-blue-800 text-sm">
+                  The annual concessional contribution limit is $27,500 (2024-25). 
+                  Your employer contributions plus salary sacrifice should not exceed this amount.
+                </p>
+              </div>
+              
+              <div className="p-4 bg-purple-50 rounded-lg">
+                <h3 className="font-semibold text-purple-900 mb-2">Government Co-contribution</h3>
+                <p className="text-purple-800 text-sm">
+                  If you earn less than $58,445, you may be eligible for government co-contributions 
+                  of up to $500 when you make after-tax contributions to super.
+                </p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    </div>
+  );
 }

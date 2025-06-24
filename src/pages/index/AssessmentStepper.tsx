@@ -1,3 +1,4 @@
+
 import React from "react";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, ArrowLeft, Loader2 } from "lucide-react";
@@ -80,7 +81,6 @@ interface AssessmentStepperProps {
 }
 
 const AssessmentStepper: React.FC<AssessmentStepperProps> = (props) => {
-  // ... keep handler utilities from original Index.tsx (getCurrentValue, income/expense manipulation) ...
   const {
     uploadedFile, setUploadedFile, fileInputRef, expenseItems, setExpenseItems,
     step, setStep, showAssessment, setShowAssessment,
@@ -108,6 +108,7 @@ const AssessmentStepper: React.FC<AssessmentStepperProps> = (props) => {
           loanAmount: "",
           balance: "",
           repayments: "",
+          repaymentFrequency: "Monthly",
           interestRate: "",
         };
       });
@@ -235,8 +236,6 @@ const AssessmentStepper: React.FC<AssessmentStepperProps> = (props) => {
   const currentMilestoneIdx = pastGoalsStep
     ? 0
     : step;
-
-  // ... renderQuestion (entire switch/case) logic from main file ...
 
   const renderQuestion = (question: typeof questionsWithUpload[0]) => {
     if (question.type === "upload") {
@@ -599,7 +598,7 @@ const AssessmentStepper: React.FC<AssessmentStepperProps> = (props) => {
                         />
                       </div>
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Repayments</label>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Repayment Amount</label>
                         <Input
                           placeholder="e.g. 400"
                           type="number"
@@ -607,6 +606,24 @@ const AssessmentStepper: React.FC<AssessmentStepperProps> = (props) => {
                           value={detail.repayments}
                           onChange={e => handleDebtDetailChange(idx, "repayments", e.target.value)}
                         />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Repayment Frequency</label>
+                        <Select
+                          value={detail.repaymentFrequency}
+                          onValueChange={(value) => handleDebtDetailChange(idx, "repaymentFrequency", value)}
+                        >
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select frequency" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {INCOME_FREQUENCIES.map((freq) => (
+                              <SelectItem key={freq} value={freq}>
+                                {freq}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
                       </div>
                       <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1">Interest Rate (%)</label>

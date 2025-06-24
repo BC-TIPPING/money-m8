@@ -15,6 +15,8 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useEffect, useState } from "react";
 import { jsPDF } from "jspdf";
 import html2canvas from "html2canvas";
+import HouseBuyingCalculator from "./index/HouseBuyingCalculator";
+import ActionItemsSection from "./index/ActionItemsSection";
 
 const DEBT_GOALS = ['Pay off home loan sooner', 'Reduce debt'];
 
@@ -106,7 +108,6 @@ export default function Index() {
   };
 
   const handleContinueAnonymous = () => {
-    console.log('Continue anonymous clicked');
     setShowSavePrompt(false);
   };
 
@@ -139,7 +140,7 @@ export default function Index() {
       </div>
 
       {/* Save Results Prompt for Anonymous Users */}
-      {showSavePrompt && !user && (
+      {showSavePrompt && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
           <Card className="w-full max-w-md">
             <CardHeader>
@@ -157,7 +158,6 @@ export default function Index() {
                 onClick={handleContinueAnonymous} 
                 variant="outline" 
                 className="w-full"
-                type="button"
               >
                 Continue Without Saving
               </Button>
@@ -180,6 +180,13 @@ export default function Index() {
             />
             {isComplete && (
                 <div className="container mx-auto grid gap-6 px-4 py-6 sm:px-6 lg:grid-cols-2 lg:px-8">
+                    {assessment.goals.includes('Buy a house') && (
+                        <HouseBuyingCalculator 
+                          assessmentData={assessment}
+                          totalMonthlyNetIncome={totalMonthlyNetIncome}
+                          totalAnnualGrossIncome={totalAnnualGrossIncome}
+                        />
+                    )}
                     {assessment.goals.includes('Pay off home loan sooner') && (
                         <Card>
                             <CardHeader>
@@ -211,6 +218,7 @@ export default function Index() {
                     )}
                     {chartData?.debtReductionData && <DebtReductionChart data={chartData.debtReductionData} />}
                     {chartData?.interestSavedData && <InterestSavedChart data={chartData.interestSavedData} />}
+                    <ActionItemsSection assessmentData={assessment} />
                 </div>
             )}
           </div>

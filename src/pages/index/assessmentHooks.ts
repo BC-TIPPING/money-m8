@@ -7,6 +7,7 @@ export type DebtDetail = {
   loanAmount: string;
   balance: string;
   repayments: string;
+  repaymentFrequency: string;
   interestRate: string;
 };
 
