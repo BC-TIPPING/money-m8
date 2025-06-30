@@ -6,7 +6,7 @@ import { PiggyBank, TrendingUp } from 'lucide-react';
 import { BudgetListRow } from './BudgetListRow';
 import { BudgetSummaryComponent } from './BudgetSummaryComponent';
 import { BudgetGoalForm } from './BudgetGoalForm';
-import { BUDGET_CATEGORY_INFO } from '@/lib/budgetCategories';
+import { BUDGET_CATEGORIES } from '@/lib/budgetCategories';
 import { calculateMonthlyAmount } from '@/lib/financialCalculations';
 
 interface BudgetPlannerProps {
@@ -42,8 +42,16 @@ const BudgetPlanner: React.FC<BudgetPlannerProps> = ({ expenseItems, totalMonthl
         goalAmount: calculateMonthlyAmount([item]).toString()
       }));
 
+    // Create category info map from BUDGET_CATEGORIES
     const categoryInfoMap = new Map(
-      Object.entries(BUDGET_CATEGORY_INFO || {}).map(([key, value]) => [key, value])
+      BUDGET_CATEGORIES.map(category => [
+        category.category,
+        {
+          minPercent: category.minPercent,
+          maxPercent: category.maxPercent,
+          notes: category.notes
+        }
+      ])
     );
 
     const handleGoalChange = (index: number, value: string) => {
