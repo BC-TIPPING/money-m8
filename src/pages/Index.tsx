@@ -24,6 +24,7 @@ export default function Index() {
   const { user, signOut } = useAuth();
   const navigate = useNavigate();
   const [showSavePrompt, setShowSavePrompt] = useState(false);
+  const [hasDismissedSavePrompt, setHasDismissedSavePrompt] = useState(false);
 
   const {
     aiSummary,
@@ -57,10 +58,10 @@ export default function Index() {
 
   // Show save prompt when assessment is complete and user is not logged in
   useEffect(() => {
-    if (isComplete && !user && !showSavePrompt) {
+    if (isComplete && !user && !showSavePrompt && !hasDismissedSavePrompt) {
       setShowSavePrompt(true);
     }
-  }, [isComplete, user, showSavePrompt]);
+  }, [isComplete, user, showSavePrompt, hasDismissedSavePrompt]);
 
   const handleExportToPDF = () => {
     const input = document.getElementById('export-content');
@@ -111,6 +112,12 @@ export default function Index() {
     e.stopPropagation();
     console.log('Continue anonymous clicked');
     setShowSavePrompt(false);
+    setHasDismissedSavePrompt(true);
+  };
+
+  const handleStartOverWithReset = () => {
+    setHasDismissedSavePrompt(false);
+    handleStartOver();
   };
 
   const hasDebtGoal = assessment.goals.some(g => DEBT_GOALS.includes(g));
@@ -253,7 +260,7 @@ export default function Index() {
                           </Button>
                       )}
                       <Button
-                          onClick={handleStartOver}
+                          onClick={handleStartOverWithReset}
                           variant="outline"
                           className="shadow-lg bg-background w-full"
                       >
