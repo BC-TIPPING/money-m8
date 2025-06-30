@@ -3,9 +3,9 @@ import React, { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { PiggyBank, TrendingUp } from 'lucide-react';
-import BudgetCategoryRow from './BudgetCategoryRow';
-import BudgetSummary from './BudgetSummary';
-import BudgetGoalForm from './BudgetGoalForm';
+import { BudgetCategoryRow } from './BudgetCategoryRow';
+import { BudgetSummary } from './BudgetSummary';
+import { BudgetGoalForm } from './BudgetGoalForm';
 
 interface BudgetPlannerProps {
   expenseItems: Array<{

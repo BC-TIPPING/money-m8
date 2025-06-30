@@ -49,17 +49,12 @@ const AssessmentStepper: React.FC<AssessmentStepperProps> = ({
   if (isComplete) {
     return (
       <AssessmentSummary 
-        generateSummary={generateSummary}
-        isGeneratingSummary={isGeneratingSummary}
-        aiSummary={aiSummary}
-        chartData={chartData}
         {...otherProps}
       />
     );
   }
 
   const currentQuestion = questions[step];
-  const QuestionComponent = currentQuestion.component;
 
   return (
     <div className="container mx-auto max-w-2xl px-4 py-8">
@@ -81,7 +76,10 @@ const AssessmentStepper: React.FC<AssessmentStepperProps> = ({
           )}
         </CardHeader>
         <CardContent className="space-y-6">
-          <QuestionComponent {...otherProps} />
+          <div>
+            {/* Question content will be rendered based on question type */}
+            <p className="text-sm text-muted-foreground">Question type: {currentQuestion.type}</p>
+          </div>
           
           <div className="flex justify-between pt-4">
             <Button 
