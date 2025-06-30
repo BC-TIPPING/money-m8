@@ -3,9 +3,11 @@ import React, { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { PiggyBank, TrendingUp } from 'lucide-react';
-import { BudgetCategoryRow } from './BudgetCategoryRow';
-import { BudgetSummary } from './BudgetSummary';
+import { BudgetListRow } from './BudgetListRow';
+import { BudgetSummaryComponent } from './BudgetSummaryComponent';
 import { BudgetGoalForm } from './BudgetGoalForm';
+import { BUDGET_CATEGORY_INFO } from '@/lib/budgetCategories';
+import { calculateMonthlyAmount } from '@/lib/financialCalculations';
 
 interface BudgetPlannerProps {
   expenseItems: Array<{
@@ -19,12 +21,6 @@ interface BudgetPlannerProps {
 const BudgetPlanner: React.FC<BudgetPlannerProps> = ({ expenseItems, totalMonthlyNetIncome }) => {
   const [budgetItems, setBudgetItems] = useState(expenseItems);
   const [showGoalForm, setShowGoalForm] = useState(false);
-  const [budgetGoals, setBudgetGoals] = useState<Array<{
-    category: string;
-    currentAmount: number;
-    targetAmount: number;
-    priority: 'high' | 'medium' | 'low';
-  }>>([]);
 
   const updateBudgetItem = (index: number, field: string, value: string) => {
     const updatedItems = [...budgetItems];
@@ -37,6 +33,24 @@ const BudgetPlanner: React.FC<BudgetPlannerProps> = ({ expenseItems, totalMonthl
   };
 
   if (showGoalForm) {
+    // Transform budget items to goal expenses format
+    const goalExpenses = budgetItems
+      .filter(item => item.amount && parseFloat(item.amount) > 0)
+      .map(item => ({
+        category: item.category,
+        actualAmount: calculateMonthlyAmount([item]),
+        goalAmount: calculateMonthlyAmount([item]).toString()
+      }));
+
+    const categoryInfoMap = new Map(
+      Object.entries(BUDGET_CATEGORY_INFO || {}).map(([key, value]) => [key, value])
+    );
+
+    const handleGoalChange = (index: number, value: string) => {
+      // This would be handled by the BudgetGoalForm component
+      console.log('Goal changed:', index, value);
+    };
+
     return (
       <Card className="w-full">
         <CardHeader>
@@ -50,12 +64,19 @@ const BudgetPlanner: React.FC<BudgetPlannerProps> = ({ expenseItems, totalMonthl
         </CardHeader>
         <CardContent>
           <BudgetGoalForm 
-            budgetItems={budgetItems}
+            goalExpenses={goalExpenses}
+            handleGoalChange={handleGoalChange}
+            categoryInfoMap={categoryInfoMap}
             totalMonthlyNetIncome={totalMonthlyNetIncome}
-            budgetGoals={budgetGoals}
-            setBudgetGoals={setBudgetGoals}
-            onBack={() => setShowGoalForm(false)}
           />
+          <div className="flex justify-between pt-6">
+            <Button variant="outline" onClick={() => setShowGoalForm(false)}>
+              Back to Budget
+            </Button>
+            <Button>
+              Save Budget Goals
+            </Button>
+          </div>
         </CardContent>
       </Card>
     );
@@ -75,8 +96,13 @@ const BudgetPlanner: React.FC<BudgetPlannerProps> = ({ expenseItems, totalMonthl
       <CardContent className="space-y-6">
         <div className="space-y-3">
           <h3 className="font-semibold text-lg">Monthly Expenses</h3>
+          <div className="grid grid-cols-3 gap-4 font-medium text-sm text-gray-600 px-2">
+            <span>Category</span>
+            <span>Amount</span>
+            <span>Frequency</span>
+          </div>
           {budgetItems.map((item, index) => (
-            <BudgetCategoryRow
+            <BudgetListRow
               key={index}
               category={item.category}
               amount={item.amount}
@@ -86,7 +112,7 @@ const BudgetPlanner: React.FC<BudgetPlannerProps> = ({ expenseItems, totalMonthl
           ))}
         </div>
 
-        <BudgetSummary 
+        <BudgetSummaryComponent 
           budgetItems={budgetItems}
           totalMonthlyNetIncome={totalMonthlyNetIncome}
         />

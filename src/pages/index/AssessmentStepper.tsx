@@ -49,7 +49,20 @@ const AssessmentStepper: React.FC<AssessmentStepperProps> = ({
   if (isComplete) {
     return (
       <AssessmentSummary 
-        {...otherProps}
+        employmentStatus={otherProps.employmentStatus}
+        hasRegularIncome={otherProps.hasRegularIncome}
+        incomeSources={otherProps.incomeSources || []}
+        expenseItems={otherProps.expenseItems || []}
+        uploadedFile={otherProps.uploadedFile}
+        financialKnowledgeLevel={otherProps.financialKnowledgeLevel}
+        investmentExperience={otherProps.investmentExperience || []}
+        goals={otherProps.goals || []}
+        otherGoal={otherProps.otherGoal}
+        goalTimeframe={otherProps.goalTimeframe}
+        debtTypes={otherProps.debtTypes || []}
+        debtDetails={otherProps.debtDetails || []}
+        debtManagementConfidence={otherProps.debtManagementConfidence}
+        freeTextComments={otherProps.freeTextComments}
       />
     );
   }
