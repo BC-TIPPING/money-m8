@@ -1,7 +1,8 @@
 
 import React from 'react';
 import { Button } from "@/components/ui/button";
-import { Save, FileDown, RotateCcw, Zap, Target } from 'lucide-react';
+import { Link } from "react-router-dom";
+import { Loader2, FileText, Save } from 'lucide-react';
 
 interface FloatingActionButtonsProps {
   isComplete: boolean;
@@ -31,42 +32,51 @@ const FloatingActionButtons: React.FC<FloatingActionButtonsProps> = ({
   if (!isComplete) return null;
 
   return (
-    <div className="fixed bottom-6 right-6 flex flex-col gap-2 z-20">
-      {aiSummary && (
-        <Button onClick={onExportToPDF} className="shadow-lg">
-          <FileDown className="mr-2 h-4 w-4" />
-          Export PDF
+    <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-20 w-full max-w-sm px-4">
+      <div className="flex flex-col items-center gap-4">
+        <Button onClick={onExportToPDF} variant="outline" className="shadow-lg bg-background w-full">
+          <FileText className="mr-2 h-4 w-4" />
+          Export to PDF
         </Button>
-      )}
-      
-      {!user && (
-        <Button onClick={onSaveResults} className="shadow-lg">
-          <Save className="mr-2 h-4 w-4" />
-          Save Results
-        </Button>
-      )}
-      
-      <Button onClick={onChangeGoal} variant="outline" className="shadow-lg">
-        <Target className="mr-2 h-4 w-4" />
-        Change Goal
-      </Button>
-      
-      <Button onClick={onStartOver} variant="outline" className="shadow-lg">
-        <RotateCcw className="mr-2 h-4 w-4" />
-        Start Over
-      </Button>
-      
-      {hasDebtGoal && aiSummary && (
-        <Button 
-          onClick={onGenerateToughLove} 
-          variant="secondary" 
-          className="shadow-lg"
-          disabled={isGeneratingSummary}
+        {!user && (
+          <Button 
+            onClick={onSaveResults}
+            className="shadow-lg w-full"
+          >
+            <Save className="mr-2 h-4 w-4" />
+            Save Results
+          </Button>
+        )}
+        <Button
+          onClick={onStartOver}
+          variant="outline"
+          className="shadow-lg bg-background w-full"
         >
-          <Zap className="mr-2 h-4 w-4" />
-          Tough Love Mode
+          Start Over
         </Button>
-      )}
+        <Button
+          onClick={onChangeGoal}
+          variant="outline"
+          className="shadow-lg bg-background w-full"
+        >
+          Change Goal
+        </Button>
+        {!aiSummary && hasDebtGoal && (
+          <Button 
+            onClick={onGenerateToughLove}
+            variant="destructive"
+            className="shadow-lg w-full"
+            disabled={isGeneratingSummary}
+          >
+            {isGeneratingSummary ? (
+              <>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                Getting tough...
+              </>
+            ) : "Tough Love"}
+          </Button>
+        )}
+      </div>
     </div>
   );
 };
