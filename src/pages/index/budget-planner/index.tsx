@@ -1,110 +1,105 @@
 
-import { useState, useMemo } from 'react';
-import { Card, CardContent, CardHeader, CardTitle, CardFooter, CardDescription } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { BUDGET_CATEGORIES } from '@/lib/budgetCategories';
-import { normalizeToMonthly } from '@/lib/financialCalculations';
-import { BudgetGoalForm } from './BudgetGoalForm';
-import { BudgetSummary } from './BudgetSummary';
+import React, { useState } from 'react';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { PiggyBank, TrendingUp } from 'lucide-react';
+import BudgetCategoryRow from './BudgetCategoryRow';
+import BudgetSummary from './BudgetSummary';
+import BudgetGoalForm from './BudgetGoalForm';
 
-interface ExpenseItem {
+interface BudgetPlannerProps {
+  expenseItems: Array<{
     category: string;
     amount: string;
     frequency: string;
+  }>;
+  totalMonthlyNetIncome: number;
 }
 
-interface BudgetPlannerProps {
-    expenseItems: ExpenseItem[];
-    totalMonthlyNetIncome: number;
-}
+const BudgetPlanner: React.FC<BudgetPlannerProps> = ({ expenseItems, totalMonthlyNetIncome }) => {
+  const [budgetItems, setBudgetItems] = useState(expenseItems);
+  const [showGoalForm, setShowGoalForm] = useState(false);
+  const [budgetGoals, setBudgetGoals] = useState<Array<{
+    category: string;
+    currentAmount: number;
+    targetAmount: number;
+    priority: 'high' | 'medium' | 'low';
+  }>>([]);
 
-export default function BudgetPlanner({ expenseItems, totalMonthlyNetIncome }: BudgetPlannerProps) {
-    const normalizedActualExpenses = useMemo(() => {
-        return (expenseItems || [])
-            .filter(item => item.category && item.amount)
-            .map(item => ({
-                ...item,
-                monthlyAmount: normalizeToMonthly(parseFloat(item.amount) || 0, item.frequency)
-            }));
-    }, [expenseItems]);
+  const updateBudgetItem = (index: number, field: string, value: string) => {
+    const updatedItems = [...budgetItems];
+    updatedItems[index] = { ...updatedItems[index], [field]: value };
+    setBudgetItems(updatedItems);
+  };
 
-    const [goalExpenses, setGoalExpenses] = useState(
-        normalizedActualExpenses.map(item => ({ 
-            category: item.category,
-            actualAmount: item.monthlyAmount,
-            goalAmount: item.monthlyAmount.toFixed(2)
-        }))
-    );
-    const [showSummary, setShowSummary] = useState(false);
+  const handleCreateBudget = () => {
+    setShowGoalForm(true);
+  };
 
-    const categoryInfoMap = useMemo(() => {
-        const map = new Map<string, { minPercent: number, maxPercent: number, notes: string }>();
-        BUDGET_CATEGORIES.forEach(item => {
-            map.set(item.category, { minPercent: item.minPercent, maxPercent: item.maxPercent, notes: item.notes });
-        });
-        return map;
-    }, []);
-
-    const handleGoalChange = (index: number, value: string) => {
-        const newGoalExpenses = [...goalExpenses];
-        newGoalExpenses[index].goalAmount = value;
-        setGoalExpenses(newGoalExpenses);
-    };
-
-    const totalActual = useMemo(() => normalizedActualExpenses.reduce((sum, item) => sum + item.monthlyAmount, 0), [normalizedActualExpenses]);
-    const totalGoal = useMemo(() => goalExpenses.reduce((sum, item) => sum + (parseFloat(item.goalAmount) || 0), 0), [goalExpenses]);
-    
-    if (!expenseItems || expenseItems.length === 0 || expenseItems.every(i => !i.amount)) {
-        return (
-             <Card className="lg:col-span-2">
-                <CardHeader>
-                    <CardTitle>Set Your Budget Goal</CardTitle>
-                </CardHeader>
-                <CardContent>
-                    <p className="text-muted-foreground">You haven't entered any expenses in your assessment. Please go back and add some expenses to use the budget planner.</p>
-                </CardContent>
-            </Card>
-        );
-    }
-
+  if (showGoalForm) {
     return (
-        <Card className="lg:col-span-2">
-            <CardHeader>
-                <CardTitle>{showSummary ? 'Budget Analysis' : 'Set Your Budget Goal'}</CardTitle>
-                <CardDescription>
-                    {showSummary 
-                        ? "Here's how your current spending compares to general budget guidelines. Over-budget items are highlighted."
-                        : "Your current monthly expenses are listed below. Set a goal for each category to see how you can improve your budget. The suggested amounts are based on your net income."
-                    }
-                </CardDescription>
-            </CardHeader>
-            <CardContent>
-                {!showSummary ? (
-                    <BudgetGoalForm 
-                        goalExpenses={goalExpenses}
-                        handleGoalChange={handleGoalChange}
-                        categoryInfoMap={categoryInfoMap}
-                        totalMonthlyNetIncome={totalMonthlyNetIncome}
-                    />
-                ) : (
-                    <BudgetSummary 
-                        goalExpenses={goalExpenses} 
-                        totalMonthlyNetIncome={totalMonthlyNetIncome}
-                        categoryInfoMap={categoryInfoMap}
-                    />
-                )}
-            </CardContent>
-            <CardFooter className="flex justify-between items-center bg-muted/50 py-4 px-6 rounded-b-lg">
-                 <div className="text-sm">
-                    <p>Total Actual: <span className="font-bold">${totalActual.toFixed(2)}</span> / month</p>
-                    <p>Total Goal: <span className="font-bold">${totalGoal.toFixed(2)}</span> / month</p>
-                </div>
-                {showSummary ? (
-                     <Button variant="outline" onClick={() => setShowSummary(false)}>Edit Goals</Button>
-                ) : (
-                    <Button onClick={() => setShowSummary(true)}>Analyze Budget</Button>
-                )}
-            </CardFooter>
-        </Card>
+      <Card className="w-full">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <TrendingUp className="h-5 w-5" />
+            Set Your Budget Goals
+          </CardTitle>
+          <CardDescription>
+            Create specific targets for your spending categories to improve your financial health.
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <BudgetGoalForm 
+            budgetItems={budgetItems}
+            totalMonthlyNetIncome={totalMonthlyNetIncome}
+            budgetGoals={budgetGoals}
+            setBudgetGoals={setBudgetGoals}
+            onBack={() => setShowGoalForm(false)}
+          />
+        </CardContent>
+      </Card>
     );
-}
+  }
+
+  return (
+    <Card className="w-full">
+      <CardHeader>
+        <CardTitle className="flex items-center gap-2">
+          <PiggyBank className="h-5 w-5" />
+          Budget Planner 📊
+        </CardTitle>
+        <CardDescription>
+          Review and adjust your monthly spending to optimize your budget. Click "Create My Budget" to set specific goals.
+        </CardDescription>
+      </CardHeader>
+      <CardContent className="space-y-6">
+        <div className="space-y-3">
+          <h3 className="font-semibold text-lg">Monthly Expenses</h3>
+          {budgetItems.map((item, index) => (
+            <BudgetCategoryRow
+              key={index}
+              category={item.category}
+              amount={item.amount}
+              frequency={item.frequency}
+              onUpdate={(field, value) => updateBudgetItem(index, field, value)}
+            />
+          ))}
+        </div>
+
+        <BudgetSummary 
+          budgetItems={budgetItems}
+          totalMonthlyNetIncome={totalMonthlyNetIncome}
+        />
+
+        <div className="flex justify-center pt-4">
+          <Button onClick={handleCreateBudget} size="lg" className="w-full sm:w-auto">
+            <TrendingUp className="mr-2 h-4 w-4" />
+            Create My Budget Goals
+          </Button>
+        </div>
+      </CardContent>
+    </Card>
+  );
+};
+
+export default BudgetPlanner;
