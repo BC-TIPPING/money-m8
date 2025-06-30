@@ -2,7 +2,7 @@
 import React from 'react';
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
-import { Loader2, FileText, Save } from 'lucide-react';
+import { Loader2, FileText, Save, RefreshCw, Target } from 'lucide-react';
 
 interface FloatingActionButtonsProps {
   isComplete: boolean;
@@ -48,18 +48,20 @@ const FloatingActionButtons: React.FC<FloatingActionButtonsProps> = ({
           </Button>
         )}
         <Button
-          onClick={onStartOver}
-          variant="outline"
-          className="shadow-lg bg-background w-full"
-        >
-          Start Over
-        </Button>
-        <Button
           onClick={onChangeGoal}
           variant="outline"
           className="shadow-lg bg-background w-full"
         >
+          <Target className="mr-2 h-4 w-4" />
           Change Goal
+        </Button>
+        <Button
+          onClick={onStartOver}
+          variant="outline"
+          className="shadow-lg bg-background w-full"
+        >
+          <RefreshCw className="mr-2 h-4 w-4" />
+          Start Over
         </Button>
         {!aiSummary && hasDebtGoal && (
           <Button 

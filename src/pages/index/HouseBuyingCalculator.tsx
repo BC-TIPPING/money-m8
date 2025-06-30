@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -30,20 +29,35 @@ const HouseBuyingCalculator: React.FC<HouseBuyingCalculatorProps> = ({
   const recommendedHousingBudget = totalMonthlyNetIncome * 0.3;
   
   // Calculate maximum borrowing capacity using 6x annual income rule
-  const maxBorrowingCapacity = totalAnnualGrossIncome * 6;
+  const theoreticalMaxBorrowingCapacity = totalAnnualGrossIncome * 6;
+  
+  // Calculate monthly repayment for theoretical max loan
+  const monthlyRate = interestRate / 100 / 12;
+  const numPayments = loanTerm * 12;
+  const theoreticalMonthlyPayment = theoreticalMaxBorrowingCapacity > 0 
+    ? (theoreticalMaxBorrowingCapacity * monthlyRate * Math.pow(1 + monthlyRate, numPayments)) / 
+      (Math.pow(1 + monthlyRate, numPayments) - 1)
+    : 0;
+  
+  // Calculate theoretical debt-to-income ratio
+  const theoreticalDebtToIncomeRatio = (theoreticalMonthlyPayment / totalMonthlyNetIncome) * 100;
+  
+  // Limit borrowing capacity if debt-to-income ratio exceeds 30%
+  let maxBorrowingCapacity = theoreticalMaxBorrowingCapacity;
+  let monthlyPayment = theoreticalMonthlyPayment;
+  
+  if (theoreticalDebtToIncomeRatio > 30) {
+    // Calculate max loan amount that keeps debt-to-income at 30%
+    const maxAllowablePayment = totalMonthlyNetIncome * 0.3;
+    maxBorrowingCapacity = maxAllowablePayment * (Math.pow(1 + monthlyRate, numPayments) - 1) / 
+                          (monthlyRate * Math.pow(1 + monthlyRate, numPayments));
+    monthlyPayment = maxAllowablePayment;
+  }
   
   // Calculate maximum purchase price
   const maxPurchasePrice = maxBorrowingCapacity + deposit;
   
-  // Calculate monthly repayment for max loan
-  const monthlyRate = interestRate / 100 / 12;
-  const numPayments = loanTerm * 12;
-  const monthlyPayment = maxBorrowingCapacity > 0 
-    ? (maxBorrowingCapacity * monthlyRate * Math.pow(1 + monthlyRate, numPayments)) / 
-      (Math.pow(1 + monthlyRate, numPayments) - 1)
-    : 0;
-  
-  // Calculate debt-to-income ratio
+  // Calculate actual debt-to-income ratio
   const debtToIncomeRatio = (monthlyPayment / totalMonthlyNetIncome) * 100;
   
   // Find credit card debt limits
@@ -116,6 +130,11 @@ const HouseBuyingCalculator: React.FC<HouseBuyingCalculatorProps> = ({
               <p className="text-2xl font-bold text-green-600">
                 ${maxBorrowingCapacity.toLocaleString()}
               </p>
+              {theoreticalDebtToIncomeRatio > 30 && (
+                <p className="text-xs text-orange-600 mt-1">
+                  Limited to keep debt-to-income ≤ 30%
+                </p>
+              )}
             </div>
             <div>
               <p className="text-sm text-gray-600">Maximum Purchase Price:</p>
@@ -159,14 +178,14 @@ const HouseBuyingCalculator: React.FC<HouseBuyingCalculatorProps> = ({
             <AlertDescription>
               <strong>Increase your income:</strong> A 20% income increase could boost your borrowing capacity to ${improvementWith20Percent.toLocaleString()}.
             </AlertDescription>
-          </Alert>
+            </Alert>
           
-          {debtToIncomeRatio > 30 && (
+          {theoreticalDebtToIncomeRatio > 30 && (
             <Alert>
               <AlertCircle className="h-4 w-4" />
               <AlertDescription>
-                <strong>Reduce expenses:</strong> Your debt-to-income ratio is above 30%, which may affect loan approval. 
-                Consider reducing expenses by ${((debtToIncomeRatio - 30) / 100 * totalMonthlyNetIncome).toLocaleString()} per month.
+                <strong>Your debt-to-income ratio would be {theoreticalDebtToIncomeRatio.toFixed(1)}%</strong> with maximum borrowing. 
+                We've limited your capacity to maintain a healthy 30% ratio. Consider increasing income or reducing expenses to borrow more.
               </AlertDescription>
             </Alert>
           )}
