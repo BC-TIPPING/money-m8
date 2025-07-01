@@ -50,9 +50,25 @@ export default function Index() {
   } = useSavePrompt({ isComplete, user });
 
   const handleStartAssessment = (goal: string) => {
-    // Allow anonymous users to start assessment immediately
-    assessment.setGoals([goal]);
-    assessment.setShowAssessment(true);
+    // Goals that have calculators - skip assessment and go directly to calculator
+    const calculatorGoals = ['Buy a house', 'Buy an investment property'];
+    
+    if (calculatorGoals.includes(goal)) {
+      assessment.setGoals([goal]);
+      assessment.setShowAssessment(true);
+      assessment.setStep(questions.length); // Skip to the end to show calculator
+      assessment.setComplete(true);
+    } else {
+      // Regular flow for other goals
+      assessment.setGoals([goal]);
+      assessment.setShowAssessment(true);
+    }
+  };
+
+  const handleFullAnalysis = () => {
+    // Reset assessment and start from beginning
+    assessment.setStep(0);
+    assessment.setComplete(false);
   };
   
   // Remove the localStorage goal handling since we're allowing anonymous access
@@ -79,6 +95,9 @@ export default function Index() {
   const annualTax = calculateAustralianIncomeTax(totalAnnualGrossIncome);
   const totalMonthlyNetIncome = totalAnnualGrossIncome > 0 ? (totalAnnualGrossIncome - annualTax) / 12 : 0;
 
+  // Check if we're showing calculator-only mode
+  const isCalculatorOnlyMode = isComplete && (assessment.goals.includes('Buy a house') || assessment.goals.includes('Buy an investment property')) && assessment.step === questions.length && !assessment.answers.length;
+
   return (
     <div className="relative min-h-screen">
       <HeaderButtons user={user} onSignOut={signOut} />
@@ -94,58 +113,90 @@ export default function Index() {
       ) : (
         <>
           <div id="export-content" className={`flex-grow ${isComplete ? 'pb-52' : ''}`}>
-            <AssessmentStepper 
-              {...assessment} 
-              generateSummary={() => generateSummary({})}
-              isGeneratingSummary={isGeneratingSummary}
-              aiSummary={aiSummary}
-              chartData={chartData}
-            />
-            {isComplete && (
-                <div className="container mx-auto grid gap-6 px-4 py-6 sm:px-6 lg:grid-cols-2 lg:px-8">
-                    {assessment.goals.includes('Buy a house') && (
-                        <HouseBuyingCalculator 
-                          assessmentData={assessment}
-                          totalMonthlyNetIncome={totalMonthlyNetIncome}
-                          totalAnnualGrossIncome={totalAnnualGrossIncome}
-                        />
-                    )}
-                    {assessment.goals.includes('Buy an investment property') && (
-                        <InvestmentPropertyCalculator />
-                    )}
-                    {assessment.goals.includes('Pay off home loan sooner') && (
-                        <Card>
-                            <CardHeader>
-                                <CardTitle>Pay Off Home Loan Sooner 🚀</CardTitle>
-                                <CardDescription>Use our calculator to see how extra repayments can save you thousands!</CardDescription>
-                            </CardHeader>
-                            <CardFooter>
-                                <Button asChild>
-                                    <Link to="/pay-off-home-loan">Open Calculator</Link>
-                                </Button>
-                            </CardFooter>
-                        </Card>
-                    )}
-                    {assessment.goals.includes('Maximise super') && (
-                        <Card>
-                            <CardHeader>
-                                <CardTitle>Maximise Super 💰</CardTitle>
-                                <CardDescription>Use our calculator to see how extra contributions can boost your retirement savings and lower your tax.</CardDescription>
-                            </CardHeader>
-                            <CardFooter>
-                                <Button asChild>
-                                    <Link to="/maximise-super">Open Calculator</Link>
-                                </Button>
-                            </CardFooter>
-                        </Card>
-                    )}
-                    {assessment.goals.includes('Set a budget') && (
-                        <BudgetPlanner expenseItems={assessment.expenseItems} totalMonthlyNetIncome={totalMonthlyNetIncome} />
-                    )}
-                    {chartData?.debtReductionData && <DebtReductionChart data={chartData.debtReductionData} />}
-                    {chartData?.interestSavedData && <InterestSavedChart data={chartData.interestSavedData} />}
-                    <ActionItemsSection assessmentData={assessment} />
+            {/* Show calculator-only mode or full assessment */}
+            {isCalculatorOnlyMode ? (
+              <div className="container mx-auto px-4 py-6">
+                <div className="mb-6 text-center">
+                  <h2 className="text-2xl font-bold mb-2">
+                    {assessment.goals[0]} Calculator
+                  </h2>
+                  <Button 
+                    onClick={handleFullAnalysis}
+                    variant="outline"
+                    className="mb-4"
+                  >
+                    Get Full Financial Analysis
+                  </Button>
                 </div>
+                <div className="grid gap-6 lg:grid-cols-1">
+                  {assessment.goals.includes('Buy a house') && (
+                    <HouseBuyingCalculator 
+                      assessmentData={assessment}
+                      totalMonthlyNetIncome={totalMonthlyNetIncome}
+                      totalAnnualGrossIncome={totalAnnualGrossIncome}
+                    />
+                  )}
+                  {assessment.goals.includes('Buy an investment property') && (
+                    <InvestmentPropertyCalculator />
+                  )}
+                </div>
+              </div>
+            ) : (
+              <>
+                <AssessmentStepper 
+                  {...assessment} 
+                  generateSummary={() => generateSummary({})}
+                  isGeneratingSummary={isGeneratingSummary}
+                  aiSummary={aiSummary}
+                  chartData={chartData}
+                />
+                {isComplete && (
+                    <div className="container mx-auto grid gap-6 px-4 py-6 sm:px-6 lg:grid-cols-2 lg:px-8">
+                        {assessment.goals.includes('Buy a house') && (
+                            <HouseBuyingCalculator 
+                              assessmentData={assessment}
+                              totalMonthlyNetIncome={totalMonthlyNetIncome}
+                              totalAnnualGrossIncome={totalAnnualGrossIncome}
+                            />
+                        )}
+                        {assessment.goals.includes('Buy an investment property') && (
+                            <InvestmentPropertyCalculator />
+                        )}
+                        {assessment.goals.includes('Pay off home loan sooner') && (
+                            <Card>
+                                <CardHeader>
+                                    <CardTitle>Pay Off Home Loan Sooner 🚀</CardTitle>
+                                    <CardDescription>Use our calculator to see how extra repayments can save you thousands!</CardDescription>
+                                </CardHeader>
+                                <CardFooter>
+                                    <Button asChild>
+                                        <Link to="/pay-off-home-loan">Open Calculator</Link>
+                                    </Button>
+                                </CardFooter>
+                            </Card>
+                        )}
+                        {assessment.goals.includes('Maximise super') && (
+                            <Card>
+                                <CardHeader>
+                                    <CardTitle>Maximise Super 💰</CardTitle>
+                                    <CardDescription>Use our calculator to see how extra contributions can boost your retirement savings and lower your tax.</CardDescription>
+                                </CardHeader>
+                                <CardFooter>
+                                    <Button asChild>
+                                        <Link to="/maximise-super">Open Calculator</Link>
+                                    </Button>
+                                </CardFooter>
+                            </Card>
+                        )}
+                        {assessment.goals.includes('Set a budget') && (
+                            <BudgetPlanner expenseItems={assessment.expenseItems} totalMonthlyNetIncome={totalMonthlyNetIncome} />
+                        )}
+                        {chartData?.debtReductionData && <DebtReductionChart data={chartData.debtReductionData} />}
+                        {chartData?.interestSavedData && <InterestSavedChart data={chartData.interestSavedData} />}
+                        <ActionItemsSection assessmentData={assessment} />
+                    </div>
+                )}
+              </>
             )}
           </div>
           
