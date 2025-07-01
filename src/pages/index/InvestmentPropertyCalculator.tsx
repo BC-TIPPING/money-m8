@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -7,7 +8,7 @@ import { Switch } from "@/components/ui/switch";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Calculator, TrendingUp, Home } from 'lucide-react';
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
-import { AreaChart, Area, XAxis, YAxis, CartesianGrid, ResponsiveContainer, LineChart, Line } from 'recharts';
+import { ComposedChart, Area, Line, XAxis, YAxis, CartesianGrid, ResponsiveContainer } from 'recharts';
 
 const InvestmentPropertyCalculator: React.FC = () => {
   const [loanAmount, setLoanAmount] = useState(500000);
@@ -19,6 +20,7 @@ const InvestmentPropertyCalculator: React.FC = () => {
   const [insurance, setInsurance] = useState(220);
   const [utilities, setUtilities] = useState(150);
   const [frequency, setFrequency] = useState('Monthly');
+  const [propertyAppreciation, setPropertyAppreciation] = useState(4);
 
   // Convert all amounts to monthly
   const getMonthlyAmount = (amount: number) => {
@@ -60,8 +62,8 @@ const InvestmentPropertyCalculator: React.FC = () => {
     let remainingLoan = loanAmount;
 
     for (let year = 0; year <= Math.min(duration, 30); year++) {
-      // Calculate annual property appreciation (assume 4% per year)
-      const appreciatedValue = propertyValue * Math.pow(1.04, year);
+      // Calculate annual property appreciation using user input
+      const appreciatedValue = propertyValue * Math.pow(1 + (propertyAppreciation / 100), year);
       
       // Calculate remaining loan balance
       if (!isInterestOnly && year > 0) {
@@ -89,7 +91,7 @@ const InvestmentPropertyCalculator: React.FC = () => {
         loanBalance: Math.round(remainingLoan),
         netEquity: Math.round(netEquity),
         cumulativeOutOfPocket: Math.round(cumulativeOutOfPocket),
-        annualCashFlow: Math.round(monthlyCashFlow * 12)
+        netEquityMinusOutOfPocket: Math.round(netEquity - cumulativeOutOfPocket)
       });
     }
     return data;
@@ -106,8 +108,8 @@ const InvestmentPropertyCalculator: React.FC = () => {
       label: "Cumulative Out of Pocket",
       color: "hsl(var(--chart-2))"
     },
-    annualCashFlow: {
-      label: "Annual Cash Flow",
+    netEquityMinusOutOfPocket: {
+      label: "Net Equity - Out of Pocket",
       color: "hsl(var(--chart-3))"
     }
   };
@@ -155,6 +157,17 @@ const InvestmentPropertyCalculator: React.FC = () => {
               value={duration}
               onChange={(e) => setDuration(Number(e.target.value))}
               placeholder="30"
+            />
+          </div>
+          <div>
+            <Label htmlFor="propertyAppreciation">Property Value Increase (% yearly)</Label>
+            <Input
+              id="propertyAppreciation"
+              type="number"
+              step="0.1"
+              value={propertyAppreciation}
+              onChange={(e) => setPropertyAppreciation(Number(e.target.value))}
+              placeholder="4"
             />
           </div>
           <div className="flex items-center space-x-2">
@@ -246,12 +259,12 @@ const InvestmentPropertyCalculator: React.FC = () => {
           </div>
         </div>
 
-        {/* Charts Section */}
+        {/* Combined Chart Section */}
         <div className="space-y-6">
           <div>
-            <h3 className="font-semibold text-lg mb-4">Net Equity Growth Over Time</h3>
-            <ChartContainer config={chartConfig} className="h-[300px]">
-              <AreaChart data={chartData}>
+            <h3 className="font-semibold text-lg mb-4">Investment Property Financial Overview</h3>
+            <ChartContainer config={chartConfig} className="h-[400px]">
+              <ComposedChart data={chartData}>
                 <CartesianGrid strokeDasharray="3 3" />
                 <XAxis dataKey="year" />
                 <YAxis tickFormatter={(value) => `$${(value / 1000).toFixed(0)}k`} />
@@ -266,34 +279,20 @@ const InvestmentPropertyCalculator: React.FC = () => {
                   fill="var(--color-netEquity)" 
                   fillOpacity={0.3}
                 />
-              </AreaChart>
-            </ChartContainer>
-          </div>
-
-          <div>
-            <h3 className="font-semibold text-lg mb-4">Cumulative Out-of-Pocket vs Annual Cash Flow</h3>
-            <ChartContainer config={chartConfig} className="h-[300px]">
-              <LineChart data={chartData}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="year" />
-                <YAxis tickFormatter={(value) => `$${(value / 1000).toFixed(0)}k`} />
-                <ChartTooltip 
-                  content={<ChartTooltipContent />}
-                  formatter={(value: any) => [`$${Number(value).toLocaleString()}`, '']}
-                />
                 <Line 
                   type="monotone" 
                   dataKey="cumulativeOutOfPocket" 
                   stroke="var(--color-cumulativeOutOfPocket)" 
                   strokeWidth={2}
+                  strokeDasharray="5 5"
                 />
                 <Line 
                   type="monotone" 
-                  dataKey="annualCashFlow" 
-                  stroke="var(--color-annualCashFlow)" 
-                  strokeWidth={2}
+                  dataKey="netEquityMinusOutOfPocket" 
+                  stroke="var(--color-netEquityMinusOutOfPocket)" 
+                  strokeWidth={3}
                 />
-              </LineChart>
+              </ComposedChart>
             </ChartContainer>
           </div>
         </div>
@@ -309,6 +308,7 @@ const InvestmentPropertyCalculator: React.FC = () => {
             <div>
               <p><strong>Annual Cash Flow:</strong> ${(monthlyCashFlow * 12).toLocaleString('en-US', { maximumFractionDigits: 0 })}</p>
               <p><strong>Rental Yield:</strong> {((monthlyRent * 12) / (loanAmount * 1.2) * 100).toFixed(2)}%</p>
+              <p><strong>Property Appreciation:</strong> {propertyAppreciation}% per year</p>
             </div>
           </div>
         </div>

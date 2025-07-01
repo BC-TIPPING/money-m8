@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Button } from "@/components/ui/button";
 import { Rocket } from 'lucide-react';
@@ -28,9 +29,15 @@ const LandingSection: React.FC<LandingSectionProps> = ({ onStartAssessment, isLo
         <p className="mx-auto max-w-[700px] text-gray-500 md:text-xl dark:text-gray-400 mt-4">
           Answer a few simple questions and we'll create a personalised plan to help you achieve your financial goals.
         </p>
-        <div className="mt-8 space-y-2 sm:space-x-4 sm:space-y-0">
+        <div className="mt-8 flex flex-wrap justify-center gap-2 sm:gap-4">
           {goals.map((goal, index) => (
-            <Button key={index} size="lg" className="w-full sm:w-auto" onClick={() => onStartAssessment(goal)} disabled={isLoading}>
+            <Button 
+              key={index} 
+              size="lg" 
+              className="w-full sm:w-auto" 
+              onClick={() => onStartAssessment(goal)} 
+              disabled={isLoading}
+            >
               {isLoading ? (
                 <>
                   <Rocket className="mr-2 h-4 w-4 animate-spin" />
