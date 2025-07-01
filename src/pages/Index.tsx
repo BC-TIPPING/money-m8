@@ -1,4 +1,3 @@
-
 import LandingSection from "./index/LandingSection";
 import AssessmentStepper from "./index/AssessmentStepper";
 import { useAssessmentState, questions } from "./index/assessmentHooks";
@@ -12,6 +11,7 @@ import { calculateMonthlyAmount, calculateAustralianIncomeTax } from "@/lib/fina
 import { useAuth } from "@/contexts/AuthContext";
 import { useEffect } from "react";
 import HouseBuyingCalculator from "./index/HouseBuyingCalculator";
+import InvestmentPropertyCalculator from "./index/InvestmentPropertyCalculator";
 import ActionItemsSection from "./index/ActionItemsSection";
 import { Link } from "react-router-dom";
 
@@ -109,6 +109,9 @@ export default function Index() {
                           totalMonthlyNetIncome={totalMonthlyNetIncome}
                           totalAnnualGrossIncome={totalAnnualGrossIncome}
                         />
+                    )}
+                    {assessment.goals.includes('Buy an investment property') && (
+                        <InvestmentPropertyCalculator />
                     )}
                     {assessment.goals.includes('Pay off home loan sooner') && (
                         <Card>
