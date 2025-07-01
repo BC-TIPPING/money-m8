@@ -36,6 +36,7 @@ export default function Index() {
     handleStartOverWithReset,
     handleExportToPDF,
     isCalculatorOnlyMode,
+    handleBackToGoals,
   } = useIndexLogic();
 
   const hasDebtGoal = assessment.goals.some(g => DEBT_GOALS.includes(g));
@@ -69,6 +70,7 @@ export default function Index() {
                 aiSummary={aiSummary}
                 chartData={chartData}
                 isComplete={isComplete}
+                onBackToGoals={handleBackToGoals}
               />
             )}
           </div>

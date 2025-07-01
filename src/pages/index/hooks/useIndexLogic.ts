@@ -51,6 +51,14 @@ export const useIndexLogic = () => {
     assessment.setStep(0);
     assessment.setComplete(false);
   };
+
+  const handleBackToGoals = () => {
+    // Reset to goal selection
+    assessment.setShowAssessment(false);
+    assessment.setGoals([]);
+    assessment.setStep(0);
+    assessment.setComplete(false);
+  };
   
   // Remove the localStorage goal handling since we're allowing anonymous access
   useEffect(() => {
@@ -95,5 +103,6 @@ export const useIndexLogic = () => {
     handleStartOverWithReset,
     handleExportToPDF,
     isCalculatorOnlyMode,
+    handleBackToGoals,
   };
 };
