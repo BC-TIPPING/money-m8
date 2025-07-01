@@ -73,7 +73,8 @@ export function useAssessmentData(assessment: AssessmentState) {
     setChartData(data.chartData);
   });
 
-  const isComplete = assessment.step >= questions.length;
+  // Use the complete state from assessment or derive from step
+  const isComplete = assessment.complete || assessment.step >= questions.length;
 
   // Only auto-save for logged-in users
   useEffect(() => {
@@ -121,6 +122,7 @@ export function useAssessmentData(assessment: AssessmentState) {
 
   const handleStartOver = () => {
     assessment.setStep(0);
+    assessment.setComplete(false);
     assessment.setEmploymentStatus(undefined);
     assessment.setHasRegularIncome(undefined);
     assessment.setIncomeSources([{ category: "", amount: "", frequency: "Monthly" }]);
@@ -135,6 +137,7 @@ export function useAssessmentData(assessment: AssessmentState) {
     assessment.setDebtManagementConfidence(undefined);
     assessment.setFreeTextComments("");
     assessment.setShowAssessment(false);
+    assessment.setAnswers([]);
 
     setIsSubmitted(false);
     setAiSummary(null);
@@ -149,6 +152,7 @@ export function useAssessmentData(assessment: AssessmentState) {
     setIsSubmitted(false);
     assessment.setGoals([]);
     assessment.setStep(0);
+    assessment.setComplete(false);
     assessment.setShowAssessment(false);
   };
 

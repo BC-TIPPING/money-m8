@@ -123,6 +123,8 @@ export const PRELOADED_EXPENSE_CATEGORIES = PreloadedExpenseCategories;
 export function useAssessmentState() {
   const [step, setStep] = useState(0);
   const [showAssessment, setShowAssessment] = useState(false);
+  const [complete, setComplete] = useState(false);
+  const [answers, setAnswers] = useState<any[]>([]);
   const [goals, setGoals] = useState<string[]>([]);
   const [otherGoal, setOtherGoal] = useState("");
   const [goalTimeframe, setGoalTimeframe] = useState<string | undefined>();
@@ -158,6 +160,10 @@ export function useAssessmentState() {
     setStep,
     showAssessment,
     setShowAssessment,
+    complete,
+    setComplete,
+    answers,
+    setAnswers,
     goals,
     setGoals,
     otherGoal,
