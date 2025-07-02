@@ -1,7 +1,7 @@
 
 import React, { useState } from 'react';
 import { Button } from "@/components/ui/button";
-import { Home, TrendingUp, PiggyBank, Calculator, Target, BookOpen, Building, CreditCard } from 'lucide-react';
+import { Home, BookOpen, Target, CreditCard, Building, Calculator, TrendingUp, PiggyBank, ChevronLeft, ChevronRight } from 'lucide-react';
 
 interface LandingSectionProps {
   onStartAssessment: (goal: string) => void;
@@ -10,55 +10,56 @@ interface LandingSectionProps {
 
 const LandingSection: React.FC<LandingSectionProps> = ({ onStartAssessment, isLoading }) => {
   const [selectedGoal, setSelectedGoal] = useState<string | null>(null);
+  const [currentIndex, setCurrentIndex] = useState(0);
 
   const goals = [
     {
       title: 'Buy a house',
       icon: Home,
       description: 'Turn your dream of homeownership into a reality with a solid plan.',
-      color: 'bg-blue-500 hover:bg-blue-600'
+      color: 'text-orange-400'
     },
     {
       title: 'Improve financial literacy',
       icon: BookOpen,
       description: 'Gain the knowledge to make confident financial decisions for your future.',
-      color: 'bg-green-500 hover:bg-green-600'
+      color: 'text-green-400'
     },
     {
       title: 'Set a budget',
       icon: Target,
       description: 'Take control of your spending and master your cash flow.',
-      color: 'bg-purple-500 hover:bg-purple-600'
+      color: 'text-purple-400'
     },
     {
       title: 'Reduce debt',
       icon: CreditCard,
       description: 'Create a strategic plan to eliminate debt and regain financial freedom.',
-      color: 'bg-red-500 hover:bg-red-600'
+      color: 'text-red-400'
     },
     {
       title: 'Buy an investment property',
       icon: Building,
       description: 'Build wealth through property investment with expert guidance.',
-      color: 'bg-orange-500 hover:bg-orange-600'
+      color: 'text-orange-400'
     },
     {
       title: 'Pay off home loan sooner',
       icon: Calculator,
       description: 'Save thousands in interest and own your home faster.',
-      color: 'bg-teal-500 hover:bg-teal-600'
+      color: 'text-teal-400'
     },
     {
       title: 'Grow investments',
       icon: TrendingUp,
       description: 'Maximize your investment returns with personalized strategies.',
-      color: 'bg-indigo-500 hover:bg-indigo-600'
+      color: 'text-blue-400'
     },
     {
       title: 'Maximise super',
       icon: PiggyBank,
       description: 'Boost your retirement savings and reduce your tax burden.',
-      color: 'bg-pink-500 hover:bg-pink-600'
+      color: 'text-pink-400'
     }
   ];
 
@@ -72,9 +73,19 @@ const LandingSection: React.FC<LandingSectionProps> = ({ onStartAssessment, isLo
     }
   };
 
+  const nextSlide = () => {
+    setCurrentIndex((prev) => (prev + 1) % Math.max(1, goals.length - 2));
+  };
+
+  const prevSlide = () => {
+    setCurrentIndex((prev) => (prev - 1 + Math.max(1, goals.length - 2)) % Math.max(1, goals.length - 2));
+  };
+
+  const visibleGoals = goals.slice(currentIndex, currentIndex + 3);
+
   return (
-    <section 
-      className="py-12 md:py-24 lg:py-32 min-h-screen flex items-center justify-center relative"
+    <div 
+      className="min-h-screen flex items-center justify-center relative"
       style={{
         backgroundImage: `url('/lovable-uploads/fd9ed9b4-cd2f-46bb-9a60-46979f3803f5.png')`,
         backgroundSize: 'cover',
@@ -96,45 +107,62 @@ const LandingSection: React.FC<LandingSectionProps> = ({ onStartAssessment, isLo
           </p>
         </div>
 
-        <div className="mb-12">
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
-            {goals.map((goal) => {
+        <div className="mb-12 relative">
+          {/* Navigation buttons */}
+          <button
+            onClick={prevSlide}
+            className="absolute left-0 top-1/2 transform -translate-y-1/2 z-10 bg-black/20 hover:bg-black/40 text-white p-2 rounded-full transition-colors"
+          >
+            <ChevronLeft size={24} />
+          </button>
+          
+          <button
+            onClick={nextSlide}
+            className="absolute right-0 top-1/2 transform -translate-y-1/2 z-10 bg-black/20 hover:bg-black/40 text-white p-2 rounded-full transition-colors"
+          >
+            <ChevronRight size={24} />
+          </button>
+
+          {/* Goal cards */}
+          <div className="flex justify-center gap-6 px-12">
+            {visibleGoals.map((goal, index) => {
               const Icon = goal.icon;
               return (
                 <button
-                  key={goal.title}
+                  key={`${goal.title}-${currentIndex + index}`}
                   onClick={() => handleGoalSelect(goal.title)}
                   className={`
-                    ${goal.color} 
-                    ${selectedGoal === goal.title ? 'ring-4 ring-white scale-105' : ''} 
+                    bg-black/40 backdrop-blur-sm border border-white/20
+                    ${selectedGoal === goal.title ? 'ring-2 ring-white scale-105' : ''} 
                     text-white p-6 rounded-lg transition-all duration-300 transform hover:scale-105 
-                    flex flex-col items-center text-center space-y-3 min-h-[180px] justify-center
+                    flex flex-col items-center text-center space-y-3 w-72 h-80 justify-center
+                    hover:bg-black/50
                   `}
                 >
-                  <Icon size={32} className="flex-shrink-0" />
+                  <Icon size={48} className={`flex-shrink-0 ${goal.color}`} />
                   <h3 className="font-semibold text-lg leading-tight">{goal.title}</h3>
                   <p className="text-sm text-white/90 leading-relaxed">{goal.description}</p>
                 </button>
               );
             })}
           </div>
+        </div>
 
-          <div className="flex flex-col items-center gap-4">
-            <Button 
-              size="lg" 
-              onClick={handleStartAssessment}
-              disabled={!selectedGoal || isLoading}
-              className="bg-white text-gray-900 hover:bg-gray-100 px-8 py-3 text-lg font-semibold"
-            >
-              {isLoading ? 'Starting...' : 'Start Assessment'}
-            </Button>
-            
-            {!selectedGoal && (
-              <p className="text-white/60 text-sm">
-                Please select a goal to continue
-              </p>
-            )}
-          </div>
+        <div className="flex flex-col items-center gap-4">
+          <Button 
+            size="lg" 
+            onClick={handleStartAssessment}
+            disabled={!selectedGoal || isLoading}
+            className="bg-white/20 backdrop-blur-sm text-white hover:bg-white/30 px-8 py-3 text-lg font-semibold border border-white/30"
+          >
+            {isLoading ? 'Starting...' : 'Start Assessment'}
+          </Button>
+          
+          {!selectedGoal && (
+            <p className="text-white/60 text-sm">
+              Please select a goal to continue
+            </p>
+          )}
         </div>
 
         <div className="mt-8 text-white/60 text-sm">
@@ -145,7 +173,7 @@ const LandingSection: React.FC<LandingSectionProps> = ({ onStartAssessment, isLo
           <p>© 2025 ClearFinAI | Financial clarity for Australians</p>
         </div>
       </div>
-    </section>
+    </div>
   );
 };
 
