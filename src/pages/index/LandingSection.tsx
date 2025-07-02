@@ -85,7 +85,7 @@ const LandingSection: React.FC<LandingSectionProps> = ({ onStartAssessment, isLo
 
   return (
     <div 
-      className="min-h-screen flex items-center justify-center relative"
+      className="min-h-screen flex items-center justify-center"
       style={{
         backgroundImage: `url('/lovable-uploads/fd9ed9b4-cd2f-46bb-9a60-46979f3803f5.png')`,
         backgroundSize: 'cover',
@@ -93,10 +93,14 @@ const LandingSection: React.FC<LandingSectionProps> = ({ onStartAssessment, isLo
         backgroundRepeat: 'no-repeat'
       }}
     >
-      <div className="absolute inset-0 bg-black/50"></div>
-      <div className="container px-4 md:px-6 text-center relative z-10 max-w-6xl">
+      {/* Single background overlay */}
+      <div className="absolute inset-0 bg-black/40"></div>
+      
+      {/* Main content container */}
+      <div className="relative z-10 w-full max-w-6xl mx-auto px-4 text-center">
+        {/* Header section */}
         <div className="mb-12">
-          <h1 className="text-4xl md:text-6xl font-bold text-white mb-4">
+          <h1 className="text-4xl md:text-6xl font-bold text-white mb-6">
             Financial health check
           </h1>
           <p className="text-xl text-white/90 mb-2">
@@ -107,53 +111,70 @@ const LandingSection: React.FC<LandingSectionProps> = ({ onStartAssessment, isLo
           </p>
         </div>
 
+        {/* Cards carousel section */}
         <div className="mb-12 relative">
           {/* Navigation buttons */}
           <button
             onClick={prevSlide}
-            className="absolute left-0 top-1/2 transform -translate-y-1/2 z-10 bg-black/20 hover:bg-black/40 text-white p-2 rounded-full transition-colors"
+            className="absolute left-0 top-1/2 transform -translate-y-1/2 z-20 bg-white/20 hover:bg-white/30 text-white p-3 rounded-full transition-all backdrop-blur-sm border border-white/20"
+            aria-label="Previous goals"
           >
             <ChevronLeft size={24} />
           </button>
           
           <button
             onClick={nextSlide}
-            className="absolute right-0 top-1/2 transform -translate-y-1/2 z-10 bg-black/20 hover:bg-black/40 text-white p-2 rounded-full transition-colors"
+            className="absolute right-0 top-1/2 transform -translate-y-1/2 z-20 bg-white/20 hover:bg-white/30 text-white p-3 rounded-full transition-all backdrop-blur-sm border border-white/20"
+            aria-label="Next goals"
           >
             <ChevronRight size={24} />
           </button>
 
-          {/* Goal cards */}
-          <div className="flex justify-center gap-6 px-12">
+          {/* Goal cards container */}
+          <div className="flex justify-center gap-6 px-16">
             {visibleGoals.map((goal, index) => {
               const Icon = goal.icon;
+              const isSelected = selectedGoal === goal.title;
+              
               return (
-                <button
+                <div
                   key={`${goal.title}-${currentIndex + index}`}
                   onClick={() => handleGoalSelect(goal.title)}
                   className={`
-                    bg-black/40 backdrop-blur-sm border border-white/20
-                    ${selectedGoal === goal.title ? 'ring-2 ring-white scale-105' : ''} 
-                    text-white p-6 rounded-lg transition-all duration-300 transform hover:scale-105 
-                    flex flex-col items-center text-center space-y-3 w-72 h-80 justify-center
-                    hover:bg-black/50
+                    relative cursor-pointer transform transition-all duration-300 hover:scale-105
+                    ${isSelected ? 'scale-105' : ''}
+                    w-80 h-96
                   `}
                 >
-                  <Icon size={48} className={`flex-shrink-0 ${goal.color}`} />
-                  <h3 className="font-semibold text-lg leading-tight">{goal.title}</h3>
-                  <p className="text-sm text-white/90 leading-relaxed">{goal.description}</p>
-                </button>
+                  {/* Card background */}
+                  <div className={`
+                    absolute inset-0 bg-black/30 backdrop-blur-sm rounded-2xl border transition-all duration-300
+                    ${isSelected ? 'border-white border-2 shadow-2xl shadow-white/20' : 'border-white/20'}
+                  `}></div>
+                  
+                  {/* Card content */}
+                  <div className="relative z-10 h-full flex flex-col items-center justify-center p-8 text-center">
+                    <Icon size={64} className={`mb-6 ${goal.color}`} />
+                    <h3 className="text-xl font-bold text-white mb-4 leading-tight">
+                      {goal.title}
+                    </h3>
+                    <p className="text-sm text-white/80 leading-relaxed">
+                      {goal.description}
+                    </p>
+                  </div>
+                </div>
               );
             })}
           </div>
         </div>
 
+        {/* Action buttons section */}
         <div className="flex flex-col items-center gap-4">
           <Button 
             size="lg" 
             onClick={handleStartAssessment}
             disabled={!selectedGoal || isLoading}
-            className="bg-white/20 backdrop-blur-sm text-white hover:bg-white/30 px-8 py-3 text-lg font-semibold border border-white/30"
+            className="bg-white/20 backdrop-blur-sm text-white hover:bg-white/30 px-8 py-4 text-lg font-semibold border border-white/30 transition-all duration-300"
           >
             {isLoading ? 'Starting...' : 'Start Assessment'}
           </Button>
@@ -165,12 +186,19 @@ const LandingSection: React.FC<LandingSectionProps> = ({ onStartAssessment, isLo
           )}
         </div>
 
-        <div className="mt-8 text-white/60 text-sm">
-          <p>Try our assessment anonymously or <button className="underline hover:text-white">sign in</button> to save your results for later</p>
-        </div>
-
-        <div className="mt-12 text-white/50 text-xs">
-          <p>© 2025 ClearFinAI | Financial clarity for Australians</p>
+        {/* Footer section */}
+        <div className="mt-12 space-y-4">
+          <p className="text-white/60 text-sm">
+            Try our assessment anonymously or{' '}
+            <button className="underline hover:text-white transition-colors">
+              sign in
+            </button>{' '}
+            to save your results for later
+          </p>
+          
+          <p className="text-white/40 text-xs">
+            © 2025 ClearFinAI | Financial clarity for Australians
+          </p>
         </div>
       </div>
     </div>
