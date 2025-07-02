@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { ChevronLeft, ChevronRight, Home, TrendingUp, PiggyBank, Calculator, Target, BookOpen, Building, CreditCard } from 'lucide-react';
+import { Home, TrendingUp, PiggyBank, Calculator, Target, BookOpen, Building, CreditCard } from 'lucide-react';
 
 interface LandingSectionProps {
   onStartAssessment: (goal: string) => void;
@@ -10,67 +10,66 @@ interface LandingSectionProps {
 }
 
 const LandingSection: React.FC<LandingSectionProps> = ({ onStartAssessment, isLoading }) => {
-  const [currentSlide, setCurrentSlide] = useState(0);
   const [selectedGoal, setSelectedGoal] = useState<string | null>(null);
 
   const goals = [
     {
       title: 'Buy a house',
       icon: Home,
-      description: 'Turn your dream of homeownership into a reality with a solid plan.'
+      description: 'Turn your dream of homeownership into a reality with a solid plan.',
+      color: 'bg-gradient-to-br from-blue-500 to-blue-600',
+      hoverColor: 'hover:from-blue-600 hover:to-blue-700'
     },
     {
       title: 'Improve financial literacy',
       icon: BookOpen,
-      description: 'Gain the knowledge to make confident financial decisions for your future.'
+      description: 'Gain the knowledge to make confident financial decisions for your future.',
+      color: 'bg-gradient-to-br from-green-500 to-green-600',
+      hoverColor: 'hover:from-green-600 hover:to-green-700'
     },
     {
       title: 'Set a budget',
       icon: Target,
-      description: 'Take control of your spending and master your cash flow.'
+      description: 'Take control of your spending and master your cash flow.',
+      color: 'bg-gradient-to-br from-purple-500 to-purple-600',
+      hoverColor: 'hover:from-purple-600 hover:to-purple-700'
     },
     {
       title: 'Reduce debt',
       icon: CreditCard,
-      description: 'Create a strategic plan to eliminate debt and regain financial freedom.'
+      description: 'Create a strategic plan to eliminate debt and regain financial freedom.',
+      color: 'bg-gradient-to-br from-red-500 to-red-600',
+      hoverColor: 'hover:from-red-600 hover:to-red-700'
     },
     {
       title: 'Buy an investment property',
       icon: Building,
-      description: 'Build wealth through property investment with expert guidance.'
+      description: 'Build wealth through property investment with expert guidance.',
+      color: 'bg-gradient-to-br from-orange-500 to-orange-600',
+      hoverColor: 'hover:from-orange-600 hover:to-orange-700'
     },
     {
       title: 'Pay off home loan sooner',
       icon: Calculator,
-      description: 'Save thousands in interest and own your home faster.'
+      description: 'Save thousands in interest and own your home faster.',
+      color: 'bg-gradient-to-br from-teal-500 to-teal-600',
+      hoverColor: 'hover:from-teal-600 hover:to-teal-700'
     },
     {
       title: 'Grow investments',
       icon: TrendingUp,
-      description: 'Maximize your investment returns with personalized strategies.'
+      description: 'Maximize your investment returns with personalized strategies.',
+      color: 'bg-gradient-to-br from-indigo-500 to-indigo-600',
+      hoverColor: 'hover:from-indigo-600 hover:to-indigo-700'
     },
     {
       title: 'Maximise super',
       icon: PiggyBank,
-      description: 'Boost your retirement savings and reduce your tax burden.'
+      description: 'Boost your retirement savings and reduce your tax burden.',
+      color: 'bg-gradient-to-br from-pink-500 to-pink-600',
+      hoverColor: 'hover:from-pink-600 hover:to-pink-700'
     }
   ];
-
-  const goalsPerSlide = 3;
-  const totalSlides = Math.ceil(goals.length / goalsPerSlide);
-
-  const nextSlide = () => {
-    setCurrentSlide((prev) => (prev + 1) % totalSlides);
-  };
-
-  const prevSlide = () => {
-    setCurrentSlide((prev) => (prev - 1 + totalSlides) % totalSlides);
-  };
-
-  const getCurrentGoals = () => {
-    const start = currentSlide * goalsPerSlide;
-    return goals.slice(start, start + goalsPerSlide);
-  };
 
   const handleGoalSelect = (goal: string) => {
     setSelectedGoal(goal);
@@ -106,64 +105,32 @@ const LandingSection: React.FC<LandingSectionProps> = ({ onStartAssessment, isLo
           </p>
         </div>
 
-        <div className="relative max-w-6xl mx-auto">
-          <div className="flex items-center justify-center gap-6 mb-8">
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={prevSlide}
-              className="bg-white/20 text-white hover:bg-white/30 rounded-full"
-            >
-              <ChevronLeft className="h-6 w-6" />
-            </Button>
-
-            <div className="flex gap-6 flex-1 justify-center max-w-4xl">
-              {getCurrentGoals().map((goal, index) => {
-                const Icon = goal.icon;
-                return (
-                  <Card 
-                    key={goal.title}
-                    className={`bg-white/10 backdrop-blur-sm border-white/20 text-white cursor-pointer transition-all duration-300 hover:bg-white/20 flex-1 max-w-xs ${
-                      selectedGoal === goal.title ? 'ring-2 ring-white bg-white/20' : ''
-                    }`}
-                    onClick={() => handleGoalSelect(goal.title)}
-                  >
-                    <CardHeader className="text-center pb-2">
-                      <div className="flex justify-center mb-3">
-                        <Icon className="h-8 w-8" />
-                      </div>
-                      <CardTitle className="text-lg">{goal.title}</CardTitle>
-                    </CardHeader>
-                    <CardContent className="pt-0">
-                      <CardDescription className="text-white/80 text-sm">
-                        {goal.description}
-                      </CardDescription>
-                    </CardContent>
-                  </Card>
-                );
-              })}
-            </div>
-
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={nextSlide}
-              className="bg-white/20 text-white hover:bg-white/30 rounded-full"
-            >
-              <ChevronRight className="h-6 w-6" />
-            </Button>
-          </div>
-
-          <div className="flex justify-center gap-2 mb-8">
-            {Array.from({ length: totalSlides }, (_, i) => (
-              <button
-                key={i}
-                onClick={() => setCurrentSlide(i)}
-                className={`w-2 h-2 rounded-full transition-all ${
-                  i === currentSlide ? 'bg-white' : 'bg-white/40'
-                }`}
-              />
-            ))}
+        <div className="max-w-6xl mx-auto mb-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+            {goals.map((goal) => {
+              const Icon = goal.icon;
+              return (
+                <Card 
+                  key={goal.title}
+                  className={`${goal.color} ${goal.hoverColor} border-0 text-white cursor-pointer transition-all duration-300 transform hover:scale-105 ${
+                    selectedGoal === goal.title ? 'ring-4 ring-white scale-105' : ''
+                  }`}
+                  onClick={() => handleGoalSelect(goal.title)}
+                >
+                  <CardHeader className="text-center pb-2">
+                    <div className="flex justify-center mb-3">
+                      <Icon className="h-8 w-8" />
+                    </div>
+                    <CardTitle className="text-lg">{goal.title}</CardTitle>
+                  </CardHeader>
+                  <CardContent className="pt-0">
+                    <CardDescription className="text-white/90 text-sm">
+                      {goal.description}
+                    </CardDescription>
+                  </CardContent>
+                </Card>
+              );
+            })}
           </div>
 
           <div className="flex flex-col items-center gap-4">
