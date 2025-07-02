@@ -10,6 +10,7 @@ import DebtReductionChart from "../DebtReductionChart";
 import InterestSavedChart from "../InterestSavedChart";
 import ActionItemsSection from "../ActionItemsSection";
 import AssessmentSummary from "../AssessmentSummary";
+import AISummarySection from "./AISummarySection";
 import { calculateMonthlyAmount, calculateAustralianIncomeTax } from "@/lib/financialCalculations";
 
 interface CompletedAssessmentViewProps {
@@ -35,13 +36,23 @@ const CompletedAssessmentView: React.FC<CompletedAssessmentViewProps> = ({
   return (
     <div className="container mx-auto px-4 py-6">
       {/* AI Summary Section */}
+      <AISummarySection
+        aiSummary={aiSummary}
+        generateSummary={generateSummary}
+        isGeneratingSummary={isGeneratingSummary}
+        chartData={chartData}
+      />
+
+      {/* Assessment Summary */}
       <div className="mb-8">
-        <AssessmentSummary
-          aiSummary={aiSummary}
-          generateSummary={generateSummary}
-          isGeneratingSummary={isGeneratingSummary}
-          chartData={chartData}
-        />
+        <Card>
+          <CardHeader>
+            <CardTitle>Your Assessment Summary</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <AssessmentSummary {...assessment} />
+          </CardContent>
+        </Card>
       </div>
 
       {/* Calculators and Tools Grid */}
