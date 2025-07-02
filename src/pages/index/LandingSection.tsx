@@ -1,7 +1,6 @@
 
 import React, { useState } from 'react';
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Home, TrendingUp, PiggyBank, Calculator, Target, BookOpen, Building, CreditCard } from 'lucide-react';
 
 interface LandingSectionProps {
@@ -17,57 +16,49 @@ const LandingSection: React.FC<LandingSectionProps> = ({ onStartAssessment, isLo
       title: 'Buy a house',
       icon: Home,
       description: 'Turn your dream of homeownership into a reality with a solid plan.',
-      color: 'bg-gradient-to-br from-blue-500 to-blue-600',
-      hoverColor: 'hover:from-blue-600 hover:to-blue-700'
+      color: 'bg-blue-500 hover:bg-blue-600'
     },
     {
       title: 'Improve financial literacy',
       icon: BookOpen,
       description: 'Gain the knowledge to make confident financial decisions for your future.',
-      color: 'bg-gradient-to-br from-green-500 to-green-600',
-      hoverColor: 'hover:from-green-600 hover:to-green-700'
+      color: 'bg-green-500 hover:bg-green-600'
     },
     {
       title: 'Set a budget',
       icon: Target,
       description: 'Take control of your spending and master your cash flow.',
-      color: 'bg-gradient-to-br from-purple-500 to-purple-600',
-      hoverColor: 'hover:from-purple-600 hover:to-purple-700'
+      color: 'bg-purple-500 hover:bg-purple-600'
     },
     {
       title: 'Reduce debt',
       icon: CreditCard,
       description: 'Create a strategic plan to eliminate debt and regain financial freedom.',
-      color: 'bg-gradient-to-br from-red-500 to-red-600',
-      hoverColor: 'hover:from-red-600 hover:to-red-700'
+      color: 'bg-red-500 hover:bg-red-600'
     },
     {
       title: 'Buy an investment property',
       icon: Building,
       description: 'Build wealth through property investment with expert guidance.',
-      color: 'bg-gradient-to-br from-orange-500 to-orange-600',
-      hoverColor: 'hover:from-orange-600 hover:to-orange-700'
+      color: 'bg-orange-500 hover:bg-orange-600'
     },
     {
       title: 'Pay off home loan sooner',
       icon: Calculator,
       description: 'Save thousands in interest and own your home faster.',
-      color: 'bg-gradient-to-br from-teal-500 to-teal-600',
-      hoverColor: 'hover:from-teal-600 hover:to-teal-700'
+      color: 'bg-teal-500 hover:bg-teal-600'
     },
     {
       title: 'Grow investments',
       icon: TrendingUp,
       description: 'Maximize your investment returns with personalized strategies.',
-      color: 'bg-gradient-to-br from-indigo-500 to-indigo-600',
-      hoverColor: 'hover:from-indigo-600 hover:to-indigo-700'
+      color: 'bg-indigo-500 hover:bg-indigo-600'
     },
     {
       title: 'Maximise super',
       icon: PiggyBank,
       description: 'Boost your retirement savings and reduce your tax burden.',
-      color: 'bg-gradient-to-br from-pink-500 to-pink-600',
-      hoverColor: 'hover:from-pink-600 hover:to-pink-700'
+      color: 'bg-pink-500 hover:bg-pink-600'
     }
   ];
 
@@ -92,43 +83,38 @@ const LandingSection: React.FC<LandingSectionProps> = ({ onStartAssessment, isLo
       }}
     >
       <div className="absolute inset-0 bg-black/50"></div>
-      <div className="container px-4 md:px-6 text-center relative z-10">
-        <div className="mb-8">
+      <div className="container px-4 md:px-6 text-center relative z-10 max-w-6xl">
+        <div className="mb-12">
           <h1 className="text-4xl md:text-6xl font-bold text-white mb-4">
             Financial health check
           </h1>
           <p className="text-xl text-white/90 mb-2">
             Get a clear picture of your finances
           </p>
-          <p className="text-lg text-white/80">
+          <p className="text-lg text-white/80 mb-8">
             Select your primary goal to get started - no sign up required!
           </p>
         </div>
 
-        <div className="max-w-6xl mx-auto mb-8">
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+        <div className="mb-12">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
             {goals.map((goal) => {
               const Icon = goal.icon;
               return (
-                <Card 
+                <button
                   key={goal.title}
-                  className={`${goal.color} ${goal.hoverColor} border-0 text-white cursor-pointer transition-all duration-300 transform hover:scale-105 ${
-                    selectedGoal === goal.title ? 'ring-4 ring-white scale-105' : ''
-                  }`}
                   onClick={() => handleGoalSelect(goal.title)}
+                  className={`
+                    ${goal.color} 
+                    ${selectedGoal === goal.title ? 'ring-4 ring-white scale-105' : ''} 
+                    text-white p-6 rounded-lg transition-all duration-300 transform hover:scale-105 
+                    flex flex-col items-center text-center space-y-3 min-h-[180px] justify-center
+                  `}
                 >
-                  <CardHeader className="text-center pb-2">
-                    <div className="flex justify-center mb-3">
-                      <Icon className="h-8 w-8" />
-                    </div>
-                    <CardTitle className="text-lg">{goal.title}</CardTitle>
-                  </CardHeader>
-                  <CardContent className="pt-0">
-                    <CardDescription className="text-white/90 text-sm">
-                      {goal.description}
-                    </CardDescription>
-                  </CardContent>
-                </Card>
+                  <Icon size={32} className="flex-shrink-0" />
+                  <h3 className="font-semibold text-lg leading-tight">{goal.title}</h3>
+                  <p className="text-sm text-white/90 leading-relaxed">{goal.description}</p>
+                </button>
               );
             })}
           </div>
