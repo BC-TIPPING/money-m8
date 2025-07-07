@@ -11,25 +11,6 @@ interface LandingSectionProps {
 const LandingSection: React.FC<LandingSectionProps> = ({ onStartAssessment, isLoading }) => {
   const [selectedGoal, setSelectedGoal] = useState<string | null>(null);
   const [currentIndex, setCurrentIndex] = useState(0);
-  const componentId = useRef(Math.random().toString(36).substr(2, 9));
-  const renderCount = useRef(0);
-
-  useEffect(() => {
-    renderCount.current += 1;
-    console.log(`[DEBUG] LandingSection ${componentId.current} - Render #${renderCount.current}`);
-    console.log(`[DEBUG] Component mounted/updated at:`, new Date().toISOString());
-    
-    return () => {
-      console.log(`[DEBUG] LandingSection ${componentId.current} - Cleanup`);
-    };
-  }, []);
-
-  useEffect(() => {
-    console.log(`[DEBUG] LandingSection ${componentId.current} - Props changed:`, { 
-      isLoading, 
-      onStartAssessment: typeof onStartAssessment 
-    });
-  }, [isLoading, onStartAssessment]);
 
   const goals = [
     {
@@ -83,13 +64,11 @@ const LandingSection: React.FC<LandingSectionProps> = ({ onStartAssessment, isLo
   ];
 
   const handleGoalSelect = (goal: string) => {
-    console.log(`[DEBUG] Goal selected: ${goal} in component ${componentId.current}`);
     setSelectedGoal(goal);
   };
 
   const handleStartAssessment = () => {
     if (selectedGoal) {
-      console.log(`[DEBUG] Starting assessment with goal: ${selectedGoal} in component ${componentId.current}`);
       onStartAssessment(selectedGoal);
     }
   };
@@ -104,23 +83,8 @@ const LandingSection: React.FC<LandingSectionProps> = ({ onStartAssessment, isLo
 
   const visibleGoals = goals.slice(currentIndex, currentIndex + 3);
 
-  console.log(`[DEBUG] LandingSection ${componentId.current} - Rendering with state:`, { 
-    selectedGoal, 
-    currentIndex, 
-    visibleGoalsCount: visibleGoals.length 
-  });
-
   return (
-    <div 
-      className="min-h-screen w-full relative"
-      data-component-id={componentId.current}
-      data-render-count={renderCount.current}
-    >
-      {/* Debug info - remove in production */}
-      <div className="fixed top-4 left-4 z-50 bg-red-500 text-white p-2 text-xs rounded">
-        Debug: Component {componentId.current} | Render #{renderCount.current}
-      </div>
-
+    <div className="h-screen w-full relative overflow-hidden">
       {/* Background image */}
       <div 
         className="absolute inset-0 w-full h-full bg-cover bg-center bg-no-repeat"
@@ -133,7 +97,7 @@ const LandingSection: React.FC<LandingSectionProps> = ({ onStartAssessment, isLo
       <div className="absolute inset-0 bg-black/40" />
       
       {/* Content */}
-      <div className="relative z-10 min-h-screen flex items-center justify-center">
+      <div className="relative z-10 h-full flex items-center justify-center">
         <div className="w-full max-w-6xl mx-auto px-4 text-center">
           {/* Header */}
           <div className="mb-12">
