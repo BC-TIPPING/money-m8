@@ -84,20 +84,20 @@ const LandingSection: React.FC<LandingSectionProps> = ({ onStartAssessment, isLo
   const visibleGoals = goals.slice(currentIndex, currentIndex + 3);
 
   return (
-    <div className="h-screen w-full relative overflow-hidden">
-      {/* Background image */}
+    <div className="min-h-screen w-full relative overflow-y-auto">
+      {/* Background image - fixed position */}
       <div 
-        className="absolute inset-0 w-full h-full bg-cover bg-center bg-no-repeat"
+        className="fixed inset-0 w-full h-full bg-cover bg-center bg-no-repeat"
         style={{
           backgroundImage: `url('/lovable-uploads/fd9ed9b4-cd2f-46bb-9a60-46979f3803f5.png')`
         }}
       />
       
-      {/* Dark overlay */}
-      <div className="absolute inset-0 bg-black/40" />
+      {/* Dark overlay - fixed position */}
+      <div className="fixed inset-0 bg-black/40" />
       
-      {/* Content */}
-      <div className="relative z-10 h-full flex items-center justify-center">
+      {/* Content - scrollable */}
+      <div className="relative z-10 flex flex-col justify-start items-center py-8">
         <div className="w-full max-w-6xl mx-auto px-4 text-center">
           {/* Header */}
           <div className="mb-12">
