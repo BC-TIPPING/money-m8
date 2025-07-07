@@ -1,25 +1,36 @@
 
-import React from 'react';
-import { useAuth } from "@/contexts/AuthContext";
-import { questions } from "./index/assessmentHooks";
-import { useIndexLogic } from "./index/hooks/useIndexLogic";
-
-// Component imports
 import LandingSection from "./index/LandingSection";
-import AssessmentView from "./index/components/AssessmentView";
-import CalculatorOnlyView from "./index/components/CalculatorOnlyView";
+import AssessmentStepper from "./index/AssessmentStepper";
+import { useAssessmentState, questions } from "./index/assessmentHooks";
+import { useAssessmentData } from "./index/hooks/useAssessmentData";
+import InterestSavedChart from "./index/InterestSavedChart";
+import DebtReductionChart from "./index/DebtReductionChart";
+import BudgetPlanner from "./index/budget-planner";
+import { Card, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { calculateMonthlyAmount, calculateAustralianIncomeTax } from "@/lib/financialCalculations";
+import { useAuth } from "@/contexts/AuthContext";
+import { useEffect } from "react";
+import HouseBuyingCalculator from "./index/HouseBuyingCalculator";
+import ActionItemsSection from "./index/ActionItemsSection";
+import { Link } from "react-router-dom";
+
+// New component imports
 import SaveResultsModal from "./index/components/SaveResultsModal";
 import FloatingActionButtons from "./index/components/FloatingActionButtons";
 import SkipToSummaryButton from "./index/components/SkipToSummaryButton";
 import HeaderButtons from "./index/components/HeaderButtons";
+import { usePDFExport } from "./index/hooks/usePDFExport";
+import { useSavePrompt } from "./index/hooks/useSavePrompt";
 
 const DEBT_GOALS = ['Pay off home loan sooner', 'Reduce debt'];
 
 export default function Index() {
-  const { signOut } = useAuth();
+  const assessment = useAssessmentState();
+  const { user, signOut } = useAuth();
+  const { handleExportToPDF } = usePDFExport();
+
   const {
-    assessment,
-    user,
     aiSummary,
     chartData,
     isPreloaded,
@@ -27,19 +38,46 @@ export default function Index() {
     isGeneratingSummary,
     isComplete,
     generateSummary,
+    handleStartOver,
     handleChangeGoal,
+  } = useAssessmentData(assessment);
+
+  const {
     showSavePrompt,
     handleSaveResults,
     handleContinueAnonymous,
-    handleStartAssessment,
-    handleFullAnalysis,
-    handleStartOverWithReset,
-    handleExportToPDF,
-    isCalculatorOnlyMode,
-    handleBackToGoals,
-  } = useIndexLogic();
+    resetDismissedFlag
+  } = useSavePrompt({ isComplete, user });
+
+  const handleStartAssessment = (goal: string) => {
+    // Allow anonymous users to start assessment immediately
+    assessment.setGoals([goal]);
+    assessment.setShowAssessment(true);
+  };
+  
+  // Remove the localStorage goal handling since we're allowing anonymous access
+  useEffect(() => {
+    if (user) {
+      const goal = localStorage.getItem('selectedGoal');
+      if (goal) {
+        assessment.setGoals([goal]);
+        assessment.setShowAssessment(true);
+        localStorage.removeItem('selectedGoal');
+      }
+    }
+  }, [user, assessment]);
+
+  const handleStartOverWithReset = () => {
+    resetDismissedFlag();
+    handleStartOver();
+  };
 
   const hasDebtGoal = assessment.goals.some(g => DEBT_GOALS.includes(g));
+
+  const totalMonthlyGrossIncome = calculateMonthlyAmount(assessment.incomeSources);
+  const totalAnnualGrossIncome = totalMonthlyGrossIncome * 12;
+  const annualTax = calculateAustralianIncomeTax(totalAnnualGrossIncome);
+  const totalMonthlyNetIncome = totalAnnualGrossIncome > 0 ? (totalAnnualGrossIncome - annualTax) / 12 : 0;
 
   return (
     <div className="relative min-h-screen">
@@ -56,22 +94,55 @@ export default function Index() {
       ) : (
         <>
           <div id="export-content" className={`flex-grow ${isComplete ? 'pb-52' : ''}`}>
-            {/* Show calculator-only mode or full assessment */}
-            {isCalculatorOnlyMode ? (
-              <CalculatorOnlyView 
-                assessment={assessment}
-                onFullAnalysis={handleFullAnalysis}
-              />
-            ) : (
-              <AssessmentView 
-                assessment={assessment}
-                generateSummary={generateSummary}
-                isGeneratingSummary={isGeneratingSummary}
-                aiSummary={aiSummary}
-                chartData={chartData}
-                isComplete={isComplete}
-                onBackToGoals={handleBackToGoals}
-              />
+            <AssessmentStepper 
+              {...assessment} 
+              generateSummary={() => generateSummary({})}
+              isGeneratingSummary={isGeneratingSummary}
+              aiSummary={aiSummary}
+              chartData={chartData}
+            />
+            {isComplete && (
+                <div className="container mx-auto grid gap-6 px-4 py-6 sm:px-6 lg:grid-cols-2 lg:px-8">
+                    {assessment.goals.includes('Buy a house') && (
+                        <HouseBuyingCalculator 
+                          assessmentData={assessment}
+                          totalMonthlyNetIncome={totalMonthlyNetIncome}
+                          totalAnnualGrossIncome={totalAnnualGrossIncome}
+                        />
+                    )}
+                    {assessment.goals.includes('Pay off home loan sooner') && (
+                        <Card>
+                            <CardHeader>
+                                <CardTitle>Pay Off Home Loan Sooner 🚀</CardTitle>
+                                <CardDescription>Use our calculator to see how extra repayments can save you thousands!</CardDescription>
+                            </CardHeader>
+                            <CardFooter>
+                                <Button asChild>
+                                    <Link to="/pay-off-home-loan">Open Calculator</Link>
+                                </Button>
+                            </CardFooter>
+                        </Card>
+                    )}
+                    {assessment.goals.includes('Maximise super') && (
+                        <Card>
+                            <CardHeader>
+                                <CardTitle>Maximise Super 💰</CardTitle>
+                                <CardDescription>Use our calculator to see how extra contributions can boost your retirement savings and lower your tax.</CardDescription>
+                            </CardHeader>
+                            <CardFooter>
+                                <Button asChild>
+                                    <Link to="/maximise-super">Open Calculator</Link>
+                                </Button>
+                            </CardFooter>
+                        </Card>
+                    )}
+                    {assessment.goals.includes('Set a budget') && (
+                        <BudgetPlanner expenseItems={assessment.expenseItems} totalMonthlyNetIncome={totalMonthlyNetIncome} />
+                    )}
+                    {chartData?.debtReductionData && <DebtReductionChart data={chartData.debtReductionData} />}
+                    {chartData?.interestSavedData && <InterestSavedChart data={chartData.interestSavedData} />}
+                    <ActionItemsSection assessmentData={assessment} />
+                </div>
             )}
           </div>
           

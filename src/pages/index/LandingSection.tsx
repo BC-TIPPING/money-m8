@@ -1,210 +1,90 @@
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Home, BookOpen, Target, CreditCard, Building, Calculator, TrendingUp, PiggyBank, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
+import { Loader2 } from "lucide-react";
 
-interface LandingSectionProps {
-  onStartAssessment: (goal: string) => void;
-  isLoading: boolean;
-}
+const goalPanels = [
+  { title: "Buy a house", description: "Turn your dream of homeownership into a reality with a solid plan.", emoji: "🏠" },
+  { title: "Improve financial literacy", description: "Gain the knowledge to make confident financial decisions for your future.", emoji: "📚" },
+  { title: "Set a budget", description: "Take control of your spending and master your cash flow.", emoji: "📊" },
+  { title: "Reduce debt", description: "Create a strategy to pay down debts and achieve financial freedom.", emoji: "💳" },
+  { title: "Grow investments", description: "Make your money work for you and build long-term wealth.", emoji: "📈" },
+  { title: "Save for a purchase", description: "Whether it's a car or a holiday, we'll help you reach your savings goals.", emoji: "🎯" },
+  { title: "Pay off home loan sooner", description: "Learn strategies to clear your mortgage faster and save thousands.", emoji: "🏡" },
+  { title: "Maximise super", description: "Boost your retirement savings and take advantage of tax benefits.", emoji: "💰" },
+];
 
-const LandingSection: React.FC<LandingSectionProps> = ({ onStartAssessment, isLoading }) => {
+const LandingSection = ({ onStartAssessment, isLoading }: { onStartAssessment: (goal: string) => void; isLoading: boolean; }) => {
   const [selectedGoal, setSelectedGoal] = useState<string | null>(null);
-  const [currentIndex, setCurrentIndex] = useState(0);
-
-  const goals = [
-    {
-      title: 'Buy a house',
-      icon: Home,
-      description: 'Turn your dream of homeownership into a reality with a solid plan.',
-      color: 'text-orange-400'
-    },
-    {
-      title: 'Improve financial literacy',
-      icon: BookOpen,
-      description: 'Gain the knowledge to make confident financial decisions for your future.',
-      color: 'text-green-400'
-    },
-    {
-      title: 'Set a budget',
-      icon: Target,
-      description: 'Take control of your spending and master your cash flow.',
-      color: 'text-purple-400'
-    },
-    {
-      title: 'Reduce debt',
-      icon: CreditCard,
-      description: 'Create a strategic plan to eliminate debt and regain financial freedom.',
-      color: 'text-red-400'
-    },
-    {
-      title: 'Buy an investment property',
-      icon: Building,
-      description: 'Build wealth through property investment with expert guidance.',
-      color: 'text-orange-400'
-    },
-    {
-      title: 'Pay off home loan sooner',
-      icon: Calculator,
-      description: 'Save thousands in interest and own your home faster.',
-      color: 'text-teal-400'
-    },
-    {
-      title: 'Grow investments',
-      icon: TrendingUp,
-      description: 'Maximize your investment returns with personalized strategies.',
-      color: 'text-blue-400'
-    },
-    {
-      title: 'Maximise super',
-      icon: PiggyBank,
-      description: 'Boost your retirement savings and reduce your tax burden.',
-      color: 'text-pink-400'
-    }
-  ];
-
-  const handleGoalSelect = (goal: string) => {
-    setSelectedGoal(goal);
-  };
-
-  const handleStartAssessment = () => {
-    if (selectedGoal) {
-      onStartAssessment(selectedGoal);
-    }
-  };
-
-  const nextSlide = () => {
-    setCurrentIndex((prev) => (prev + 1) % Math.max(1, goals.length - 2));
-  };
-
-  const prevSlide = () => {
-    setCurrentIndex((prev) => (prev - 1 + Math.max(1, goals.length - 2)) % Math.max(1, goals.length - 2));
-  };
-
-  const visibleGoals = goals.slice(currentIndex, currentIndex + 3);
 
   return (
-    <div className="min-h-screen w-full relative overflow-y-auto">
-      {/* Background image - fixed position */}
+    <div className="w-full min-h-screen relative flex flex-col items-center justify-center overflow-hidden bg-gradient-to-br from-[#202336] via-[#28365a] to-[#191d29]">
       <div 
-        className="fixed inset-0 w-full h-full bg-cover bg-center bg-no-repeat"
+        className="absolute inset-0 z-0 bg-cover bg-center bg-no-repeat"
         style={{
-          backgroundImage: `url('/lovable-uploads/fd9ed9b4-cd2f-46bb-9a60-46979f3803f5.png')`
+          backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.5)), url('/lovable-uploads/3b4aa2ff-8ca4-4b86-85e7-85b1d027ca73.png')`
         }}
       />
-      
-      {/* Dark overlay - fixed position */}
-      <div className="fixed inset-0 bg-black/40" />
-      
-      {/* Content - scrollable */}
-      <div className="relative z-10 flex flex-col justify-start items-center py-8">
-        <div className="w-full max-w-6xl mx-auto px-4 text-center">
-          {/* Header */}
-          <div className="mb-12">
-            <h1 className="text-4xl md:text-6xl font-bold text-white mb-6">
-              Financial health check
-            </h1>
-            <p className="text-xl text-white/90 mb-2">
-              Get a clear picture of your finances
-            </p>
-            <p className="text-lg text-white/80 mb-8">
-              Select your primary goal to get started - no sign up required!
-            </p>
-          </div>
-
-          {/* Cards carousel */}
-          <div className="mb-12 relative">
-            {/* Navigation buttons */}
-            <button
-              onClick={prevSlide}
-              className="absolute left-0 top-1/2 transform -translate-y-1/2 z-20 bg-white/20 hover:bg-white/30 text-white p-3 rounded-full transition-all backdrop-blur-sm border border-white/20"
-              aria-label="Previous goals"
-            >
-              <ChevronLeft size={24} />
-            </button>
-            
-            <button
-              onClick={nextSlide}
-              className="absolute right-0 top-1/2 transform -translate-y-1/2 z-20 bg-white/20 hover:bg-white/30 text-white p-3 rounded-full transition-all backdrop-blur-sm border border-white/20"
-              aria-label="Next goals"
-            >
-              <ChevronRight size={24} />
-            </button>
-
-            {/* Goal cards */}
-            <div className="flex justify-center gap-6 px-16">
-              {visibleGoals.map((goal, index) => {
-                const Icon = goal.icon;
-                const isSelected = selectedGoal === goal.title;
-                
-                return (
-                  <div
-                    key={`${goal.title}-${currentIndex + index}`}
-                    onClick={() => handleGoalSelect(goal.title)}
-                    className={`
-                      relative cursor-pointer transform transition-all duration-300 hover:scale-105
-                      ${isSelected ? 'scale-105' : ''}
-                      w-80 h-96
-                    `}
-                  >
-                    {/* Card background */}
-                    <div className={`
-                      absolute inset-0 bg-black/30 backdrop-blur-sm rounded-2xl border transition-all duration-300
-                      ${isSelected ? 'border-white border-2 shadow-2xl shadow-white/20' : 'border-white/20'}
-                    `} />
-                    
-                    {/* Card content */}
-                    <div className="relative z-10 h-full flex flex-col items-center justify-center p-8 text-center">
-                      <Icon size={64} className={`mb-6 ${goal.color}`} />
-                      <h3 className="text-xl font-bold text-white mb-4 leading-tight">
-                        {goal.title}
-                      </h3>
-                      <p className="text-sm text-white/80 leading-relaxed">
-                        {goal.description}
-                      </p>
+      <div className="absolute inset-0 z-1 bg-gradient-to-br from-emerald-900/20 via-blue-900/30 to-purple-900/20" />
+      <main className="relative z-10 w-full flex flex-col items-center mt-6 md:mt-8 px-2">
+        <h1 className="text-4xl md:text-5xl font-extrabold mb-2 md:mb-2 text-center tracking-tight text-white drop-shadow-2xl">
+          Financial health check
+        </h1>
+        <div className="text-2xl md:text-3xl font-semibold text-white/90 mb-0 mt-2 text-center drop-shadow-lg">
+          Get a clear picture of your finances
+        </div>
+        <div className="text-lg md:text-xl text-white/80 mb-4 mt-2 max-w-2xl text-center drop-shadow font-medium">
+          Select your primary goal to get started - no sign up required!
+        </div>
+        <section className="w-full max-w-3xl mb-8 px-14">
+          <Carousel opts={{ align: "center", loop: false }} className="w-full">
+            <CarouselContent>
+              {goalPanels.map((panel, i) => (
+                <CarouselItem key={i} className="py-4 cursor-pointer md:basis-1/2 lg:basis-1/3 self-stretch" onClick={() => setSelectedGoal(panel.title)}>
+                  <div className="p-1 h-full">
+                    <div className={`bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl shadow-xl p-6 h-full flex flex-col items-center gap-3 transition-all hover:scale-105 hover:bg-white/15 ${selectedGoal === panel.title ? 'ring-4 ring-emerald-500 bg-white/20' : 'ring-transparent'}`}>
+                      <span className="text-4xl">{panel.emoji}</span>
+                      <span className="font-bold text-xl text-white text-center">{panel.title}</span>
+                      <span className="text-base text-white/80 text-center">{panel.description}</span>
                     </div>
                   </div>
-                );
-              })}
-            </div>
-          </div>
-
-          {/* Action button */}
-          <div className="flex flex-col items-center gap-4 mb-12">
-            <Button 
-              size="lg" 
-              onClick={handleStartAssessment}
-              disabled={!selectedGoal || isLoading}
-              className="bg-white/20 backdrop-blur-sm text-white hover:bg-white/30 px-8 py-4 text-lg font-semibold border border-white/30 transition-all duration-300"
-            >
-              {isLoading ? 'Starting...' : 'Start Assessment'}
-            </Button>
-            
-            {!selectedGoal && (
-              <p className="text-white/60 text-sm">
-                Please select a goal to continue
-              </p>
-            )}
-          </div>
-
-          {/* Footer */}
-          <div className="space-y-4">
-            <p className="text-white/60 text-sm">
-              Try our assessment anonymously or{' '}
-              <button className="underline hover:text-white transition-colors">
-                sign in
-              </button>{' '}
-              to save your results for later
-            </p>
-            
-            <p className="text-white/40 text-xs">
-              © 2025 ClearFinAI | Financial clarity for Australians
-            </p>
-          </div>
-        </div>
-      </div>
+                </CarouselItem>
+              ))}
+            </CarouselContent>
+            <CarouselPrevious className="bg-white/20 border-white/30 text-white hover:bg-white/30" />
+            <CarouselNext className="bg-white/20 border-white/30 text-white hover:bg-white/30" />
+          </Carousel>
+        </section>
+        <Button 
+          size="lg" 
+          className="text-xl px-12 py-6 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-semibold shadow-2xl transform hover:scale-105 transition-all disabled:bg-gray-400 disabled:cursor-not-allowed disabled:transform-none"
+          onClick={() => {
+            if (selectedGoal) {
+              onStartAssessment(selectedGoal);
+            }
+          }}
+          disabled={!selectedGoal || isLoading}
+        >
+          {isLoading ? (
+            <>
+              <Loader2 className="mr-2 h-6 w-6 animate-spin" />
+              Loading...
+            </>
+          ) : (
+            "Start Assessment"
+          )}
+        </Button>
+        {!selectedGoal && <p className="text-white/70 mt-4 animate-pulse">Please select a goal to continue</p>}
+        <p className="text-white/60 mt-6 text-sm text-center max-w-lg">
+          Try our assessment anonymously or <span className="underline">sign in</span> to save your results for later
+        </p>
+      </main>
+      <footer className="mt-12 mb-6 text-sm text-white/60 z-10 text-center">
+        &copy; {new Date().getFullYear()} ClearFin.AI&nbsp;&nbsp;|&nbsp;&nbsp;Financial clarity for Australians
+      </footer>
     </div>
   );
-};
+}
 
 export default LandingSection;
