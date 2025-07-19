@@ -39,15 +39,9 @@ const LandingSection = ({ onStartAssessment, isLoading }: { onStartAssessment: (
       <div className="absolute inset-0 z-1 bg-gradient-to-br from-emerald-900/20 via-blue-900/30 to-purple-900/20" />
       
       <main className="relative z-10 w-full flex flex-col items-center mt-6 md:mt-8 px-2">
-        <h1 className="text-4xl md:text-5xl font-extrabold mb-2 md:mb-2 text-center tracking-tight text-white drop-shadow-2xl">
-          Financial health check
+        <h1 className="text-4xl md:text-5xl font-extrabold mb-8 text-center tracking-tight text-white drop-shadow-2xl">
+          Money M8
         </h1>
-        <div className="text-2xl md:text-3xl font-semibold text-white/90 mb-2 mt-2 text-center drop-shadow-lg">
-          Get a clear picture of your finances
-        </div>
-        <div className="text-lg md:text-xl text-white/80 mb-8 mt-2 max-w-2xl text-center drop-shadow font-medium">
-          Ask our AI assistant trained on Australian financial regulations or select your primary goal below
-        </div>
 
         <AISearchSection onGoalSuggested={handleGoalSuggestion} />
 
