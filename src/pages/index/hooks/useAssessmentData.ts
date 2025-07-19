@@ -1,4 +1,3 @@
-
 import { useState, useEffect, useMemo } from "react";
 import { useToast } from "@/components/ui/use-toast";
 import { type Database } from "@/integrations/supabase/types";
@@ -18,6 +17,7 @@ export function useAssessmentData(assessment: AssessmentState) {
   const [chartData, setChartData] = useState<any | null>(null);
   const [isPreloaded, setIsPreloaded] = useState(false);
   const [assessmentId, setAssessmentId] = useState<string | null>(null);
+  const [hasCompletedAssessment, setHasCompletedAssessment] = useState(false);
 
   // Only fetch assessment if user is logged in
   const { data: existingAssessment, isLoading: isLoadingAssessment, isSuccess: isFetchSuccess } = useFetchAssessment(user?.id ?? null);
@@ -75,6 +75,13 @@ export function useAssessmentData(assessment: AssessmentState) {
 
   const isComplete = assessment.step >= questions.length;
 
+  // Track if assessment has been completed
+  useEffect(() => {
+    if (isComplete) {
+      setHasCompletedAssessment(true);
+    }
+  }, [isComplete]);
+
   // Only auto-save for logged-in users
   useEffect(() => {
     if (isComplete && !isSubmitted && !isSaving && assessmentData && user) {
@@ -115,11 +122,24 @@ export function useAssessmentData(assessment: AssessmentState) {
 
         toast({ title: "Welcome back!", description: "We've pre-filled your previous assessment data." });
         setIsPreloaded(true);
+        setHasCompletedAssessment(true);
         assessment.setShowAssessment(true);
     }
   }, [isFetchSuccess, user, existingAssessment, toast]);
 
   const handleStartOver = () => {
+    // If assessment was completed, go directly to summary (skip to end)
+    if (hasCompletedAssessment) {
+      assessment.setStep(questions.length);
+      assessment.setShowAssessment(true);
+      toast({ 
+        title: "Assessment Skipped", 
+        description: "Since you've completed the assessment before, we've taken you directly to the results." 
+      });
+      return;
+    }
+
+    // Otherwise, do a full reset
     assessment.setStep(0);
     assessment.setEmploymentStatus(undefined);
     assessment.setHasRegularIncome(undefined);
@@ -141,15 +161,49 @@ export function useAssessmentData(assessment: AssessmentState) {
     setChartData(null);
     setAssessmentId(null);
     setIsPreloaded(false);
+    setHasCompletedAssessment(false);
   };
 
   const handleChangeGoal = () => {
+    // If assessment was completed, go directly to summary with new goal
+    if (hasCompletedAssessment) {
+      setAiSummary(null);
+      setChartData(null);
+      setIsSubmitted(false);
+      assessment.setGoals([]);
+      assessment.setStep(0);
+      assessment.setShowAssessment(false);
+      toast({ 
+        title: "Goal Changed", 
+        description: "Select your new goal. Your previous assessment data will be preserved." 
+      });
+      return;
+    }
+
+    // Standard goal change flow
     setAiSummary(null);
     setChartData(null);
     setIsSubmitted(false);
     assessment.setGoals([]);
     assessment.setStep(0);
     assessment.setShowAssessment(false);
+  };
+
+  const handleSetBudgetGoal = () => {
+    if (!assessment.goals.includes('Set a budget')) {
+      const newGoals = [...assessment.goals, 'Set a budget'];
+      assessment.setGoals(newGoals);
+      
+      // If we have assessment data, regenerate summary
+      if (hasCompletedAssessment) {
+        generateSummary({});
+      }
+      
+      toast({ 
+        title: "Budget Goal Added", 
+        description: "We've added 'Set a budget' to your goals and updated your recommendations." 
+      });
+    }
   };
 
   // For anonymous users, create a temporary assessment data object for AI generation
@@ -184,8 +238,10 @@ export function useAssessmentData(assessment: AssessmentState) {
     generateSummary,
     handleStartOver,
     handleChangeGoal,
+    handleSetBudgetGoal,
     assessmentId,
     updateHomeLoanExtraRepayment,
     isUpdatingRepayment,
+    hasCompletedAssessment,
   };
 }

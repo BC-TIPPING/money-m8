@@ -20,6 +20,9 @@ import SaveResultsModal from "./index/components/SaveResultsModal";
 import FloatingActionButtons from "./index/components/FloatingActionButtons";
 import SkipToSummaryButton from "./index/components/SkipToSummaryButton";
 import HeaderButtons from "./index/components/HeaderButtons";
+import GoalNavigationHeader from "./index/components/GoalNavigationHeader";
+import DebtSnowballCalculator from "./index/DebtSnowballCalculator";
+import InvestmentGrowthCalculator from "./index/InvestmentGrowthCalculator";
 import { usePDFExport } from "./index/hooks/usePDFExport";
 import { useSavePrompt } from "./index/hooks/useSavePrompt";
 
@@ -40,6 +43,8 @@ export default function Index() {
     generateSummary,
     handleStartOver,
     handleChangeGoal,
+    handleSetBudgetGoal,
+    hasCompletedAssessment,
   } = useAssessmentData(assessment);
 
   const {
@@ -78,6 +83,8 @@ export default function Index() {
   const totalAnnualGrossIncome = totalMonthlyGrossIncome * 12;
   const annualTax = calculateAustralianIncomeTax(totalAnnualGrossIncome);
   const totalMonthlyNetIncome = totalAnnualGrossIncome > 0 ? (totalAnnualGrossIncome - annualTax) / 12 : 0;
+  const totalMonthlyExpenses = calculateMonthlyAmount(assessment.expenseItems);
+  const monthlySurplus = totalMonthlyNetIncome - totalMonthlyExpenses;
 
   return (
     <div className="relative min-h-screen">
@@ -93,6 +100,12 @@ export default function Index() {
         <LandingSection onStartAssessment={handleStartAssessment} isLoading={isLoadingAssessment} />
       ) : (
         <>
+          <GoalNavigationHeader 
+            currentGoals={assessment.goals}
+            onBackToGoals={handleChangeGoal}
+            showBackButton={assessment.showAssessment}
+          />
+          
           <div id="export-content" className={`flex-grow ${isComplete ? 'pb-52' : ''}`}>
             <AssessmentStepper 
               {...assessment} 
@@ -139,9 +152,24 @@ export default function Index() {
                     {assessment.goals.includes('Set a budget') && (
                         <BudgetPlanner expenseItems={assessment.expenseItems} totalMonthlyNetIncome={totalMonthlyNetIncome} />
                     )}
+                    {assessment.goals.includes('Reduce debt') && assessment.debtDetails && assessment.debtDetails.length > 0 && (
+                        <DebtSnowballCalculator 
+                          debtDetails={assessment.debtDetails}
+                          totalMonthlySurplus={monthlySurplus}
+                        />
+                    )}
+                    {assessment.goals.includes('Grow investments') && (
+                        <InvestmentGrowthCalculator 
+                          defaultInvestmentAmount={Math.max(monthlySurplus * 0.7, 100)}
+                          currentAge={30}
+                        />
+                    )}
                     {chartData?.debtReductionData && <DebtReductionChart data={chartData.debtReductionData} />}
                     {chartData?.interestSavedData && <InterestSavedChart data={chartData.interestSavedData} />}
-                    <ActionItemsSection assessmentData={assessment} />
+                    <ActionItemsSection 
+                      assessmentData={assessment} 
+                      onSetBudgetGoal={handleSetBudgetGoal}
+                    />
                 </div>
             )}
           </div>

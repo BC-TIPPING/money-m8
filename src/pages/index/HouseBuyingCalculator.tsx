@@ -26,20 +26,23 @@ const HouseBuyingCalculator: React.FC<HouseBuyingCalculatorProps> = ({
   // Calculate monthly expenses
   const totalMonthlyExpenses = calculateMonthlyAmount(assessmentData.expenseItems);
   
-  // Calculate available for housing (30% of net income is recommended)
-  const recommendedHousingBudget = totalMonthlyNetIncome * 0.3;
+  // Use 30% debt-to-income ratio as the standard for house buying
+  const maxHousingPayment = totalMonthlyNetIncome * 0.3;
   
-  // Calculate maximum borrowing capacity using 6x annual income rule
-  const maxBorrowingCapacity = totalAnnualGrossIncome * 6;
-  
-  // Calculate maximum purchase price
-  const maxPurchasePrice = maxBorrowingCapacity + deposit;
-  
-  // Calculate monthly repayment for max loan
+  // Calculate maximum loan amount based on 30% debt-to-income ratio
   const monthlyRate = interestRate / 100 / 12;
   const numPayments = loanTerm * 12;
-  const monthlyPayment = maxBorrowingCapacity > 0 
-    ? (maxBorrowingCapacity * monthlyRate * Math.pow(1 + monthlyRate, numPayments)) / 
+  const maxLoanAmount = maxHousingPayment > 0 
+    ? (maxHousingPayment * (Math.pow(1 + monthlyRate, numPayments) - 1)) / 
+      (monthlyRate * Math.pow(1 + monthlyRate, numPayments))
+    : 0;
+  
+  // Calculate maximum purchase price
+  const maxPurchasePrice = maxLoanAmount + deposit;
+  
+  // Calculate monthly payment for max loan
+  const monthlyPayment = maxLoanAmount > 0 
+    ? (maxLoanAmount * monthlyRate * Math.pow(1 + monthlyRate, numPayments)) / 
       (Math.pow(1 + monthlyRate, numPayments) - 1)
     : 0;
   
@@ -55,10 +58,15 @@ const HouseBuyingCalculator: React.FC<HouseBuyingCalculatorProps> = ({
   
   // Calculate improvement scenarios
   const improvementWithoutCreditCard = creditCardLimit > 0 
-    ? (totalAnnualGrossIncome + creditCardLimit * 0.2) * 6 + deposit
+    ? maxPurchasePrice + (creditCardLimit * 0.5) // Rough estimate of increased capacity
     : maxPurchasePrice;
   
-  const improvementWith20Percent = totalAnnualGrossIncome * 1.2 * 6 + deposit;
+  const improvementWith20Percent = totalMonthlyNetIncome * 1.2 * 0.3; // 20% income increase
+  const improvedLoanAmount = improvementWith20Percent > 0 
+    ? (improvementWith20Percent * (Math.pow(1 + monthlyRate, numPayments) - 1)) / 
+      (monthlyRate * Math.pow(1 + monthlyRate, numPayments))
+    : 0;
+  const improvementWith20PercentPrice = improvedLoanAmount + deposit;
 
   return (
     <Card className="w-full">
@@ -68,7 +76,7 @@ const HouseBuyingCalculator: React.FC<HouseBuyingCalculatorProps> = ({
           House Buying Calculator 🏠
         </CardTitle>
         <CardDescription>
-          Based on your income and expenses, here's what you could potentially borrow for a home.
+          Based on the 30% debt-to-income ratio rule, here's what you could potentially afford for a home.
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-6">
@@ -109,26 +117,26 @@ const HouseBuyingCalculator: React.FC<HouseBuyingCalculatorProps> = ({
 
         {/* Results Section */}
         <div className="bg-blue-50 rounded-lg p-4 space-y-3">
-          <h3 className="font-semibold text-lg text-blue-900">Your Borrowing Capacity</h3>
+          <h3 className="font-semibold text-lg text-blue-900">Your Borrowing Capacity (30% Rule)</h3>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <p className="text-sm text-gray-600">Maximum Loan Amount:</p>
+              <p className="text-sm text-gray-600">Maximum Monthly Payment:</p>
               <p className="text-2xl font-bold text-green-600">
-                ${maxBorrowingCapacity.toLocaleString()}
+                ${maxHousingPayment.toLocaleString('en-US', { maximumFractionDigits: 0 })}
               </p>
             </div>
             <div>
-              <p className="text-sm text-gray-600">Maximum Purchase Price:</p>
-              <p className="text-2xl font-bold text-blue-600">
-                ${maxPurchasePrice.toLocaleString()}
+              <p className="text-sm text-gray-600">Maximum Loan Amount:</p>
+              <p className="text-2xl font-bold text-green-600">
+                ${maxLoanAmount.toLocaleString('en-US', { maximumFractionDigits: 0 })}
               </p>
             </div>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <p className="text-sm text-gray-600">Estimated Monthly Repayment:</p>
-              <p className="text-xl font-semibold">
-                ${monthlyPayment.toLocaleString('en-US', { maximumFractionDigits: 0 })}
+              <p className="text-sm text-gray-600">Maximum Purchase Price:</p>
+              <p className="text-2xl font-bold text-blue-600">
+                ${maxPurchasePrice.toLocaleString('en-US', { maximumFractionDigits: 0 })}
               </p>
             </div>
             <div>
@@ -140,16 +148,52 @@ const HouseBuyingCalculator: React.FC<HouseBuyingCalculatorProps> = ({
           </div>
         </div>
 
+        {/* Financial Health Check */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <Card>
+            <CardContent className="p-4">
+              <div className="text-center">
+                <p className="text-sm text-gray-600">Net Monthly Income</p>
+                <p className="text-lg font-semibold text-gray-900">
+                  ${totalMonthlyNetIncome.toLocaleString('en-US', { maximumFractionDigits: 0 })}
+                </p>
+              </div>
+            </CardContent>
+          </Card>
+          
+          <Card>
+            <CardContent className="p-4">
+              <div className="text-center">
+                <p className="text-sm text-gray-600">Current Expenses</p>
+                <p className="text-lg font-semibold text-gray-900">
+                  ${totalMonthlyExpenses.toLocaleString('en-US', { maximumFractionDigits: 0 })}
+                </p>
+              </div>
+            </CardContent>
+          </Card>
+          
+          <Card>
+            <CardContent className="p-4">
+              <div className="text-center">
+                <p className="text-sm text-gray-600">Available for Housing</p>
+                <p className="text-lg font-semibold text-green-600">
+                  ${maxHousingPayment.toLocaleString('en-US', { maximumFractionDigits: 0 })}
+                </p>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
         {/* Recommendations */}
         <div className="space-y-3">
-          <h3 className="font-semibold text-lg">How to Improve Your Borrowing Capacity</h3>
+          <h3 className="font-semibold text-lg">How to Improve Your Buying Power</h3>
           
           {creditCardLimit > 0 && (
             <Alert>
               <TrendingUp className="h-4 w-4" />
               <AlertDescription>
-                <strong>Pay off credit card debt:</strong> Reducing your credit card balance by ${creditCardLimit.toLocaleString()} 
-                could increase your borrowing capacity to ${improvementWithoutCreditCard.toLocaleString()}.
+                <strong>Pay off credit card debt:</strong> Reducing your credit card balance could 
+                increase your borrowing capacity to approximately ${improvementWithoutCreditCard.toLocaleString()}.
               </AlertDescription>
             </Alert>
           )}
@@ -157,29 +201,39 @@ const HouseBuyingCalculator: React.FC<HouseBuyingCalculatorProps> = ({
           <Alert>
             <TrendingUp className="h-4 w-4" />
             <AlertDescription>
-              <strong>Increase your income:</strong> A 20% income increase could boost your borrowing capacity to ${improvementWith20Percent.toLocaleString()}.
+              <strong>Increase your income:</strong> A 20% income increase could boost your maximum 
+              purchase price to ${improvementWith20PercentPrice.toLocaleString()}.
             </AlertDescription>
           </Alert>
           
-          {debtToIncomeRatio > 30 && (
+          {totalMonthlyExpenses > totalMonthlyNetIncome * 0.7 && (
             <Alert>
               <AlertCircle className="h-4 w-4" />
               <AlertDescription>
-                <strong>Reduce expenses:</strong> Your debt-to-income ratio is above 30%, which may affect loan approval. 
-                Consider reducing expenses by ${((debtToIncomeRatio - 30) / 100 * totalMonthlyNetIncome).toLocaleString()} per month.
+                <strong>Reduce expenses:</strong> Your current expenses are high relative to income. 
+                Consider reducing non-essential spending to improve your financial position.
               </AlertDescription>
             </Alert>
           )}
+          
+          <Alert>
+            <TrendingUp className="h-4 w-4" />
+            <AlertDescription>
+              <strong>Save a larger deposit:</strong> Every $10,000 extra in deposit increases your 
+              buying power by $10,000 and reduces your monthly payments.
+            </AlertDescription>
+          </Alert>
         </div>
 
         {/* Action Items */}
         <div className="bg-green-50 rounded-lg p-4">
-          <h3 className="font-semibold text-green-900 mb-2">Next Steps</h3>
+          <h3 className="font-semibold text-green-900 mb-2">Next Steps to Homeownership</h3>
           <ul className="space-y-1 text-sm text-green-800">
-            <li>• Save for a larger deposit to reduce monthly repayments</li>
             <li>• Get pre-approval from multiple lenders to compare rates</li>
-            <li>• Consider location and property type within your budget</li>
-            <li>• Factor in additional costs like stamp duty and legal fees</li>
+            <li>• Factor in additional costs: stamp duty, legal fees, building inspection</li>
+            <li>• Consider location and property type within your budget range</li>
+            <li>• Build your deposit while house hunting to improve your position</li>
+            <li>• Maintain stable employment and good credit score</li>
           </ul>
         </div>
       </CardContent>

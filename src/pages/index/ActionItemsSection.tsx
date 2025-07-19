@@ -8,9 +8,13 @@ import { calculateMonthlyAmount } from "@/lib/financialCalculations";
 
 interface ActionItemsSectionProps {
   assessmentData: any;
+  onSetBudgetGoal?: () => void;
 }
 
-const ActionItemsSection: React.FC<ActionItemsSectionProps> = ({ assessmentData }) => {
+const ActionItemsSection: React.FC<ActionItemsSectionProps> = ({ 
+  assessmentData, 
+  onSetBudgetGoal 
+}) => {
   const totalMonthlyIncome = calculateMonthlyAmount(assessmentData.incomeSources);
   const totalMonthlyExpenses = calculateMonthlyAmount(assessmentData.expenseItems);
   const monthlySurplus = totalMonthlyIncome - totalMonthlyExpenses;
@@ -143,6 +147,12 @@ const ActionItemsSection: React.FC<ActionItemsSectionProps> = ({ assessmentData 
     }
   };
 
+  const handleCreateBudget = () => {
+    if (onSetBudgetGoal) {
+      onSetBudgetGoal();
+    }
+  };
+
   return (
     <Card className="w-full lg:col-span-2">
       <CardHeader>
@@ -193,7 +203,11 @@ const ActionItemsSection: React.FC<ActionItemsSectionProps> = ({ assessmentData 
             Create a comprehensive budget to track your progress and stay on top of your financial goals.
           </p>
           <div className="flex gap-2">
-            <Button size="sm" className="bg-blue-600 hover:bg-blue-700">
+            <Button 
+              size="sm" 
+              className="bg-blue-600 hover:bg-blue-700"
+              onClick={handleCreateBudget}
+            >
               Create My Budget
             </Button>
             <Button asChild size="sm" variant="outline">
