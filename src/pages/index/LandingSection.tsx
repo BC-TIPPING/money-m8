@@ -3,6 +3,7 @@ import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
 import { Loader2 } from "lucide-react";
+import AISearchSection from "./components/AISearchSection";
 
 const goalPanels = [
   { title: "Buy a house", description: "Turn your dream of homeownership into a reality with a solid plan.", emoji: "🏠" },
@@ -18,26 +19,44 @@ const goalPanels = [
 const LandingSection = ({ onStartAssessment, isLoading }: { onStartAssessment: (goal: string) => void; isLoading: boolean; }) => {
   const [selectedGoal, setSelectedGoal] = useState<string | null>(null);
 
+  const handleGoalSuggestion = (goal: string) => {
+    setSelectedGoal(goal);
+    // Scroll to goals section
+    const goalsSection = document.getElementById('goals-section');
+    if (goalsSection) {
+      goalsSection.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
+
   return (
     <div className="w-full min-h-screen relative flex flex-col items-center justify-center overflow-hidden bg-gradient-to-br from-[#202336] via-[#28365a] to-[#191d29]">
       <div 
         className="absolute inset-0 z-0 bg-cover bg-center bg-no-repeat"
         style={{
-          backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.5)), url('/lovable-uploads/3b4aa2ff-8ca4-4b86-85e7-85b1d027ca73.png')`
+          backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.75), rgba(0, 0, 0, 0.6)), url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZGVmcz48cGF0dGVybiBpZD0iYXVzdHJhbGlhbl9jdXJyZW5jeSIgcGF0dGVyblVuaXRzPSJ1c2VyU3BhY2VPblVzZSIgd2lkdGg9IjEwMCIgaGVpZ2h0PSIxMDAiPjxnIGZpbGw9Im5vbmUiIHN0cm9rZT0iIzAwRkY4MCIgc3Ryb2tlLXdpZHRoPSIwLjUiIG9wYWNpdHk9IjAuMSI+PGNpcmNsZSBjeD0iMjAiIGN5PSIyMCIgcj0iMTUiLz48Y2lyY2xlIGN4PSI4MCIgY3k9IjIwIiByPSIxMCIvPjxjaXJjbGUgY3g9IjUwIiBjeT0iNTAiIHI9IjEyIi8+PGNpcmNsZSBjeD0iMjAiIGN5PSI4MCIgcj0iOCIvPjxjaXJjbGUgY3g9IjgwIiBjeT0iODAiIHI9IjE0Ii8+PHBhdGggZD0iTTEwIDEwTDkwIDkwTTkwIDEwTDEwIDkwIi8+PC9nPjx0ZXh0IHg9IjQ1IiB5PSI1NSIgZm9udC1mYW1pbHk9IkFyaWFsIiBmb250LXNpemU9IjEyIiBmaWxsPSIjMDBGRjgwIiBvcGFjaXR5PSIwLjEiPiQ8L3RleHQ+PC9wYXR0ZXJuPjwvZGVmcz48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSJ1cmwoI2F1c3RyYWxpYW5fY3VycmVuY3kpIi8+PC9zdmc+')`
         }}
       />
       <div className="absolute inset-0 z-1 bg-gradient-to-br from-emerald-900/20 via-blue-900/30 to-purple-900/20" />
+      
       <main className="relative z-10 w-full flex flex-col items-center mt-6 md:mt-8 px-2">
         <h1 className="text-4xl md:text-5xl font-extrabold mb-2 md:mb-2 text-center tracking-tight text-white drop-shadow-2xl">
           Financial health check
         </h1>
-        <div className="text-2xl md:text-3xl font-semibold text-white/90 mb-0 mt-2 text-center drop-shadow-lg">
+        <div className="text-2xl md:text-3xl font-semibold text-white/90 mb-2 mt-2 text-center drop-shadow-lg">
           Get a clear picture of your finances
         </div>
-        <div className="text-lg md:text-xl text-white/80 mb-4 mt-2 max-w-2xl text-center drop-shadow font-medium">
-          Select your primary goal to get started - no sign up required!
+        <div className="text-lg md:text-xl text-white/80 mb-8 mt-2 max-w-2xl text-center drop-shadow font-medium">
+          Ask our AI assistant trained on Australian financial regulations or select your primary goal below
         </div>
-        <section className="w-full max-w-3xl mb-8 px-14">
+
+        <AISearchSection onGoalSuggested={handleGoalSuggestion} />
+
+        <section id="goals-section" className="w-full max-w-3xl mb-8 px-14">
+          <div className="text-center mb-6">
+            <h2 className="text-2xl font-bold text-white mb-2">Choose Your Financial Goal</h2>
+            <p className="text-white/70">Or browse our goal options below - no sign up required!</p>
+          </div>
+          
           <Carousel opts={{ align: "center", loop: false }} className="w-full">
             <CarouselContent>
               {goalPanels.map((panel, i) => (
@@ -56,6 +75,7 @@ const LandingSection = ({ onStartAssessment, isLoading }: { onStartAssessment: (
             <CarouselNext className="bg-white/20 border-white/30 text-white hover:bg-white/30" />
           </Carousel>
         </section>
+        
         <Button 
           size="lg" 
           className="text-xl px-12 py-6 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-semibold shadow-2xl transform hover:scale-105 transition-all disabled:bg-gray-400 disabled:cursor-not-allowed disabled:transform-none"
@@ -80,6 +100,7 @@ const LandingSection = ({ onStartAssessment, isLoading }: { onStartAssessment: (
           Try our assessment anonymously or <span className="underline">sign in</span> to save your results for later
         </p>
       </main>
+      
       <footer className="mt-12 mb-6 text-sm text-white/60 z-10 text-center">
         &copy; {new Date().getFullYear()} ClearFin.AI&nbsp;&nbsp;|&nbsp;&nbsp;Financial clarity for Australians
       </footer>
