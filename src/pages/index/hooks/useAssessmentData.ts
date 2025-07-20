@@ -36,7 +36,6 @@ export function useAssessmentData(assessment: AssessmentState) {
       investment_experience: assessment.investmentExperience,
       goals: assessment.goals,
       other_goal: assessment.otherGoal,
-      goal_timeframe: assessment.goalTimeframe,
       debt_types: assessment.debtTypes,
       debt_details: assessment.debtDetails,
       debt_management_confidence: assessment.debtManagementConfidence,
@@ -52,7 +51,6 @@ export function useAssessmentData(assessment: AssessmentState) {
     assessment.investmentExperience,
     assessment.goals,
     assessment.otherGoal,
-    assessment.goalTimeframe,
     assessment.debtTypes,
     assessment.debtDetails,
     assessment.debtManagementConfidence,
@@ -114,7 +112,7 @@ export function useAssessmentData(assessment: AssessmentState) {
         assessment.setFinancialKnowledgeLevel(typedAssessment.financial_knowledge_level ?? undefined);
         assessment.setInvestmentExperience(typedAssessment.investment_experience ?? []);
         assessment.setOtherGoal(typedAssessment.other_goal ?? "");
-        assessment.setGoalTimeframe(typedAssessment.goal_timeframe ?? undefined);
+        
         assessment.setDebtTypes(typedAssessment.debt_types ?? []);
         assessment.setDebtDetails((typedAssessment.debt_details as any) || []);
         assessment.setDebtManagementConfidence(typedAssessment.debt_management_confidence ?? undefined);
@@ -149,7 +147,7 @@ export function useAssessmentData(assessment: AssessmentState) {
     assessment.setInvestmentExperience([]);
     assessment.setGoals([]);
     assessment.setOtherGoal("");
-    assessment.setGoalTimeframe(undefined);
+    
     assessment.setDebtTypes([]);
     assessment.setDebtDetails([]);
     assessment.setDebtManagementConfidence(undefined);
@@ -208,7 +206,7 @@ export function useAssessmentData(assessment: AssessmentState) {
       investment_experience: assessment.investmentExperience,
       goals: assessment.goals,
       other_goal: assessment.otherGoal,
-      goal_timeframe: assessment.goalTimeframe,
+      
       debt_types: assessment.debtTypes,
       debt_details: assessment.debtDetails,
       debt_management_confidence: assessment.debtManagementConfidence,

@@ -64,8 +64,6 @@ interface AssessmentStepperProps {
   setGoals: (val: string[]) => void;
   otherGoal: string;
   setOtherGoal: (val: string) => void;
-  goalTimeframe: string | undefined;
-  setGoalTimeframe: (val: string) => void;
   debtTypes: string[];
   setDebtTypes: (val: string[]) => void;
   debtDetails: DebtDetail[];
@@ -87,7 +85,7 @@ const AssessmentStepper: React.FC<AssessmentStepperProps> = (props) => {
     employmentStatus, setEmploymentStatus, hasRegularIncome, setHasRegularIncome,
     incomeSources, setIncomeSources,
     financialKnowledgeLevel, setFinancialKnowledgeLevel, investmentExperience, setInvestmentExperience,
-    goals, setGoals, otherGoal, setOtherGoal, goalTimeframe, setGoalTimeframe,
+    goals, setGoals, otherGoal, setOtherGoal,
     debtTypes, setDebtTypes, debtDetails, setDebtDetails, debtManagementConfidence, setDebtManagementConfidence,
     freeTextComments, setFreeTextComments,
     generateSummary, isGeneratingSummary, aiSummary, chartData
@@ -208,7 +206,7 @@ const AssessmentStepper: React.FC<AssessmentStepperProps> = (props) => {
       case "financialKnowledge": return financialKnowledgeLevel;
       case "investmentExperience": return investmentExperience.length > 0;
       case "goals": return goals.length > 0;
-      case "goalTimeframe": return goalTimeframe;
+      
       case "debtTypes": return debtTypes.length > 0;
       case "debtDetails": return true;
       case "debtConfidence": return debtManagementConfidence;
@@ -348,12 +346,10 @@ const AssessmentStepper: React.FC<AssessmentStepperProps> = (props) => {
               <RadioGroup 
                 value={question.id === "employment" ? employmentStatus : 
                        question.id === "financialKnowledge" ? financialKnowledgeLevel :
-                       question.id === "goalTimeframe" ? goalTimeframe :
-                       question.id === "debtConfidence" ? debtManagementConfidence : ""} 
+                       question.id === "debtConfidence" ? debtManagementConfidence : ""}
                 onValueChange={(value) => {
                   if (question.id === "employment") setEmploymentStatus(value);
                   else if (question.id === "financialKnowledge") setFinancialKnowledgeLevel(value);
-                  else if (question.id === "goalTimeframe") setGoalTimeframe(value);
                   else if (question.id === "debtConfidence") setDebtManagementConfidence(value);
                 }}
                 className="space-y-3"
