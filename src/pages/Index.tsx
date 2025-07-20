@@ -23,6 +23,8 @@ import SkipToSummaryButton from "./index/components/SkipToSummaryButton";
 import GoalNavigationHeader from "./index/components/GoalNavigationHeader";
 import DebtSnowballCalculator from "./index/DebtSnowballCalculator";
 import InvestmentGrowthCalculator from "./index/InvestmentGrowthCalculator";
+import PayOffHomeLoanCalculator from "./index/components/PayOffHomeLoanCalculator";
+import EditAssessmentButton from "./index/components/EditAssessmentButton";
 import { usePDFExport } from "./index/hooks/usePDFExport";
 import { useSavePrompt } from "./index/hooks/useSavePrompt";
 
@@ -93,6 +95,10 @@ export default function Index() {
     handleStartOver();
   };
 
+  const handleEditAssessment = () => {
+    assessment.setStep(0);
+  };
+
   const hasDebtGoal = assessment.goals.some(g => DEBT_GOALS.includes(g));
 
   const totalMonthlyGrossIncome = calculateMonthlyAmount(assessment.incomeSources);
@@ -120,6 +126,10 @@ export default function Index() {
             showBackButton={assessment.showAssessment}
           />
           
+          {isComplete && (
+            <EditAssessmentButton onEdit={handleEditAssessment} />
+          )}
+          
           <div id="export-content" className={`flex-grow ${isComplete ? 'pb-52' : ''}`}>
             <AssessmentStepper 
               {...assessment} 
@@ -141,17 +151,11 @@ export default function Index() {
                         <InvestmentPropertyCalculator />
                     )}
                     {assessment.goals.includes('Pay off home loan sooner') && (
-                        <Card>
-                            <CardHeader>
-                                <CardTitle>Pay Off Home Loan Sooner 🚀</CardTitle>
-                                <CardDescription>Use our calculator to see how extra repayments can save you thousands!</CardDescription>
-                            </CardHeader>
-                            <CardFooter>
-                                <Button asChild className="w-2/3">
-                                    <Link to="/pay-off-home-loan">Open Calculator</Link>
-                                </Button>
-                            </CardFooter>
-                        </Card>
+                        <PayOffHomeLoanCalculator 
+                          assessmentData={assessment}
+                          totalMonthlyNetIncome={totalMonthlyNetIncome}
+                          totalAnnualGrossIncome={totalAnnualGrossIncome}
+                        />
                     )}
                     {assessment.goals.includes('Maximise super') && (
                         <Card>
@@ -212,6 +216,12 @@ export default function Index() {
           />
         </>
       )}
+      
+      <footer className="w-full py-2 text-center bg-background border-t">
+        <p className="text-xs text-muted-foreground italic">
+          Remember mate, this is just AI-generated guidance to get you thinking. It's not personal advice, so chat with a qualified professional before making any big money moves.
+        </p>
+      </footer>
     </div>
   );
 }

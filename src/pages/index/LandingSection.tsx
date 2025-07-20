@@ -8,13 +8,14 @@ import AISearchSection from "./components/AISearchSection";
 const goalPanels = [
   { title: "Buy a house", description: "Turn your dream of homeownership into a reality with a solid plan.", emoji: "🏠" },
   { title: "Buy an investment property", description: "Build wealth through property investment with smart strategies.", emoji: "🏘️" },
+  { title: "Full Financial Health Check", description: "Get a comprehensive analysis of your entire financial situation.", emoji: "📊" },
   { title: "Improve financial literacy", description: "Gain the knowledge to make confident decisions for your future.", emoji: "📚" },
-  { title: "Set a budget", description: "Take control of your spending and master your cash flow.", emoji: "📊" },
+  { title: "Set a budget", description: "Take control of your spending and master your cash flow.", emoji: "💰" },
   { title: "Reduce debt", description: "Create a strategy to pay down debts and achieve freedom.", emoji: "💳" },
   { title: "Grow investments", description: "Make your money work for you and build long-term wealth.", emoji: "📈" },
   { title: "Save for a purchase", description: "Whether it's a car or a holiday, we'll help you reach your savings goals.", emoji: "🎯" },
   { title: "Pay off home loan sooner", description: "Learn strategies to clear your mortgage faster and save thousands.", emoji: "🏡" },
-  { title: "Maximise super", description: "Boost your retirement savings and take advantage of tax benefits.", emoji: "💰" },
+  { title: "Maximise super", description: "Boost your retirement savings and take advantage of tax benefits.", emoji: "💼" },
 ];
 
 const LandingSection = ({ onStartAssessment, isLoading }: { onStartAssessment: (goal: string) => void; isLoading: boolean; }) => {
@@ -39,28 +40,27 @@ const LandingSection = ({ onStartAssessment, isLoading }: { onStartAssessment: (
       />
       <div className="absolute inset-0 z-1 bg-gradient-to-br from-emerald-900/20 via-blue-900/30 to-purple-900/20" />
       
-      <main className="relative z-10 w-full flex flex-col items-center mt-6 md:mt-8 px-2">
-        <h1 className="text-4xl md:text-5xl font-extrabold mb-8 text-center tracking-tight text-white drop-shadow-2xl">
+      <main className="relative z-10 w-full flex flex-col items-center mt-4 md:mt-6 px-2">
+        <h1 className="text-3xl md:text-4xl font-extrabold mb-4 text-center tracking-tight text-white drop-shadow-2xl">
           Money M8
         </h1>
 
         <AISearchSection onGoalSuggested={handleGoalSuggestion} />
 
-        <section id="goals-section" className="w-full max-w-3xl mb-8 px-14">
-          <div className="text-center mb-6">
-            <h2 className="text-2xl font-bold text-white mb-2">Choose Your Goal</h2>
-            <p className="text-white/70">Browse our goal options below - no sign up required!</p>
+        <section id="goals-section" className="w-full max-w-3xl mb-6 px-14">
+          <div className="text-center mb-4">
+            <h2 className="text-xl font-bold text-white mb-2">Choose Your Goal</h2>
           </div>
           
           <Carousel opts={{ align: "center", loop: false }} className="w-full">
             <CarouselContent>
               {goalPanels.map((panel, i) => (
-                <CarouselItem key={i} className="py-4 cursor-pointer md:basis-1/2 lg:basis-1/3 self-stretch" onClick={() => setSelectedGoal(panel.title)}>
+                <CarouselItem key={i} className="py-3 cursor-pointer md:basis-1/2 lg:basis-1/3 self-stretch" onClick={() => setSelectedGoal(panel.title)}>
                   <div className="p-1 h-full">
-                    <div className={`bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl shadow-xl p-6 h-full flex flex-col items-center gap-3 transition-all hover:scale-105 hover:bg-white/15 ${selectedGoal === panel.title ? 'ring-4 ring-emerald-500 bg-white/20' : 'ring-transparent'}`}>
-                      <span className="text-4xl">{panel.emoji}</span>
-                      <span className="font-bold text-xl text-white text-center">{panel.title}</span>
-                      <span className="text-base text-white/80 text-center">{panel.description}</span>
+                    <div className={`bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl shadow-xl p-4 h-full flex flex-col items-center gap-2 transition-all hover:scale-105 hover:bg-white/15 ${selectedGoal === panel.title ? 'ring-4 ring-emerald-500 bg-white/20' : 'ring-transparent'}`}>
+                      <span className="text-3xl">{panel.emoji}</span>
+                      <span className="font-bold text-lg text-white text-center">{panel.title}</span>
+                      <span className="text-sm text-white/80 text-center">{panel.description}</span>
                     </div>
                   </div>
                 </CarouselItem>
@@ -73,7 +73,7 @@ const LandingSection = ({ onStartAssessment, isLoading }: { onStartAssessment: (
         
         <Button 
           size="lg" 
-          className="text-xl px-8 py-6 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-semibold shadow-2xl transform hover:scale-105 transition-all disabled:bg-gray-400 disabled:cursor-not-allowed disabled:transform-none w-2/3 max-w-md"
+          className="text-lg px-6 py-4 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-semibold shadow-2xl transform hover:scale-105 transition-all disabled:bg-gray-400 disabled:cursor-not-allowed disabled:transform-none w-2/3 max-w-md"
           onClick={() => {
             if (selectedGoal) {
               onStartAssessment(selectedGoal);
@@ -83,15 +83,21 @@ const LandingSection = ({ onStartAssessment, isLoading }: { onStartAssessment: (
         >
           {isLoading ? (
             <>
-              <Loader2 className="mr-2 h-6 w-6 animate-spin" />
+              <Loader2 className="mr-2 h-5 w-5 animate-spin" />
               Loading...
             </>
           ) : (
             "Start Assessment"
           )}
         </Button>
-        {!selectedGoal && <p className="text-white/70 mt-4 animate-pulse">Please select a goal to continue</p>}
+        {!selectedGoal && <p className="text-white/70 mt-3 animate-pulse text-sm">Please select a goal to continue</p>}
       </main>
+      
+      <footer className="absolute bottom-2 w-full text-center">
+        <p className="text-xs text-white/50 italic">
+          Remember mate, this is just AI-generated guidance to get you thinking. It's not personal advice, so chat with a qualified professional before making any big money moves.
+        </p>
+      </footer>
     </div>
   );
 }

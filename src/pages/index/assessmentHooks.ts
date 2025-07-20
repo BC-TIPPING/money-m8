@@ -28,12 +28,6 @@ export const questions = [
     ],
   },
   {
-    id: "regularIncome",
-    title: "Regular Income",
-    subtitle: "Do you have a regular source of income?",
-    type: "boolean",
-  },
-  {
     id: "incomeSources",
     title: "Gross Income Sources",
     subtitle: "Please specify your sources of pre-tax income.",
@@ -73,13 +67,6 @@ export const questions = [
     ],
   },
   {
-    id: "goalTimeframe",
-    title: "Goal Timeframe",
-    subtitle: "What is your goal timeframe?",
-    type: "radio",
-    options: ["0–6 months", "6–12 months", "1–3 years", "3–5 years", "5+ years"],
-  },
-  {
     id: "debtTypes",
     title: "Debts & Liabilities",
     subtitle: "Which debts/liabilities do you currently hold?",
@@ -106,13 +93,68 @@ export const questions = [
     title: "Debt Management Confidence",
     subtitle: "Are you confident in your ability to manage your debts?",
     type: "radio",
-  options: ["Yes", "Somewhat", "No"],
+    options: ["Yes", "Somewhat", "No"],
   },
   {
     id: "additionalNotes",
     title: "Additional Notes",
     subtitle: "Is there anything else you'd like to share?",
     type: "textarea",
+  },
+];
+
+// Additional questions for Full Financial Health Check
+export const healthCheckQuestions = [
+  {
+    id: "postcode",
+    title: "Location",
+    subtitle: "What's your postcode?",
+    type: "text",
+  },
+  {
+    id: "age",
+    title: "Age",
+    subtitle: "What's your age?",
+    type: "number",
+  },
+  {
+    id: "superBalance",
+    title: "Superannuation Balance",
+    subtitle: "What's your current super balance?",
+    type: "number",
+  },
+  {
+    id: "superFund",
+    title: "Super Fund",
+    subtitle: "Which super fund are you with? (if known)",
+    type: "text",
+  },
+  {
+    id: "mortgageRate",
+    title: "Current Mortgage Rate",
+    subtitle: "What's your current mortgage interest rate? (if applicable)",
+    type: "number",
+  },
+  {
+    id: "insurances",
+    title: "Insurance Coverage",
+    subtitle: "Which insurances do you currently have?",
+    type: "checkbox",
+    options: [
+      "Life Insurance",
+      "Income Protection",
+      "TPD (Total Permanent Disability)",
+      "Home Insurance",
+      "Car Insurance",
+      "Health Insurance",
+      "None",
+    ],
+  },
+  {
+    id: "assets",
+    title: "Assets Breakdown",
+    subtitle: "What assets do you currently own?",
+    type: "asset-list",
   },
 ];
 
@@ -125,7 +167,6 @@ export function useAssessmentState() {
   const [showAssessment, setShowAssessment] = useState(false);
   const [goals, setGoals] = useState<string[]>([]);
   const [otherGoal, setOtherGoal] = useState("");
-  const [goalTimeframe, setGoalTimeframe] = useState<string | undefined>();
   const [debtTypes, setDebtTypes] = useState<string[]>([]);
   const [debtDetails, setDebtDetails] = useState<DebtDetail[]>([]);
   const [debtManagementConfidence, setDebtManagementConfidence] =
@@ -153,6 +194,19 @@ export function useAssessmentState() {
   const [uploadedFile, setUploadedFile] = useState<File | null>(null);
   const fileInputRef = React.useRef<HTMLInputElement>(null);
 
+  // Additional fields for Full Financial Health Check
+  const [postcode, setPostcode] = useState("");
+  const [age, setAge] = useState<number | undefined>();
+  const [superBalance, setSuperBalance] = useState<number | undefined>();
+  const [superFund, setSuperFund] = useState("");
+  const [mortgageRate, setMortgageRate] = useState<number | undefined>();
+  const [insurances, setInsurances] = useState<string[]>([]);
+  const [assets, setAssets] = useState<{
+    type: string;
+    value: string;
+    description: string;
+  }[]>([]);
+
   return {
     step,
     setStep,
@@ -162,8 +216,6 @@ export function useAssessmentState() {
     setGoals,
     otherGoal,
     setOtherGoal,
-    goalTimeframe,
-    setGoalTimeframe,
     debtTypes,
     setDebtTypes,
     debtDetails,
@@ -187,5 +239,20 @@ export function useAssessmentState() {
     uploadedFile,
     setUploadedFile,
     fileInputRef,
+    // Additional health check fields
+    postcode,
+    setPostcode,
+    age,
+    setAge,
+    superBalance,
+    setSuperBalance,
+    superFund,
+    setSuperFund,
+    mortgageRate,
+    setMortgageRate,
+    insurances,
+    setInsurances,
+    assets,
+    setAssets,
   };
 }
