@@ -34,36 +34,44 @@ const FloatingActionButtons: React.FC<FloatingActionButtonsProps> = ({
   return (
     <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-20 w-full max-w-sm px-4">
       <div className="flex flex-col items-center gap-3">
-        <div className="flex gap-2 w-full">
+        <div className="flex gap-2 w-2/3">
           <Button
             onClick={onChangeGoal}
             variant="outline"
-            className="shadow-lg bg-background flex-1"
+            className="shadow-lg bg-background flex-1 text-sm px-3 py-2"
+            size="sm"
           >
-            <Target className="mr-2 h-4 w-4" />
+            <Target className="mr-1 h-3 w-3" />
             Change Goal
           </Button>
           <Button
             onClick={onStartOver}
             variant="outline"
-            className="shadow-lg bg-background flex-1"
+            className="shadow-lg bg-background flex-1 text-sm px-3 py-2"
+            size="sm"
           >
-            <RotateCcw className="mr-2 h-4 w-4" />
+            <RotateCcw className="mr-1 h-3 w-3" />
             Start Over
           </Button>
         </div>
         
-        <Button onClick={onExportToPDF} variant="outline" className="shadow-lg bg-background w-full">
-          <FileText className="mr-2 h-4 w-4" />
+        <Button 
+          onClick={onExportToPDF} 
+          variant="outline" 
+          className="shadow-lg bg-background w-2/3 text-sm px-3 py-2"
+          size="sm"
+        >
+          <FileText className="mr-1 h-3 w-3" />
           Export to PDF
         </Button>
         
         {!user && (
           <Button 
             onClick={onSaveResults}
-            className="shadow-lg w-full"
+            className="shadow-lg w-2/3 text-sm px-3 py-2"
+            size="sm"
           >
-            <Save className="mr-2 h-4 w-4" />
+            <Save className="mr-1 h-3 w-3" />
             Save Results
           </Button>
         )}
@@ -72,12 +80,13 @@ const FloatingActionButtons: React.FC<FloatingActionButtonsProps> = ({
           <Button 
             onClick={onGenerateToughLove}
             variant="destructive"
-            className="shadow-lg w-full"
+            className="shadow-lg w-2/3 text-sm px-3 py-2"
+            size="sm"
             disabled={isGeneratingSummary}
           >
             {isGeneratingSummary ? (
               <>
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                <Loader2 className="mr-1 h-3 w-3 animate-spin" />
                 Getting tough...
               </>
             ) : "Tough Love"}

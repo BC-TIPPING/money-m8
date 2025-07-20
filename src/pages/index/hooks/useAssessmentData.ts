@@ -165,28 +165,18 @@ export function useAssessmentData(assessment: AssessmentState) {
   };
 
   const handleChangeGoal = () => {
-    // If assessment was completed, go directly to summary with new goal
-    if (hasCompletedAssessment) {
-      setAiSummary(null);
-      setChartData(null);
-      setIsSubmitted(false);
-      assessment.setGoals([]);
-      assessment.setStep(0);
-      assessment.setShowAssessment(false);
-      toast({ 
-        title: "Goal Changed", 
-        description: "Select your new goal. Your previous assessment data will be preserved." 
-      });
-      return;
-    }
-
-    // Standard goal change flow
+    // Reset AI summary for new goal
     setAiSummary(null);
     setChartData(null);
     setIsSubmitted(false);
     assessment.setGoals([]);
     assessment.setStep(0);
     assessment.setShowAssessment(false);
+    
+    toast({ 
+      title: "Goal Changed", 
+      description: "Select your new goal. Your assessment data will be preserved." 
+    });
   };
 
   const handleSetBudgetGoal = () => {
@@ -232,7 +222,7 @@ export function useAssessmentData(assessment: AssessmentState) {
     aiSummary,
     chartData,
     isPreloaded,
-    isLoadingAssessment: user ? isLoadingAssessment : false, // Don't show loading for anonymous users
+    isLoadingAssessment: user ? isLoadingAssessment : false,
     isGeneratingSummary,
     isComplete,
     generateSummary,

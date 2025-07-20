@@ -7,9 +7,10 @@ import AISearchSection from "./components/AISearchSection";
 
 const goalPanels = [
   { title: "Buy a house", description: "Turn your dream of homeownership into a reality with a solid plan.", emoji: "🏠" },
-  { title: "Improve financial literacy", description: "Gain the knowledge to make confident financial decisions for your future.", emoji: "📚" },
+  { title: "Buy an investment property", description: "Build wealth through property investment with smart strategies.", emoji: "🏘️" },
+  { title: "Improve financial literacy", description: "Gain the knowledge to make confident decisions for your future.", emoji: "📚" },
   { title: "Set a budget", description: "Take control of your spending and master your cash flow.", emoji: "📊" },
-  { title: "Reduce debt", description: "Create a strategy to pay down debts and achieve financial freedom.", emoji: "💳" },
+  { title: "Reduce debt", description: "Create a strategy to pay down debts and achieve freedom.", emoji: "💳" },
   { title: "Grow investments", description: "Make your money work for you and build long-term wealth.", emoji: "📈" },
   { title: "Save for a purchase", description: "Whether it's a car or a holiday, we'll help you reach your savings goals.", emoji: "🎯" },
   { title: "Pay off home loan sooner", description: "Learn strategies to clear your mortgage faster and save thousands.", emoji: "🏡" },
@@ -47,8 +48,8 @@ const LandingSection = ({ onStartAssessment, isLoading }: { onStartAssessment: (
 
         <section id="goals-section" className="w-full max-w-3xl mb-8 px-14">
           <div className="text-center mb-6">
-            <h2 className="text-2xl font-bold text-white mb-2">Choose Your Financial Goal</h2>
-            <p className="text-white/70">Or browse our goal options below - no sign up required!</p>
+            <h2 className="text-2xl font-bold text-white mb-2">Choose Your Goal</h2>
+            <p className="text-white/70">Browse our goal options below - no sign up required!</p>
           </div>
           
           <Carousel opts={{ align: "center", loop: false }} className="w-full">
@@ -72,7 +73,7 @@ const LandingSection = ({ onStartAssessment, isLoading }: { onStartAssessment: (
         
         <Button 
           size="lg" 
-          className="text-xl px-12 py-6 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-semibold shadow-2xl transform hover:scale-105 transition-all disabled:bg-gray-400 disabled:cursor-not-allowed disabled:transform-none"
+          className="text-xl px-8 py-6 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-semibold shadow-2xl transform hover:scale-105 transition-all disabled:bg-gray-400 disabled:cursor-not-allowed disabled:transform-none w-2/3 max-w-md"
           onClick={() => {
             if (selectedGoal) {
               onStartAssessment(selectedGoal);
@@ -90,14 +91,7 @@ const LandingSection = ({ onStartAssessment, isLoading }: { onStartAssessment: (
           )}
         </Button>
         {!selectedGoal && <p className="text-white/70 mt-4 animate-pulse">Please select a goal to continue</p>}
-        <p className="text-white/60 mt-6 text-sm text-center max-w-lg">
-          Try our assessment anonymously or <span className="underline">sign in</span> to save your results for later
-        </p>
       </main>
-      
-      <footer className="mt-12 mb-6 text-sm text-white/60 z-10 text-center">
-        &copy; {new Date().getFullYear()} ClearFin.AI&nbsp;&nbsp;|&nbsp;&nbsp;Financial clarity for Australians
-      </footer>
     </div>
   );
 }

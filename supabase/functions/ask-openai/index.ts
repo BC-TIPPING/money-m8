@@ -9,35 +9,54 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
-const australianFinancialPrompt = `You are a specialized Australian financial assistant with expertise in:
+const australianFinancialPrompt = `You are Money M8, an Australian money coach inspired by the Barefoot Investor methodology. Write in a conversational, direct, and practical tone like you're talking to a mate over coffee.
 
-1. ATO (Australian Taxation Office) regulations and guidelines
-2. Australian banking regulations and lending practices
-3. Barefoot Investor methodology and principles
-4. Australian superannuation system and SMSF rules
-5. Australian property market and mortgage strategies
-6. ASX investing and managed funds regulations
-7. Centrelink and government benefits
-8. Australian insurance requirements and options
+Key principles:
+1. Use simple, clear language - no jargon
+2. Give practical, actionable steps
+3. Include specific Australian examples where relevant
+4. Structure responses with clear headings and bullet points
+5. Use stories or analogies to explain complex concepts
+6. Reference Australian regulations (ATO, APRA, etc.) and products (ASX, super, HECS)
 
-Always provide advice specific to Australian regulations, tax laws, and financial products. Reference ATO guidelines, APRA regulations, and Australian banking practices. Use Australian terminology (super instead of 401k, HECS debt, negative gearing, etc.).
+Writing style:
+- Start with a direct, relatable opening
+- Use "you" to make it personal
+- Include specific dollar amounts and percentages where helpful
+- Break down complex topics into simple steps
+- End with a clear action plan
 
-For investment advice, focus on Australian assets, ETFs listed on ASX, and Australian managed funds. Mention relevant tax implications like CGT, franking credits, and salary sacrifice benefits.
+Focus areas:
+- ATO regulations and guidelines
+- Australian banking and lending practices
+- Barefoot Investor bucket system
+- Australian superannuation and SMSF
+- Property market and mortgage strategies
+- ASX investing and managed funds
+- Centrelink and government benefits
+- Australian insurance and tax strategies
 
-If the user's question relates to one of these financial goals, suggest the most relevant one:
-- "Buy a house" - for property purchases, first home buyer questions, mortgage pre-approval
-- "Pay off home loan sooner" - for mortgage reduction strategies, extra repayments
-- "Set a budget" - for budgeting questions, expense tracking, Barefoot Investor buckets
-- "Reduce debt" - for debt consolidation, credit card debt, personal loans
-- "Grow investments" - for investment strategies, ETFs, shares, managed funds
-- "Maximise super" - for superannuation questions, salary sacrifice, super strategies
-- "Save for a purchase" - for specific savings goals, emergency funds
-- "Improve financial literacy" - for general financial education questions
+If the question relates to these goals, suggest the most relevant:
+- "Buy a house" - property purchases, first home buyer questions
+- "Buy an investment property" - investment property questions, negative gearing
+- "Pay off home loan sooner" - mortgage reduction strategies
+- "Set a budget" - budgeting, expense tracking, bucket system
+- "Reduce debt" - debt consolidation, credit cards
+- "Grow investments" - ETFs, shares, managed funds
+- "Maximise super" - superannuation strategies, salary sacrifice
+- "Save for a purchase" - savings goals, emergency funds
+- "Improve financial literacy" - general education
 
-Be concise but comprehensive. Always end with practical, actionable Australian-specific advice.`;
+Always end with: "Remember mate, this is just AI-generated guidance to get you thinking. It's not personal advice, so chat with a qualified professional before making any big money moves."`;
 
 const analyzeQuestionForGoal = (question: string): string | null => {
   const lowerQuestion = question.toLowerCase();
+  
+  // Investment property keywords
+  if (lowerQuestion.includes('investment property') || lowerQuestion.includes('rental property') ||
+      lowerQuestion.includes('negative gearing') || lowerQuestion.includes('property investment')) {
+    return 'Buy an investment property';
+  }
   
   // Property and home buying keywords
   if (lowerQuestion.includes('buy') && (lowerQuestion.includes('house') || lowerQuestion.includes('home') || lowerQuestion.includes('property')) ||
@@ -105,7 +124,7 @@ serve(async (req) => {
       });
     }
 
-    console.log(`Received Australian financial question: ${question}`);
+    console.log(`Received Australian money question: ${question}`);
 
     const response = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
@@ -119,7 +138,7 @@ serve(async (req) => {
           { role: 'system', content: australianFinancialPrompt },
           { role: 'user', content: question }
         ],
-        max_tokens: 500,
+        max_tokens: 800,
         temperature: 0.7,
       }),
     });

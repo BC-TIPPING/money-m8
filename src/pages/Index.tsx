@@ -12,6 +12,7 @@ import { calculateMonthlyAmount, calculateAustralianIncomeTax } from "@/lib/fina
 import { useAuth } from "@/contexts/AuthContext";
 import { useEffect } from "react";
 import HouseBuyingCalculator from "./index/HouseBuyingCalculator";
+import InvestmentPropertyCalculator from "./index/InvestmentPropertyCalculator";
 import ActionItemsSection from "./index/ActionItemsSection";
 import { Link } from "react-router-dom";
 
@@ -19,7 +20,6 @@ import { Link } from "react-router-dom";
 import SaveResultsModal from "./index/components/SaveResultsModal";
 import FloatingActionButtons from "./index/components/FloatingActionButtons";
 import SkipToSummaryButton from "./index/components/SkipToSummaryButton";
-import HeaderButtons from "./index/components/HeaderButtons";
 import GoalNavigationHeader from "./index/components/GoalNavigationHeader";
 import DebtSnowballCalculator from "./index/DebtSnowballCalculator";
 import InvestmentGrowthCalculator from "./index/InvestmentGrowthCalculator";
@@ -55,9 +55,18 @@ export default function Index() {
   } = useSavePrompt({ isComplete, user });
 
   const handleStartAssessment = (goal: string) => {
-    // Allow anonymous users to start assessment immediately
-    assessment.setGoals([goal]);
-    assessment.setShowAssessment(true);
+    // Check if user has completed assessment before and redirect accordingly
+    if (hasCompletedAssessment) {
+      assessment.setGoals([goal]);
+      assessment.setStep(questions.length); // Go directly to summary
+      assessment.setShowAssessment(true);
+      // Auto-generate summary with new goal
+      setTimeout(() => generateSummary({}), 100);
+    } else {
+      // Allow anonymous users to start assessment immediately
+      assessment.setGoals([goal]);
+      assessment.setShowAssessment(true);
+    }
   };
   
   // Remove the localStorage goal handling since we're allowing anonymous access
@@ -71,6 +80,13 @@ export default function Index() {
       }
     }
   }, [user, assessment]);
+
+  // Auto-generate summary when assessment is complete
+  useEffect(() => {
+    if (isComplete && !aiSummary && !isGeneratingSummary) {
+      generateSummary({});
+    }
+  }, [isComplete, aiSummary, isGeneratingSummary, generateSummary]);
 
   const handleStartOverWithReset = () => {
     resetDismissedFlag();
@@ -88,8 +104,6 @@ export default function Index() {
 
   return (
     <div className="relative min-h-screen">
-      <HeaderButtons user={user} onSignOut={signOut} />
-
       <SaveResultsModal 
         showSavePrompt={showSavePrompt}
         onSaveResults={handleSaveResults}
@@ -123,6 +137,9 @@ export default function Index() {
                           totalAnnualGrossIncome={totalAnnualGrossIncome}
                         />
                     )}
+                    {assessment.goals.includes('Buy an investment property') && (
+                        <InvestmentPropertyCalculator />
+                    )}
                     {assessment.goals.includes('Pay off home loan sooner') && (
                         <Card>
                             <CardHeader>
@@ -130,7 +147,7 @@ export default function Index() {
                                 <CardDescription>Use our calculator to see how extra repayments can save you thousands!</CardDescription>
                             </CardHeader>
                             <CardFooter>
-                                <Button asChild>
+                                <Button asChild className="w-2/3">
                                     <Link to="/pay-off-home-loan">Open Calculator</Link>
                                 </Button>
                             </CardFooter>
@@ -143,7 +160,7 @@ export default function Index() {
                                 <CardDescription>Use our calculator to see how extra contributions can boost your retirement savings and lower your tax.</CardDescription>
                             </CardHeader>
                             <CardFooter>
-                                <Button asChild>
+                                <Button asChild className="w-2/3">
                                     <Link to="/maximise-super">Open Calculator</Link>
                                 </Button>
                             </CardFooter>
