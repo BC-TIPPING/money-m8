@@ -22,6 +22,7 @@ import remarkGfm from 'remark-gfm';
 import DebtReductionChart from "./DebtReductionChart";
 import {
   questions,
+  healthCheckQuestions,
   type DebtDetail,
   PRELOADED_INCOME_CATEGORIES,
   INCOME_FREQUENCIES,
@@ -76,6 +77,21 @@ interface AssessmentStepperProps {
   isGeneratingSummary: boolean;
   aiSummary: string | null;
   chartData: any | null;
+  // Health check fields
+  postcode: string;
+  setPostcode: (val: string) => void;
+  age: number | undefined;
+  setAge: (val: number | undefined) => void;
+  superBalance: number | undefined;
+  setSuperBalance: (val: number | undefined) => void;
+  superFund: string;
+  setSuperFund: (val: string) => void;
+  mortgageRate: number | undefined;
+  setMortgageRate: (val: number | undefined) => void;
+  insurances: string[];
+  setInsurances: (val: string[]) => void;
+  assets: { type: string; value: string; description: string }[];
+  setAssets: (val: { type: string; value: string; description: string }[]) => void;
 }
 
 const AssessmentStepper: React.FC<AssessmentStepperProps> = (props) => {
@@ -88,6 +104,9 @@ const AssessmentStepper: React.FC<AssessmentStepperProps> = (props) => {
     goals, setGoals, otherGoal, setOtherGoal,
     debtTypes, setDebtTypes, debtDetails, setDebtDetails, debtManagementConfidence, setDebtManagementConfidence,
     freeTextComments, setFreeTextComments,
+    // Health check fields
+    postcode, setPostcode, age, setAge, superBalance, setSuperBalance, superFund, setSuperFund,
+    mortgageRate, setMortgageRate, insurances, setInsurances, assets, setAssets,
     generateSummary, isGeneratingSummary, aiSummary, chartData
   } = props;
 
@@ -206,7 +225,13 @@ const AssessmentStepper: React.FC<AssessmentStepperProps> = (props) => {
       case "financialKnowledge": return financialKnowledgeLevel;
       case "investmentExperience": return investmentExperience.length > 0;
       case "goals": return goals.length > 0;
-      
+      case "postcode": return postcode !== "";
+      case "age": return age !== undefined;
+      case "superBalance": return superBalance !== undefined;
+      case "superFund": return true; // Optional field
+      case "mortgageRate": return mortgageRate !== undefined || !debtTypes.includes("Mortgage");
+      case "insurances": return insurances.length > 0;
+      case "assets": return assets.length > 0;
       case "debtTypes": return debtTypes.length > 0;
       case "debtDetails": return true;
       case "debtConfidence": return debtManagementConfidence;
@@ -215,7 +240,9 @@ const AssessmentStepper: React.FC<AssessmentStepperProps> = (props) => {
     }
   };
 
-  const questionsWithUpload = questions;
+  // Combine questions based on selected goals
+  const isFullHealthCheck = goals.includes("Full Financial Health Check");
+  const questionsWithUpload = isFullHealthCheck ? [...questions, ...healthCheckQuestions] : questions;
 
   const pastGoalsStep = goals.length > 0;
 
@@ -403,11 +430,13 @@ const AssessmentStepper: React.FC<AssessmentStepperProps> = (props) => {
           
           case "checkbox":
             const currentValues = question.id === "investmentExperience" ? investmentExperience :
-                                   question.id === "goals" ? goals :
-                                   question.id === "debtTypes" ? debtTypes : [];
+                                 question.id === "goals" ? goals :
+                                 question.id === "debtTypes" ? debtTypes :
+                                 question.id === "insurances" ? insurances : [];
             const setCurrentValues = question.id === "investmentExperience" ? setInvestmentExperience :
                                     question.id === "goals" ? setGoals :
-                                    question.id === "debtTypes" ? setDebtTypes : () => {};
+                                    question.id === "debtTypes" ? setDebtTypes :
+                                    question.id === "insurances" ? setInsurances : () => {};
             
             return (
               <div className="space-y-3">
@@ -430,6 +459,21 @@ const AssessmentStepper: React.FC<AssessmentStepperProps> = (props) => {
                                 }
                                 setDebtTypesTyped(newDebtTypes);
                             }
+                        } else if (question.id === "insurances") {
+                          const setInsurancesTyped = setCurrentValues as React.Dispatch<React.SetStateAction<string[]>>;
+                          const typedCurrent = currentValues as string[];
+                          let newValues = [...typedCurrent];
+                          if (checked) {
+                            if (option === "None") {
+                              newValues = ["None"];
+                            } else {
+                              newValues = newValues.filter(item => item !== "None");
+                              newValues.push(option);
+                            }
+                          } else {
+                            newValues = newValues.filter(item => item !== option);
+                          }
+                          setInsurancesTyped(newValues);
                         } else {
                           if (checked) {
                             setCurrentValues([...currentValues, option]);
@@ -638,6 +682,84 @@ const AssessmentStepper: React.FC<AssessmentStepperProps> = (props) => {
               </div>
             );
           
+          case "text":
+            return (
+              <Input
+                type="text"
+                placeholder={question.subtitle}
+                value={question.id === "postcode" ? postcode : 
+                       question.id === "superFund" ? superFund : ""}
+                onChange={(e) => {
+                  if (question.id === "postcode") setPostcode(e.target.value);
+                  else if (question.id === "superFund") setSuperFund(e.target.value);
+                }}
+                className="w-full"
+              />
+            );
+
+          case "number":
+            return (
+              <Input
+                type="number"
+                placeholder={question.subtitle}
+                value={question.id === "age" ? age || "" : 
+                       question.id === "superBalance" ? superBalance || "" :
+                       question.id === "mortgageRate" ? mortgageRate || "" : ""}
+                onChange={(e) => {
+                  const value = e.target.value ? parseFloat(e.target.value) : undefined;
+                  if (question.id === "age") setAge(value);
+                  else if (question.id === "superBalance") setSuperBalance(value);
+                  else if (question.id === "mortgageRate") setMortgageRate(value);
+                }}
+                className="w-full"
+              />
+            );
+
+          case "asset-list":
+            return (
+              <div className="space-y-4">
+                {assets.map((asset, index) => (
+                  <div key={index} className="grid grid-cols-1 md:grid-cols-3 gap-2">
+                    <Input
+                      placeholder="Asset type (e.g., Shares, Property)"
+                      value={asset.type}
+                      onChange={(e) => {
+                        const newAssets = [...assets];
+                        newAssets[index].type = e.target.value;
+                        setAssets(newAssets);
+                      }}
+                    />
+                    <Input
+                      placeholder="Value ($)"
+                      value={asset.value}
+                      onChange={(e) => {
+                        const newAssets = [...assets];
+                        newAssets[index].value = e.target.value;
+                        setAssets(newAssets);
+                      }}
+                    />
+                    <Input
+                      placeholder="Description (optional)"
+                      value={asset.description}
+                      onChange={(e) => {
+                        const newAssets = [...assets];
+                        newAssets[index].description = e.target.value;
+                        setAssets(newAssets);
+                      }}
+                    />
+                  </div>
+                ))}
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => setAssets([...assets, { type: "", value: "", description: "" }])}
+                  className="w-full"
+                >
+                  Add Another Asset
+                </Button>
+              </div>
+            );
+
           case "textarea":
             return (
               <Textarea

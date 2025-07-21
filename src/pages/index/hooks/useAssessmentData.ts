@@ -112,8 +112,15 @@ export function useAssessmentData(assessment: AssessmentState) {
         assessment.setFinancialKnowledgeLevel(typedAssessment.financial_knowledge_level ?? undefined);
         assessment.setInvestmentExperience(typedAssessment.investment_experience ?? []);
         assessment.setOtherGoal(typedAssessment.other_goal ?? "");
-        
         assessment.setDebtTypes(typedAssessment.debt_types ?? []);
+        // Health check fields
+        assessment.setPostcode(typedAssessment.postcode ?? "");
+        assessment.setAge(typedAssessment.age ?? undefined);
+        assessment.setSuperBalance(typedAssessment.super_balance ?? undefined);
+        assessment.setSuperFund(typedAssessment.super_fund ?? "");
+        assessment.setMortgageRate(typedAssessment.mortgage_rate ?? undefined);
+        assessment.setInsurances((typedAssessment.insurances as string[]) ?? []);
+        assessment.setAssets((typedAssessment.assets as any) ?? []);
         assessment.setDebtDetails((typedAssessment.debt_details as any) || []);
         assessment.setDebtManagementConfidence(typedAssessment.debt_management_confidence ?? undefined);
         assessment.setFreeTextComments(typedAssessment.free_text_comments ?? "");
@@ -147,8 +154,15 @@ export function useAssessmentData(assessment: AssessmentState) {
     assessment.setInvestmentExperience([]);
     assessment.setGoals([]);
     assessment.setOtherGoal("");
-    
     assessment.setDebtTypes([]);
+    // Reset health check fields
+    assessment.setPostcode("");
+    assessment.setAge(undefined);
+    assessment.setSuperBalance(undefined);
+    assessment.setSuperFund("");
+    assessment.setMortgageRate(undefined);
+    assessment.setInsurances([]);
+    assessment.setAssets([]);
     assessment.setDebtDetails([]);
     assessment.setDebtManagementConfidence(undefined);
     assessment.setFreeTextComments("");
@@ -206,8 +220,15 @@ export function useAssessmentData(assessment: AssessmentState) {
       investment_experience: assessment.investmentExperience,
       goals: assessment.goals,
       other_goal: assessment.otherGoal,
-      
       debt_types: assessment.debtTypes,
+      // Health check fields
+      postcode: assessment.postcode || null,
+      age: assessment.age || null,
+      super_balance: assessment.superBalance || null,
+      super_fund: assessment.superFund || null,
+      mortgage_rate: assessment.mortgageRate || null,
+      insurances: assessment.insurances || null,
+      assets: assessment.assets || null,
       debt_details: assessment.debtDetails,
       debt_management_confidence: assessment.debtManagementConfidence,
       free_text_comments: assessment.freeTextComments,
