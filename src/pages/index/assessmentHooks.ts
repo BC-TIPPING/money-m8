@@ -13,21 +13,6 @@ export type DebtDetail = {
 
 export const questions = [
   {
-    id: "employment",
-    title: "Employment Status",
-    subtitle: "What is your current employment situation?",
-    type: "radio",
-    options: [
-      "Full-Time",
-      "Part-Time",
-      "Casual/Contract",
-      "Self-Employed",
-      "Unemployed",
-      "Retired",
-      "Other",
-    ],
-  },
-  {
     id: "incomeSources",
     title: "Gross Income Sources",
     subtitle: "Please specify your sources of pre-tax income.",
@@ -45,13 +30,6 @@ export const questions = [
     title: "Expenses",
     subtitle: "What are your typical monthly expenses?",
     type: "expense-list",
-  },
-  {
-    id: "financialKnowledge",
-    title: "Financial Knowledge",
-    subtitle: "How would you rate your financial knowledge?",
-    type: "radio",
-    options: ["High", "Medium", "Low"],
   },
   {
     id: "investmentExperience",
@@ -88,19 +66,6 @@ export const questions = [
     subtitle: "Enter the details for each debt.",
     type: "debt-details-list",
   },
-  {
-    id: "debtConfidence",
-    title: "Debt Management Confidence",
-    subtitle: "Are you confident in your ability to manage your debts?",
-    type: "radio",
-    options: ["Yes", "Somewhat", "No"],
-  },
-  {
-    id: "additionalNotes",
-    title: "Additional Notes",
-    subtitle: "Is there anything else you'd like to share?",
-    type: "textarea",
-  },
 ];
 
 // Additional questions for Full Financial Health Check
@@ -124,18 +89,6 @@ export const healthCheckQuestions = [
     type: "number",
   },
   {
-    id: "superFund",
-    title: "Super Fund",
-    subtitle: "Which super fund are you with? (if known)",
-    type: "text",
-  },
-  {
-    id: "mortgageRate",
-    title: "Current Mortgage Rate",
-    subtitle: "What's your current mortgage interest rate? (if applicable)",
-    type: "number",
-  },
-  {
     id: "insurances",
     title: "Insurance Coverage",
     subtitle: "Which insurances do you currently have?",
@@ -150,12 +103,6 @@ export const healthCheckQuestions = [
       "None",
     ],
   },
-  {
-    id: "assets",
-    title: "Assets Breakdown",
-    subtitle: "What assets do you currently own?",
-    type: "asset-list",
-  },
 ];
 
 export const INCOME_FREQUENCIES = freqs;
@@ -169,14 +116,7 @@ export function useAssessmentState() {
   const [otherGoal, setOtherGoal] = useState("");
   const [debtTypes, setDebtTypes] = useState<string[]>([]);
   const [debtDetails, setDebtDetails] = useState<DebtDetail[]>([]);
-  const [debtManagementConfidence, setDebtManagementConfidence] =
-    useState<string | undefined>();
-  const [freeTextComments, setFreeTextComments] = useState("");
-  const [financialKnowledgeLevel, setFinancialKnowledgeLevel] =
-    useState<string | undefined>();
   const [investmentExperience, setInvestmentExperience] = useState<string[]>([]);
-  const [employmentStatus, setEmploymentStatus] = useState<string | undefined>();
-  const [hasRegularIncome, setHasRegularIncome] = useState<boolean | undefined>();
   const [incomeSources, setIncomeSources] = useState([
     { category: "", amount: "", frequency: "Monthly" },
   ]);
@@ -198,14 +138,7 @@ export function useAssessmentState() {
   const [postcode, setPostcode] = useState("");
   const [age, setAge] = useState<number | undefined>();
   const [superBalance, setSuperBalance] = useState<number | undefined>();
-  const [superFund, setSuperFund] = useState("");
-  const [mortgageRate, setMortgageRate] = useState<number | undefined>();
   const [insurances, setInsurances] = useState<string[]>([]);
-  const [assets, setAssets] = useState<{
-    type: string;
-    value: string;
-    description: string;
-  }[]>([]);
 
   return {
     step,
@@ -220,18 +153,8 @@ export function useAssessmentState() {
     setDebtTypes,
     debtDetails,
     setDebtDetails,
-    debtManagementConfidence,
-    setDebtManagementConfidence,
-    freeTextComments,
-    setFreeTextComments,
-    financialKnowledgeLevel,
-    setFinancialKnowledgeLevel,
     investmentExperience,
     setInvestmentExperience,
-    employmentStatus,
-    setEmploymentStatus,
-    hasRegularIncome,
-    setHasRegularIncome,
     incomeSources,
     setIncomeSources,
     expenseItems,
@@ -246,13 +169,7 @@ export function useAssessmentState() {
     setAge,
     superBalance,
     setSuperBalance,
-    superFund,
-    setSuperFund,
-    mortgageRate,
-    setMortgageRate,
     insurances,
     setInsurances,
-    assets,
-    setAssets,
   };
 }

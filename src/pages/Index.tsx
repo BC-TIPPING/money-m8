@@ -43,10 +43,12 @@ export default function Index() {
     isLoadingAssessment,
     isGeneratingSummary,
     isComplete,
+    shouldShowSummary,
     generateSummary,
     handleStartOver,
     handleChangeGoal,
     handleSetBudgetGoal,
+    handleCompleteHealthCheck,
     hasCompletedAssessment,
   } = useAssessmentData(assessment);
 
@@ -109,10 +111,10 @@ export default function Index() {
 
   // Auto-generate summary when assessment is complete
   useEffect(() => {
-    if (isComplete && !aiSummary && !isGeneratingSummary) {
+    if (shouldShowSummary && !aiSummary && !isGeneratingSummary) {
       generateSummary({});
     }
-  }, [isComplete, aiSummary, isGeneratingSummary, generateSummary]);
+  }, [shouldShowSummary, aiSummary, isGeneratingSummary, generateSummary]);
 
   const handleStartOverWithReset = () => {
     resetDismissedFlag();
@@ -150,20 +152,21 @@ export default function Index() {
             showBackButton={assessment.showAssessment}
           />
           
-          {isComplete && (
+          {shouldShowSummary && (
             <EditAssessmentButton onEdit={handleEditAssessment} />
           )}
           
-          <div id="export-content" className={`flex-grow ${isComplete ? 'pb-52' : ''}`}>
+          <div id="export-content" className={`flex-grow ${shouldShowSummary ? 'pb-52' : ''}`}>
             <AssessmentStepper 
               {...assessment} 
               generateSummary={() => generateSummary({})}
               isGeneratingSummary={isGeneratingSummary}
               aiSummary={aiSummary}
               chartData={chartData}
+              onCompleteHealthCheck={handleCompleteHealthCheck}
             />
             
-            {isComplete && (
+            {shouldShowSummary && (
               <>
                 {assessment.goals.includes('Full Financial Health Check') && (
                   <div className="container mx-auto px-4 py-6 sm:px-6 lg:px-8">
@@ -171,10 +174,7 @@ export default function Index() {
                       age={assessment.age}
                       postcode={assessment.postcode}
                       superBalance={assessment.superBalance}
-                      superFund={assessment.superFund}
-                      mortgageRate={assessment.mortgageRate}
                       insurances={assessment.insurances}
-                      assets={assessment.assets}
                       debtTypes={assessment.debtTypes}
                       debtDetails={assessment.debtDetails}
                       incomeSources={assessment.incomeSources}
@@ -286,7 +286,7 @@ export default function Index() {
           />
           
           <FloatingActionButtons 
-            isComplete={isComplete}
+            isComplete={shouldShowSummary}
             user={user}
             aiSummary={aiSummary}
             hasDebtGoal={hasDebtGoal}
