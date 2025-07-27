@@ -1,4 +1,3 @@
-
 import LandingSection from "./index/LandingSection";
 import AssessmentStepper from "./index/AssessmentStepper";
 import { useAssessmentState, questions } from "./index/assessmentHooks";
@@ -71,6 +70,29 @@ export default function Index() {
       assessment.setShowAssessment(true);
     }
   };
+
+  // Add goal selection event handler
+  const handleGoalSelection = (goal: string) => {
+    if (!assessment.goals.includes(goal)) {
+      const newGoals = [...assessment.goals, goal];
+      assessment.setGoals(newGoals);
+      
+      // If we have assessment data, regenerate summary
+      if (hasCompletedAssessment) {
+        generateSummary({});
+      }
+    }
+  };
+
+  // Listen for goal selection events
+  useEffect(() => {
+    const handleGoalEvent = (event: CustomEvent) => {
+      handleGoalSelection(event.detail);
+    };
+
+    window.addEventListener('selectGoal', handleGoalEvent as EventListener);
+    return () => window.removeEventListener('selectGoal', handleGoalEvent as EventListener);
+  }, [assessment.goals, hasCompletedAssessment, generateSummary]);
   
   // Remove the localStorage goal handling since we're allowing anonymous access
   useEffect(() => {
@@ -157,10 +179,28 @@ export default function Index() {
                       incomeSources={assessment.incomeSources}
                       goals={assessment.goals}
                     />
+                    
+                    {/* AI Summary positioned after Full Financial Health Check */}
+                    {aiSummary && (
+                      <div className="mt-8">
+                        <Card className="border-emerald-200 bg-gradient-to-br from-emerald-50 to-white">
+                          <CardHeader>
+                            <CardTitle>AI-Generated Financial Summary</CardTitle>
+                          </CardHeader>
+                          <CardContent>
+                            <div className="prose prose-emerald max-w-none">
+                              <div dangerouslySetInnerHTML={{ __html: aiSummary }} />
+                            </div>
+                          </CardContent>
+                        </Card>
+                      </div>
+                    )}
                   </div>
                 )}
                 
-                <div className="container mx-auto grid gap-6 px-4 py-6 sm:px-6 lg:grid-cols-2 lg:px-8">
+                {/* Other goal-specific components */}
+                {!assessment.goals.includes('Full Financial Health Check') && (
+                  <div className="container mx-auto grid gap-6 px-4 py-6 sm:px-6 lg:grid-cols-2 lg:px-8">
                     {assessment.goals.includes('Buy a house') && (
                         <HouseBuyingCalculator 
                           assessmentData={assessment}
@@ -212,7 +252,8 @@ export default function Index() {
                       assessmentData={assessment} 
                       onSetBudgetGoal={handleSetBudgetGoal}
                     />
-                </div>
+                  </div>
+                )}
               </>
             )}
           </div>

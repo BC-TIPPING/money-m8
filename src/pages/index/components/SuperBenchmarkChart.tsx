@@ -22,6 +22,47 @@ const SuperBenchmarkChart: React.FC<SuperBenchmarkChartProps> = ({ currentAge, c
     { age: 65, benchmark: 1000000, percentile25: 650000, percentile75: 1500000 },
   ];
 
+  // Calculate projection lines if current age and balance are provided
+  const calculateProjections = () => {
+    if (!currentAge || !currentBalance) return benchmarkData;
+
+    return benchmarkData.map(point => {
+      const yearsToProject = point.age - currentAge;
+      
+      if (yearsToProject <= 0) {
+        return {
+          ...point,
+          currentTrend: currentBalance,
+          currentPlus10: currentBalance
+        };
+      }
+
+      // Assume average income of $80k for calculations
+      const averageIncome = 80000;
+      const monthlyGrowthRate = 0.07 / 12; // 7% annual growth
+      const months = yearsToProject * 12;
+      
+      // Current trend: just employer contributions (9.5%)
+      const monthlyEmployerContrib = (averageIncome * 0.095) / 12;
+      const currentTrendProjection = currentBalance * Math.pow(1 + monthlyGrowthRate, months) +
+        monthlyEmployerContrib * ((Math.pow(1 + monthlyGrowthRate, months) - 1) / monthlyGrowthRate);
+      
+      // With additional 10% personal contributions
+      const additionalContrib = (averageIncome * 0.10) / 12;
+      const totalMonthlyContrib = monthlyEmployerContrib + additionalContrib;
+      const plus10Projection = currentBalance * Math.pow(1 + monthlyGrowthRate, months) +
+        totalMonthlyContrib * ((Math.pow(1 + monthlyGrowthRate, months) - 1) / monthlyGrowthRate);
+
+      return {
+        ...point,
+        currentTrend: Math.round(currentTrendProjection),
+        currentPlus10: Math.round(plus10Projection)
+      };
+    });
+  };
+
+  const chartData = calculateProjections();
+
   const CustomTooltip = ({ active, payload, label }: any) => {
     if (active && payload && payload.length) {
       return (
@@ -41,12 +82,12 @@ const SuperBenchmarkChart: React.FC<SuperBenchmarkChartProps> = ({ currentAge, c
   return (
     <Card className="w-full">
       <CardHeader>
-        <CardTitle>Super Balance Benchmarks by Age</CardTitle>
+        <CardTitle>Super Balance Projections by Age</CardTitle>
       </CardHeader>
       <CardContent>
         <div className="h-64">
           <ResponsiveContainer width="100%" height="100%">
-            <LineChart data={benchmarkData} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
+            <LineChart data={chartData} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
               <CartesianGrid strokeDasharray="3 3" />
               <XAxis dataKey="age" />
               <YAxis tickFormatter={(value) => `$${(value / 1000).toFixed(0)}k`} />
@@ -75,8 +116,27 @@ const SuperBenchmarkChart: React.FC<SuperBenchmarkChartProps> = ({ currentAge, c
                 name="75th Percentile"
                 dot={false}
               />
-              {currentAge && (
-                <ReferenceLine x={currentAge} stroke="#ff7300" strokeDasharray="3 3" />
+              {currentAge && currentBalance && (
+                <>
+                  <Line 
+                    type="monotone" 
+                    dataKey="currentTrend" 
+                    stroke="#ff7300" 
+                    strokeWidth={2}
+                    name="Your Current Trend"
+                    dot={false}
+                  />
+                  <Line 
+                    type="monotone" 
+                    dataKey="currentPlus10" 
+                    stroke="#10b981" 
+                    strokeWidth={2}
+                    strokeDasharray="3 3"
+                    name="Your Trend + 10%"
+                    dot={false}
+                  />
+                  <ReferenceLine x={currentAge} stroke="#ff7300" strokeDasharray="3 3" />
+                </>
               )}
             </LineChart>
           </ResponsiveContainer>
@@ -86,6 +146,14 @@ const SuperBenchmarkChart: React.FC<SuperBenchmarkChartProps> = ({ currentAge, c
             <p className="text-sm font-medium">Your Position (Age {currentAge})</p>
             <p className="text-sm text-blue-800">
               Current Balance: ${currentBalance.toLocaleString()}
+            </p>
+            <p className="text-sm text-blue-800">
+              With current contributions, you're projected to have{' '}
+              ${chartData.find(d => d.age === 67)?.currentTrend?.toLocaleString() || 'N/A'} at retirement.
+            </p>
+            <p className="text-sm text-green-800">
+              Adding 10% personal contributions would give you{' '}
+              ${chartData.find(d => d.age === 67)?.currentPlus10?.toLocaleString() || 'N/A'} at retirement.
             </p>
           </div>
         )}
