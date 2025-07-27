@@ -4,11 +4,21 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 
 interface InvestmentRiskProfileProps {
-  riskProfile: 'Conservative' | 'Balanced' | 'Growth';
-  hasHighInterestDebt: boolean;
+  age: number;
+  monthlySurplus: number;
+  totalDebt: number;
 }
 
-const InvestmentRiskProfile: React.FC<InvestmentRiskProfileProps> = ({ riskProfile, hasHighInterestDebt }) => {
+const InvestmentRiskProfile: React.FC<InvestmentRiskProfileProps> = ({ age, monthlySurplus, totalDebt }) => {
+  const getRiskProfile = () => {
+    if (age < 30) return 'Growth';
+    if (age < 50) return 'Balanced';
+    return 'Conservative';
+  };
+
+  const riskProfile = getRiskProfile();
+  const hasHighInterestDebt = totalDebt > 0;
+
   const portfolioAllocation = {
     Conservative: [
       { asset: 'Australian Index Funds', allocation: 40, returns: { '1yr': 8.2, '3yr': 6.1, '5yr': 7.8, '10yr': 9.1 }, risk: 3 },
@@ -30,7 +40,7 @@ const InvestmentRiskProfile: React.FC<InvestmentRiskProfileProps> = ({ riskProfi
     ],
   };
 
-  const allocation = portfolioAllocation[riskProfile];
+  const allocation = portfolioAllocation[riskProfile as keyof typeof portfolioAllocation];
   const overallRisk = allocation.reduce((sum, item) => sum + (item.risk * item.allocation / 100), 0);
   const expectedReturn = allocation.reduce((sum, item) => sum + (item.returns['10yr'] * item.allocation / 100), 0);
 

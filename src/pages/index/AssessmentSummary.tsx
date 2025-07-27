@@ -4,20 +4,15 @@ import { type DebtDetail } from './assessmentHooks';
 import { calculateMonthlyAmount, calculateAustralianIncomeTax } from '@/lib/financialCalculations';
 
 interface AssessmentSummaryProps {
-  employmentStatus?: string;
   hasRegularIncome?: boolean;
   incomeSources: { category: string; amount: string; frequency: string }[];
   expenseItems: { category: string; amount: string; frequency: string }[];
   uploadedFile?: File | null;
-  financialKnowledgeLevel?: string;
   investmentExperience: string[];
   goals: string[];
   otherGoal?: string;
-  goalTimeframe?: string;
   debtTypes: string[];
   debtDetails: DebtDetail[];
-  debtManagementConfidence?: string;
-  freeTextComments?: string;
 }
 
 const SummaryItem = ({ label, value }: { label: string; value?: string | string[] | boolean | null | React.ReactNode }) => {
@@ -49,23 +44,17 @@ const Section: React.FC<{ title: string; children: React.ReactNode }> = ({ title
     </div>
 );
 
-
 const AssessmentSummary: React.FC<AssessmentSummaryProps> = (props) => {
   const {
-    employmentStatus,
     hasRegularIncome,
     incomeSources,
     expenseItems,
     uploadedFile,
-    financialKnowledgeLevel,
     investmentExperience,
     goals,
     otherGoal,
-    goalTimeframe,
     debtTypes,
     debtDetails,
-    debtManagementConfidence,
-    freeTextComments,
   } = props;
 
   const filteredIncomeSources = incomeSources.filter(s => s.category && s.amount);
@@ -81,16 +70,13 @@ const AssessmentSummary: React.FC<AssessmentSummaryProps> = (props) => {
   const monthlySavings = totalMonthlyNetIncome - totalMonthlyExpenses;
   const savingsPercentage = totalMonthlyNetIncome > 0 ? (monthlySavings / totalMonthlyNetIncome) * 100 : 0;
 
-
   return (
     <div className="space-y-8 text-sm">
       <Section title="Primary Goal">
         <SummaryItem label="Your Goal" value={goals.includes('Other') && otherGoal ? otherGoal : goals.join(', ')} />
-        <SummaryItem label="Timeframe" value={goalTimeframe} />
       </Section>
 
       <Section title="Employment & Income">
-        <SummaryItem label="Employment" value={employmentStatus} />
         <SummaryItem label="Regular Income" value={hasRegularIncome} />
         {uploadedFile && <SummaryItem label="Uploaded Statement" value={uploadedFile.name} />}
       </Section>
@@ -120,13 +106,11 @@ const AssessmentSummary: React.FC<AssessmentSummaryProps> = (props) => {
       )}
       
       <Section title="Financial Knowledge">
-        <SummaryItem label="Knowledge Level" value={financialKnowledgeLevel} />
         <SummaryItem label="Investment Experience" value={investmentExperience} />
       </Section>
 
       <Section title="Debts & Liabilities">
         <SummaryItem label="Debts Held" value={debtTypes.join(', ')} />
-        <SummaryItem label="Confidence" value={debtManagementConfidence} />
         {debtDetails.length > 0 && (
           <div className="pt-2">
             <p className="font-medium text-gray-600 mb-2">Debt Details:</p>
@@ -143,12 +127,6 @@ const AssessmentSummary: React.FC<AssessmentSummaryProps> = (props) => {
           </div>
         )}
       </Section>
-      
-      {freeTextComments && (
-        <Section title="Additional Notes">
-            <p className="text-gray-700 italic">"{freeTextComments}"</p>
-        </Section>
-      )}
 
       <Section title="Financial Summary">
           <SummaryItem label="Total Monthly Expenses" value={`$${totalMonthlyExpenses.toFixed(2)}`} />

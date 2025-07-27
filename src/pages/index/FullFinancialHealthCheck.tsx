@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
@@ -148,12 +149,15 @@ export default function FullFinancialHealthCheck({
       });
     }
     
+    // Fix Medicare Levy Surcharge calculation
     if (!insurances.includes('Health Insurance') && totalAnnualGrossIncome > 97000) {
-      const surcharge = Math.min(totalAnnualGrossIncome * 0.015, totalAnnualGrossIncome * 0.01);
+      const surchargeRate = totalAnnualGrossIncome <= 108000 ? 0.01 : 
+                           totalAnnualGrossIncome <= 144000 ? 0.0125 : 0.015;
+      const surcharge = totalAnnualGrossIncome * surchargeRate;
       gaps.push({
         icon: <Shield className="h-5 w-5 text-orange-500" />,
         title: "Private Health Insurance",
-        description: `Consider private health insurance to avoid Medicare Levy Surcharge of $${surcharge.toFixed(0)}`,
+        description: `Consider private health insurance to avoid Medicare Levy Surcharge of $${surcharge.toFixed(0)} annually`,
         priority: "Medium"
       });
     }
@@ -304,21 +308,21 @@ export default function FullFinancialHealthCheck({
       {/* Detailed Analysis Sections */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <IncomeComparisonChart 
-          currentIncome={totalAnnualGrossIncome}
+          userIncome={totalAnnualGrossIncome}
           postcode={postcode}
         />
         
         <SuperKPICards 
           currentBalance={superBalance || 0}
-          age={age || 30}
-          annualIncome={totalAnnualGrossIncome}
+          currentAge={age || 30}
+          currentSalary={totalAnnualGrossIncome}
         />
       </div>
 
       <SuperBenchmarkChart 
         currentBalance={superBalance || 0}
-        age={age || 30}
-        annualIncome={totalAnnualGrossIncome}
+        currentAge={age || 30}
+        currentSalary={totalAnnualGrossIncome}
       />
 
       <InvestmentRiskProfile 
@@ -328,7 +332,10 @@ export default function FullFinancialHealthCheck({
       />
 
       {debtDetails.length > 0 && (
-        <DebtSummaryTable debtDetails={debtDetails} />
+        <DebtSummaryTable 
+          debtDetails={debtDetails}
+          monthlySurplus={monthlySurplus}
+        />
       )}
 
       <BudgetRecap 

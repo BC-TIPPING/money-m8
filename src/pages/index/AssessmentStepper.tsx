@@ -38,10 +38,6 @@ export interface AssessmentStepperProps {
   uploadedFile: File | null;
   setUploadedFile: (file: File | null) => void;
   fileInputRef: React.RefObject<HTMLInputElement>;
-  generateSummary: () => void;
-  isGeneratingSummary: boolean;
-  aiSummary: string | null;
-  chartData: any;
   postcode: string;
   setPostcode: (postcode: string) => void;
   age: number | undefined;
@@ -76,10 +72,6 @@ export default function AssessmentStepper({
   uploadedFile,
   setUploadedFile,
   fileInputRef,
-  generateSummary,
-  isGeneratingSummary,
-  aiSummary,
-  chartData,
   postcode,
   setPostcode,
   age,
@@ -148,8 +140,15 @@ export default function AssessmentStepper({
   if (isLastStep) {
     return (
       <AssessmentSummary
-        generateSummary={generateSummary}
-        isGeneratingSummary={isGeneratingSummary}
+        hasRegularIncome={hasRegularIncome}
+        incomeSources={incomeSources}
+        expenseItems={expenseItems}
+        uploadedFile={uploadedFile}
+        investmentExperience={investmentExperience}
+        goals={goals}
+        otherGoal={otherGoal}
+        debtTypes={debtTypes}
+        debtDetails={debtDetails}
       />
     );
   }
