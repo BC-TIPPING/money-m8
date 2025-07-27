@@ -1,3 +1,4 @@
+
 import React from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -9,7 +10,6 @@ import { Progress } from "@/components/ui/progress";
 import { Loader2 } from "lucide-react";
 import { questions, healthCheckQuestions, INCOME_FREQUENCIES, type DebtDetail } from "./assessmentHooks";
 import AssessmentSummary from "./AssessmentSummary";
-import FileAnalysisReport from "./FileAnalysisReport";
 
 export interface AssessmentStepperProps {
   step: number;
@@ -101,8 +101,7 @@ const AssessmentStepper: React.FC<AssessmentStepperProps> = ({
     }
   };
 
-  const handleGoalChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { value } = e.target;
+  const handleGoalChange = (value: string) => {
     if (goals.includes(value)) {
       setGoals(goals.filter((goal) => goal !== value));
     } else {
@@ -114,8 +113,7 @@ const AssessmentStepper: React.FC<AssessmentStepperProps> = ({
     setOtherGoal(e.target.value);
   };
 
-  const handleDebtTypeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { value } = e.target;
+  const handleDebtTypeChange = (value: string) => {
     if (debtTypes.includes(value)) {
       setDebtTypes(debtTypes.filter((type) => type !== value));
     } else {
@@ -123,10 +121,7 @@ const AssessmentStepper: React.FC<AssessmentStepperProps> = ({
     }
   };
 
-  const handleInvestmentExperienceChange = (
-    e: React.ChangeEvent<HTMLInputElement>
-  ) => {
-    const { value } = e.target;
+  const handleInvestmentExperienceChange = (value: string) => {
     if (investmentExperience.includes(value)) {
       setInvestmentExperience(
         investmentExperience.filter((exp) => exp !== value)
@@ -219,8 +214,7 @@ const AssessmentStepper: React.FC<AssessmentStepperProps> = ({
     setSuperBalance(value === "" ? undefined : parseInt(value, 10));
   };
 
-  const handleInsuranceChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { value } = e.target;
+  const handleInsuranceChange = (value: string) => {
     if (insurances.includes(value)) {
       setInsurances(insurances.filter((insurance) => insurance !== value));
     } else {
@@ -307,7 +301,12 @@ const AssessmentStepper: React.FC<AssessmentStepperProps> = ({
             <Button onClick={() => fileInputRef.current?.click()}>
               Upload File
             </Button>
-            {uploadedFile && <FileAnalysisReport file={uploadedFile} />}
+            {uploadedFile && (
+              <div className="mt-4 p-4 bg-blue-50 rounded-lg">
+                <p className="text-sm">File uploaded: {uploadedFile.name}</p>
+                <p className="text-sm text-gray-600">File analysis feature coming soon!</p>
+              </div>
+            )}
           </div>
         );
       case "expenses":
@@ -362,17 +361,8 @@ const AssessmentStepper: React.FC<AssessmentStepperProps> = ({
               <div className="flex items-center space-x-2" key={option}>
                 <Checkbox
                   id={option}
-                  value={option}
                   checked={investmentExperience.includes(option)}
-                  onCheckedChange={() => {
-                    if (investmentExperience.includes(option)) {
-                      setInvestmentExperience(
-                        investmentExperience.filter((exp) => exp !== option)
-                      );
-                    } else {
-                      setInvestmentExperience([...investmentExperience, option]);
-                    }
-                  }}
+                  onCheckedChange={() => handleInvestmentExperienceChange(option)}
                 />
                 <Label htmlFor={option}>{option}</Label>
               </div>
@@ -386,15 +376,8 @@ const AssessmentStepper: React.FC<AssessmentStepperProps> = ({
               <div className="flex items-center space-x-2" key={option}>
                 <Checkbox
                   id={option}
-                  value={option}
                   checked={debtTypes.includes(option)}
-                  onCheckedChange={() => {
-                    if (debtTypes.includes(option)) {
-                      setDebtTypes(debtTypes.filter((type) => type !== option));
-                    } else {
-                      setDebtTypes([...debtTypes, option]);
-                    }
-                  }}
+                  onCheckedChange={() => handleDebtTypeChange(option)}
                 />
                 <Label htmlFor={option}>{option}</Label>
               </div>
@@ -547,15 +530,8 @@ const AssessmentStepper: React.FC<AssessmentStepperProps> = ({
                 <div className="flex items-center space-x-2" key={option}>
                   <Checkbox
                     id={option}
-                    value={option}
                     checked={insurances.includes(option)}
-                    onCheckedChange={() => {
-                      if (insurances.includes(option)) {
-                        setInsurances(insurances.filter((ins) => ins !== option));
-                      } else {
-                        setInsurances([...insurances, option]);
-                      }
-                    }}
+                    onCheckedChange={() => handleInsuranceChange(option)}
                   />
                   <Label htmlFor={option}>{option}</Label>
                 </div>
@@ -661,17 +637,8 @@ const AssessmentStepper: React.FC<AssessmentStepperProps> = ({
                       <div className="flex items-center space-x-2" key={option}>
                         <Checkbox
                           id={option}
-                          value={option}
                           checked={insurances.includes(option)}
-                          onCheckedChange={() => {
-                            if (insurances.includes(option)) {
-                              setInsurances(
-                                insurances.filter((ins) => ins !== option)
-                              );
-                            } else {
-                              setInsurances([...insurances, option]);
-                            }
-                          }}
+                          onCheckedChange={() => handleInsuranceChange(option)}
                         />
                         <Label htmlFor={option}>{option}</Label>
                       </div>
@@ -713,18 +680,16 @@ const AssessmentStepper: React.FC<AssessmentStepperProps> = ({
               <div className="flex items-center space-x-2">
                 <Checkbox
                   id="buy-house"
-                  value="Buy a house"
                   checked={goals.includes("Buy a house")}
-                  onCheckedChange={handleGoalChange}
+                  onCheckedChange={() => handleGoalChange("Buy a house")}
                 />
                 <Label htmlFor="buy-house">Buy a house</Label>
               </div>
               <div className="flex items-center space-x-2">
                 <Checkbox
                   id="buy-investment-property"
-                  value="Buy an investment property"
                   checked={goals.includes("Buy an investment property")}
-                  onCheckedChange={handleGoalChange}
+                  onCheckedChange={() => handleGoalChange("Buy an investment property")}
                 />
                 <Label htmlFor="buy-investment-property">
                   Buy an investment property
@@ -733,9 +698,8 @@ const AssessmentStepper: React.FC<AssessmentStepperProps> = ({
               <div className="flex items-center space-x-2">
                 <Checkbox
                   id="pay-off-home-loan-sooner"
-                  value="Pay off home loan sooner"
                   checked={goals.includes("Pay off home loan sooner")}
-                  onCheckedChange={handleGoalChange}
+                  onCheckedChange={() => handleGoalChange("Pay off home loan sooner")}
                 />
                 <Label htmlFor="pay-off-home-loan-sooner">
                   Pay off home loan sooner
@@ -744,45 +708,40 @@ const AssessmentStepper: React.FC<AssessmentStepperProps> = ({
               <div className="flex items-center space-x-2">
                 <Checkbox
                   id="maximise-super"
-                  value="Maximise super"
                   checked={goals.includes("Maximise super")}
-                  onCheckedChange={handleGoalChange}
+                  onCheckedChange={() => handleGoalChange("Maximise super")}
                 />
                 <Label htmlFor="maximise-super">Maximise super</Label>
               </div>
               <div className="flex items-center space-x-2">
                 <Checkbox
                   id="set-budget"
-                  value="Set a budget"
                   checked={goals.includes("Set a budget")}
-                  onCheckedChange={handleGoalChange}
+                  onCheckedChange={() => handleGoalChange("Set a budget")}
                 />
                 <Label htmlFor="set-budget">Set a budget</Label>
               </div>
               <div className="flex items-center space-x-2">
                 <Checkbox
                   id="reduce-debt"
-                  value="Reduce debt"
                   checked={goals.includes("Reduce debt")}
-                  onCheckedChange={handleGoalChange}
+                  onCheckedChange={() => handleGoalChange("Reduce debt")}
                 />
                 <Label htmlFor="reduce-debt">Reduce debt</Label>
               </div>
               <div className="flex items-center space-x-2">
                 <Checkbox
                   id="grow-investments"
-                  value="Grow investments"
                   checked={goals.includes("Grow investments")}
-                  onCheckedChange={handleGoalChange}
+                  onCheckedChange={() => handleGoalChange("Grow investments")}
                 />
                 <Label htmlFor="grow-investments">Grow investments</Label>
               </div>
               <div className="flex items-center space-x-2">
                 <Checkbox
                   id="full-financial-health-check"
-                  value="Full Financial Health Check"
                   checked={goals.includes("Full Financial Health Check")}
-                  onCheckedChange={handleGoalChange}
+                  onCheckedChange={() => handleGoalChange("Full Financial Health Check")}
                 />
                 <Label htmlFor="full-financial-health-check">
                   Full Financial Health Check
@@ -829,10 +788,13 @@ const AssessmentStepper: React.FC<AssessmentStepperProps> = ({
           {step === questions.length + healthCheckQuestions.length &&
             goals.includes("Full Financial Health Check") ? (
             <AssessmentSummary
-              aiSummary={aiSummary}
-              chartData={chartData}
-              isGeneratingSummary={isGeneratingSummary}
-              generateSummary={generateSummary}
+              incomeSources={incomeSources}
+              expenseItems={expenseItems}
+              investmentExperience={investmentExperience}
+              goals={goals}
+              otherGoal={otherGoal}
+              debtTypes={debtTypes}
+              debtDetails={debtDetails}
             />
           ) : null}
         </>
