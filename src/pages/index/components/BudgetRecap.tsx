@@ -1,0 +1,168 @@
+
+import React from 'react';
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { TrendingUp, TrendingDown, AlertCircle } from "lucide-react";
+
+interface BudgetRecapProps {
+  totalMonthlyNetIncome: number;
+  totalMonthlyExpenses: number;
+  expenseItems: { category: string; amount: string; frequency: string }[];
+}
+
+const BudgetRecap: React.FC<BudgetRecapProps> = ({ 
+  totalMonthlyNetIncome, 
+  totalMonthlyExpenses, 
+  expenseItems 
+}) => {
+  // Australian budget guidelines (as % of net income)
+  const australianBudgetGuidelines = {
+    'Rent/Mortgage': { min: 25, max: 35, category: 'Housing' },
+    'Groceries': { min: 10, max: 15, category: 'Food' },
+    'Utilities': { min: 5, max: 10, category: 'Utilities' },
+    'Transport': { min: 10, max: 15, category: 'Transport' },
+    'Insurance': { min: 3, max: 8, category: 'Insurance' },
+    'Entertainment': { min: 5, max: 10, category: 'Entertainment' },
+    'Clothing': { min: 2, max: 5, category: 'Clothing' },
+    'Healthcare': { min: 3, max: 8, category: 'Healthcare' },
+    'Savings': { min: 10, max: 20, category: 'Savings' },
+  };
+
+  const calculateCategorySpending = (category: string) => {
+    const relevantExpenses = expenseItems.filter(item => 
+      item.category.toLowerCase().includes(category.toLowerCase()) && 
+      item.amount && 
+      !isNaN(parseFloat(item.amount))
+    );
+    
+    return relevantExpenses.reduce((sum, item) => {
+      const amount = parseFloat(item.amount);
+      const multiplier = item.frequency === 'Weekly' ? 4.33 : 
+                        item.frequency === 'Fortnightly' ? 2.165 : 
+                        item.frequency === 'Yearly' ? 1/12 : 1;
+      return sum + (amount * multiplier);
+    }, 0);
+  };
+
+  const budgetAnalysis = Object.entries(australianBudgetGuidelines).map(([category, guideline]) => {
+    const actualSpending = calculateCategorySpending(category);
+    const actualPercentage = totalMonthlyNetIncome > 0 ? (actualSpending / totalMonthlyNetIncome) * 100 : 0;
+    
+    let status: 'good' | 'warning' | 'over' = 'good';
+    if (actualPercentage > guideline.max) status = 'over';
+    else if (actualPercentage < guideline.min) status = 'warning';
+    
+    return {
+      category,
+      actualSpending,
+      actualPercentage,
+      guideline,
+      status,
+    };
+  });
+
+  const surplus = totalMonthlyNetIncome - totalMonthlyExpenses;
+  const savingsRate = totalMonthlyNetIncome > 0 ? (surplus / totalMonthlyNetIncome) * 100 : 0;
+
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case 'good': return 'bg-green-100 text-green-800';
+      case 'warning': return 'bg-yellow-100 text-yellow-800';
+      case 'over': return 'bg-red-100 text-red-800';
+      default: return 'bg-gray-100 text-gray-800';
+    }
+  };
+
+  const getStatusIcon = (status: string) => {
+    switch (status) {
+      case 'good': return <TrendingUp className="h-4 w-4 text-green-600" />;
+      case 'warning': return <AlertCircle className="h-4 w-4 text-yellow-600" />;
+      case 'over': return <TrendingDown className="h-4 w-4 text-red-600" />;
+      default: return null;
+    }
+  };
+
+  return (
+    <Card className="w-full">
+      <CardHeader>
+        <CardTitle>Budget Analysis</CardTitle>
+      </CardHeader>
+      <CardContent className="space-y-6">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="text-center">
+            <p className="text-sm text-muted-foreground">Monthly Net Income</p>
+            <p className="text-2xl font-bold">${totalMonthlyNetIncome.toLocaleString()}</p>
+          </div>
+          <div className="text-center">
+            <p className="text-sm text-muted-foreground">Monthly Expenses</p>
+            <p className="text-2xl font-bold">${totalMonthlyExpenses.toLocaleString()}</p>
+          </div>
+          <div className="text-center">
+            <p className="text-sm text-muted-foreground">Monthly Surplus</p>
+            <p className={`text-2xl font-bold ${surplus >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+              ${surplus.toLocaleString()}
+            </p>
+          </div>
+        </div>
+
+        <div className="bg-blue-50 p-4 rounded-lg">
+          <h4 className="font-semibold text-blue-900 mb-2">Savings Rate Analysis</h4>
+          <div className="flex items-center gap-2">
+            <span className="text-sm text-blue-800">Current Savings Rate: </span>
+            <Badge className={savingsRate >= 10 ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}>
+              {savingsRate.toFixed(1)}%
+            </Badge>
+          </div>
+          <p className="text-sm text-blue-800 mt-2">
+            Target: 10-20% • Australian Average: 8.6%
+          </p>
+        </div>
+
+        <div className="space-y-3">
+          <h4 className="font-semibold">Budget Category Analysis</h4>
+          <div className="space-y-2">
+            {budgetAnalysis.map((item, index) => (
+              <div key={index} className="flex items-center justify-between p-3 border rounded-lg">
+                <div className="flex items-center gap-3">
+                  {getStatusIcon(item.status)}
+                  <div>
+                    <p className="font-medium">{item.category}</p>
+                    <p className="text-sm text-muted-foreground">
+                      ${item.actualSpending.toFixed(0)} ({item.actualPercentage.toFixed(1)}%)
+                    </p>
+                  </div>
+                </div>
+                <div className="text-right">
+                  <Badge className={getStatusColor(item.status)}>
+                    {item.status === 'good' ? 'On Track' : 
+                     item.status === 'warning' ? 'Under' : 'Over'}
+                  </Badge>
+                  <p className="text-xs text-muted-foreground mt-1">
+                    Target: {item.guideline.min}-{item.guideline.max}%
+                  </p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div className="bg-yellow-50 p-4 rounded-lg">
+          <h4 className="font-semibold text-yellow-900 mb-2">Budget Recommendations</h4>
+          <ul className="text-sm text-yellow-800 space-y-1">
+            {budgetAnalysis.filter(item => item.status === 'over').map((item, index) => (
+              <li key={index}>• Reduce {item.category} spending by ${((item.actualPercentage - item.guideline.max) * totalMonthlyNetIncome / 100).toFixed(0)}/month</li>
+            ))}
+            {savingsRate < 10 && (
+              <li>• Increase savings rate to at least 10% (${(totalMonthlyNetIncome * 0.1).toFixed(0)}/month)</li>
+            )}
+            {budgetAnalysis.filter(item => item.status === 'over').length === 0 && savingsRate >= 10 && (
+              <li>• Your budget is well-balanced! Consider increasing savings rate to 15-20%</li>
+            )}
+          </ul>
+        </div>
+      </CardContent>
+    </Card>
+  );
+};
+
+export default BudgetRecap;

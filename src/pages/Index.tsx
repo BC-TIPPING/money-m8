@@ -177,6 +177,7 @@ export default function Index() {
                       debtTypes={assessment.debtTypes}
                       debtDetails={assessment.debtDetails}
                       incomeSources={assessment.incomeSources}
+                      expenseItems={assessment.expenseItems}
                       goals={assessment.goals}
                     />
                     
@@ -185,7 +186,10 @@ export default function Index() {
                       <div className="mt-8">
                         <Card className="border-emerald-200 bg-gradient-to-br from-emerald-50 to-white">
                           <CardHeader>
-                            <CardTitle>AI-Generated Financial Summary</CardTitle>
+                            <CardTitle className="flex items-center gap-2">
+                              <BarChart3 className="h-5 w-5 text-emerald-600" />
+                              AI-Generated Financial Summary
+                            </CardTitle>
                           </CardHeader>
                           <CardContent>
                             <div className="prose prose-emerald max-w-none">
@@ -248,6 +252,21 @@ export default function Index() {
                     )}
                     {chartData?.debtReductionData && <DebtReductionChart data={chartData.debtReductionData} />}
                     {chartData?.interestSavedData && <InterestSavedChart data={chartData.interestSavedData} />}
+                    
+                    {/* AI Summary for other goals */}
+                    {aiSummary && (
+                      <Card className="border-emerald-200 bg-gradient-to-br from-emerald-50 to-white">
+                        <CardHeader>
+                          <CardTitle>AI-Generated Financial Summary</CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                          <div className="prose prose-emerald max-w-none">
+                            <div dangerouslySetInnerHTML={{ __html: aiSummary }} />
+                          </div>
+                        </CardContent>
+                      </Card>
+                    )}
+                    
                     <ActionItemsSection 
                       assessmentData={assessment} 
                       onSetBudgetGoal={handleSetBudgetGoal}
