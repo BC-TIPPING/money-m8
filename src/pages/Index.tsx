@@ -15,6 +15,7 @@ import HouseBuyingCalculator from "./index/HouseBuyingCalculator";
 import InvestmentPropertyCalculator from "./index/InvestmentPropertyCalculator";
 import ActionItemsSection from "./index/ActionItemsSection";
 import { Link } from "react-router-dom";
+import FullFinancialHealthCheck from "./index/FullFinancialHealthCheck";
 
 // New component imports
 import SaveResultsModal from "./index/components/SaveResultsModal";
@@ -138,7 +139,27 @@ export default function Index() {
               aiSummary={aiSummary}
               chartData={chartData}
             />
+            
             {isComplete && (
+              <>
+                {assessment.goals.includes('Full Financial Health Check') && (
+                  <div className="container mx-auto px-4 py-6 sm:px-6 lg:px-8">
+                    <FullFinancialHealthCheck 
+                      age={assessment.age}
+                      postcode={assessment.postcode}
+                      superBalance={assessment.superBalance}
+                      superFund={assessment.superFund}
+                      mortgageRate={assessment.mortgageRate}
+                      insurances={assessment.insurances}
+                      assets={assessment.assets}
+                      debtTypes={assessment.debtTypes}
+                      debtDetails={assessment.debtDetails}
+                      incomeSources={assessment.incomeSources}
+                      goals={assessment.goals}
+                    />
+                  </div>
+                )}
+                
                 <div className="container mx-auto grid gap-6 px-4 py-6 sm:px-6 lg:grid-cols-2 lg:px-8">
                     {assessment.goals.includes('Buy a house') && (
                         <HouseBuyingCalculator 
@@ -192,6 +213,7 @@ export default function Index() {
                       onSetBudgetGoal={handleSetBudgetGoal}
                     />
                 </div>
+              </>
             )}
           </div>
           

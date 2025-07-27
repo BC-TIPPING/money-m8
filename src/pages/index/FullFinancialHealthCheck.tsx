@@ -1,10 +1,14 @@
+
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
-import { ArrowRight, TrendingUp, Shield, Home, PiggyBank, Target } from "lucide-react";
+import { ArrowRight, TrendingUp, Shield, Home, PiggyBank, Target, BarChart3 } from "lucide-react";
 import { Link } from "react-router-dom";
+import IncomeComparisonChart from "./components/IncomeComparisonChart";
+import SuperBenchmarkChart from "./components/SuperBenchmarkChart";
+import DebtPayoffVisualization from "./components/DebtPayoffVisualization";
 
 interface FullFinancialHealthCheckProps {
   age?: number;
@@ -107,6 +111,36 @@ const FullFinancialHealthCheck: React.FC<FullFinancialHealthCheckProps> = ({
 
   const insuranceGaps = getInsuranceRecommendations();
 
+  // Calculate financial health score
+  const calculateHealthScore = () => {
+    let score = 0;
+    let maxScore = 100;
+    
+    // Income score (25 points)
+    score += Math.min(incomeData.percentile / 100 * 25, 25);
+    
+    // Super score (25 points)
+    if (superProgress > 0) {
+      score += Math.min(superProgress / 100 * 25, 25);
+    }
+    
+    // Insurance score (25 points)
+    const insuranceScore = (insurances.length - insuranceGaps.length) / Math.max(insurances.length, 1) * 25;
+    score += insuranceScore;
+    
+    // Debt score (25 points)
+    const hasHighInterestDebt = debtTypes.some(debt => ["Credit Card", "Personal Loan"].includes(debt));
+    if (!hasHighInterestDebt) {
+      score += 25;
+    } else {
+      score += 10; // Some points for managing debt
+    }
+    
+    return Math.round(score);
+  };
+
+  const healthScore = calculateHealthScore();
+
   return (
     <div className="space-y-8">
       <div className="text-center mb-8">
@@ -118,7 +152,29 @@ const FullFinancialHealthCheck: React.FC<FullFinancialHealthCheckProps> = ({
         </p>
       </div>
 
-      {/* Income Analysis */}
+      {/* Financial Health Score */}
+      <Card className="border-emerald-200 bg-gradient-to-br from-emerald-50 to-white">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <BarChart3 className="h-5 w-5 text-emerald-600" />
+            Financial Health Score
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="flex items-center gap-4 mb-4">
+            <Progress value={healthScore} className="flex-1" />
+            <span className="text-2xl font-bold text-emerald-600">{healthScore}/100</span>
+          </div>
+          <div className="text-sm text-emerald-800">
+            {healthScore >= 80 && "Excellent financial health! You're on track for a secure financial future."}
+            {healthScore >= 60 && healthScore < 80 && "Good financial health with room for improvement in key areas."}
+            {healthScore >= 40 && healthScore < 60 && "Moderate financial health. Focus on the action items below."}
+            {healthScore < 40 && "Your financial health needs attention. Start with high-priority items."}
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Income Analysis with Chart */}
       <Card className="border-emerald-200 bg-gradient-to-br from-emerald-50 to-white">
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
@@ -126,7 +182,7 @@ const FullFinancialHealthCheck: React.FC<FullFinancialHealthCheckProps> = ({
             Income Analysis
           </CardTitle>
         </CardHeader>
-        <CardContent className="space-y-4">
+        <CardContent className="space-y-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <p className="text-sm text-muted-foreground">Annual Income</p>
@@ -143,20 +199,22 @@ const FullFinancialHealthCheck: React.FC<FullFinancialHealthCheckProps> = ({
               </div>
             </div>
           </div>
+
+          <IncomeComparisonChart userIncome={annualIncome} postcode={postcode} />
           
           <div className="bg-blue-50 p-4 rounded-lg">
             <h4 className="font-semibold text-blue-900 mb-2">Understanding Income Percentiles</h4>
             <p className="text-sm text-blue-800">
               The <strong>median</strong> income represents the middle point where half earn more and half earn less. 
               Unlike the average (which can be skewed by very high earners), the median gives a better picture 
-              of typical Australian earnings. Your income puts you in the {incomeData.level.toLowerCase()} range 
-              compared to other Australians.
+              of typical Australian earnings. For example, if 10 people earn $30k, $40k, $50k, $60k, $70k, $80k, $90k, $100k, $200k, $500k, 
+              the median is $75k but the average is $122k. Your income puts you in the {incomeData.level.toLowerCase()} range.
             </p>
           </div>
         </CardContent>
       </Card>
 
-      {/* Superannuation Analysis */}
+      {/* Enhanced Superannuation Analysis */}
       <Card className="border-blue-200 bg-gradient-to-br from-blue-50 to-white">
         <CardHeader className="flex flex-row items-center justify-between">
           <CardTitle className="flex items-center gap-2">
@@ -169,7 +227,7 @@ const FullFinancialHealthCheck: React.FC<FullFinancialHealthCheckProps> = ({
             </Button>
           </Link>
         </CardHeader>
-        <CardContent className="space-y-4">
+        <CardContent className="space-y-6">
           {age && superBalance !== undefined && (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
@@ -190,6 +248,8 @@ const FullFinancialHealthCheck: React.FC<FullFinancialHealthCheckProps> = ({
             </div>
           )}
 
+          <SuperBenchmarkChart currentAge={age} currentBalance={superBalance} />
+
           {superProgress < 100 && superBenchmark && superBalance !== undefined && (
             <div className="bg-orange-50 p-4 rounded-lg">
               <h4 className="font-semibold text-orange-900 mb-2">Catch-Up Strategy</h4>
@@ -203,7 +263,7 @@ const FullFinancialHealthCheck: React.FC<FullFinancialHealthCheckProps> = ({
         </CardContent>
       </Card>
 
-      {/* Insurance Coverage */}
+      {/* Enhanced Insurance Coverage */}
       <Card className="border-purple-200 bg-gradient-to-br from-purple-50 to-white">
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
@@ -249,7 +309,7 @@ const FullFinancialHealthCheck: React.FC<FullFinancialHealthCheckProps> = ({
         </CardContent>
       </Card>
 
-      {/* Debt Analysis */}
+      {/* Enhanced Debt Analysis */}
       {debtTypes.length > 0 && (
         <Card className="border-red-200 bg-gradient-to-br from-red-50 to-white">
           <CardHeader className="flex flex-row items-center justify-between">
@@ -263,7 +323,7 @@ const FullFinancialHealthCheck: React.FC<FullFinancialHealthCheckProps> = ({
               </Button>
             </Link>
           </CardHeader>
-          <CardContent className="space-y-4">
+          <CardContent className="space-y-6">
             <div>
               <p className="text-sm text-muted-foreground mb-2">Current Debts</p>
               <div className="flex flex-wrap gap-2">
@@ -272,6 +332,8 @@ const FullFinancialHealthCheck: React.FC<FullFinancialHealthCheckProps> = ({
                 ))}
               </div>
             </div>
+
+            <DebtPayoffVisualization debtDetails={debtDetails} monthlyIncome={monthlyIncome} />
 
             {debtTypes.includes("Credit Card") && (
               <div className="bg-yellow-50 p-4 rounded-lg">
@@ -297,7 +359,7 @@ const FullFinancialHealthCheck: React.FC<FullFinancialHealthCheckProps> = ({
         </Card>
       )}
 
-      {/* Investment Strategy */}
+      {/* Enhanced Investment Strategy */}
       <Card className="border-indigo-200 bg-gradient-to-br from-indigo-50 to-white">
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
@@ -354,7 +416,7 @@ const FullFinancialHealthCheck: React.FC<FullFinancialHealthCheckProps> = ({
         </CardContent>
       </Card>
 
-      {/* Action Plan */}
+      {/* Enhanced Action Plan */}
       <Card className="border-emerald-200 bg-gradient-to-br from-emerald-50 to-white">
         <CardHeader>
           <CardTitle>Your Financial Action Plan</CardTitle>
@@ -394,14 +456,22 @@ const FullFinancialHealthCheck: React.FC<FullFinancialHealthCheckProps> = ({
           </div>
 
           <div className="bg-emerald-50 p-4 rounded-lg">
-            <h4 className="font-semibold text-emerald-900 mb-2">Financial Health Score</h4>
-            <div className="flex items-center gap-4">
-              <Progress value={75} className="flex-1" />
-              <span className="text-lg font-bold text-emerald-600">75/100</span>
-            </div>
-            <p className="text-sm text-emerald-800 mt-2">
-              You're on track! Focus on the action items above to optimize your financial position.
+            <h4 className="font-semibold text-emerald-900 mb-2">Next Steps</h4>
+            <p className="text-sm text-emerald-800 mb-3">
+              Based on your financial health score of {healthScore}/100, focus on these priority areas 
+              to improve your overall financial position.
             </p>
+            <div className="flex flex-wrap gap-2">
+              <Link to="/#budget">
+                <Button size="sm" variant="outline">Budget Planner</Button>
+              </Link>
+              <Link to="/maximise-super">
+                <Button size="sm" variant="outline">Super Calculator</Button>
+              </Link>
+              <Link to="/pay-off-home-loan">
+                <Button size="sm" variant="outline">Debt Calculator</Button>
+              </Link>
+            </div>
           </div>
         </CardContent>
       </Card>
