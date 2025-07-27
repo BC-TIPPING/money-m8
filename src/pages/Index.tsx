@@ -15,6 +15,7 @@ import InvestmentPropertyCalculator from "./index/InvestmentPropertyCalculator";
 import ActionItemsSection from "./index/ActionItemsSection";
 import { Link } from "react-router-dom";
 import FullFinancialHealthCheck from "./index/FullFinancialHealthCheck";
+import { BarChart3 } from "lucide-react";
 
 // New component imports
 import SaveResultsModal from "./index/components/SaveResultsModal";
