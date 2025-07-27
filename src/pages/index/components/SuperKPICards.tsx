@@ -30,7 +30,7 @@ const SuperKPICards: React.FC<SuperKPICardsProps> = ({ currentAge, currentBalanc
   // Australian super benchmarks by age
   const benchmarks = {
     25: 30000, 30: 60000, 35: 110000, 40: 180000, 45: 270000,
-    50: 390000, 55: 550000, 60: 750000, 65: 1000000, 67: 1100000
+    50: 390000, 55: 550000, 60: 750000, 65: 1000000
   };
 
   const closestAge = Object.keys(benchmarks)
@@ -47,7 +47,7 @@ const SuperKPICards: React.FC<SuperKPICardsProps> = ({ currentAge, currentBalanc
   const monthlyGrowthRate = 0.07 / 12; // 7% annual growth
   const months = retirementYears * 12;
   
-  // Current employer contributions (11.5% as of 2024)
+  // Current employer contributions (11.5%)
   const annualEmployerContrib = currentSalary * 0.115;
   
   // Future value with current contributions
@@ -60,17 +60,13 @@ const SuperKPICards: React.FC<SuperKPICardsProps> = ({ currentAge, currentBalanc
   const futureValueExtra = currentBalance * Math.pow(1 + monthlyGrowthRate, months) +
     (totalAnnualContrib / 12) * ((Math.pow(1 + monthlyGrowthRate, months) - 1) / monthlyGrowthRate);
 
-  // 4% rule for retirement income
-  const retirementIncomeCurrent = futureValueCurrent * 0.04;
-  const retirementIncomeExtra = futureValueExtra * 0.04;
-  
-  // Retirement target using 4% rule (comfortable retirement ~$70k/year)
-  const retirementTarget = 70000 / 0.04; // $1.75M
+  // Retirement target (10x current salary)
+  const retirementTarget = currentSalary * 10;
   const retirementReadiness = (futureValueCurrent / retirementTarget) * 100;
 
-  // Tax savings from salary sacrifice (assuming 30% tax rate for middle income)
-  const taxRate = currentSalary > 45000 ? 0.30 : 0.19;
-  const annualTaxSavings = additionalContrib * (taxRate - 0.15); // 15% super tax vs income tax
+  // Tax savings from salary sacrifice (assuming 30% tax rate)
+  const taxRate = currentSalary > 45000 ? 0.30 : 0.19; // Simplified tax calculation
+  const annualTaxSavings = additionalContrib * taxRate;
   const monthlySacrificeNet = (additionalContrib / 12) * (1 - taxRate);
 
   return (
@@ -97,9 +93,7 @@ const SuperKPICards: React.FC<SuperKPICardsProps> = ({ currentAge, currentBalanc
           <p className="text-2xl font-bold text-green-600">
             ${(futureValueCurrent / 1000000).toFixed(1)}M
           </p>
-          <p className="text-xs text-muted-foreground">
-            ${retirementIncomeCurrent.toLocaleString()}/year (4% rule)
-          </p>
+          <p className="text-xs text-muted-foreground">projected at 67</p>
         </CardContent>
       </Card>
 
@@ -112,9 +106,7 @@ const SuperKPICards: React.FC<SuperKPICardsProps> = ({ currentAge, currentBalanc
           <p className="text-2xl font-bold text-purple-600">
             {retirementReadiness.toFixed(0)}%
           </p>
-          <p className="text-xs text-muted-foreground">
-            of comfortable retirement
-          </p>
+          <p className="text-xs text-muted-foreground">of target needed</p>
         </CardContent>
       </Card>
 

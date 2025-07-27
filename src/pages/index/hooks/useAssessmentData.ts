@@ -1,4 +1,3 @@
-
 import { useState, useEffect, useMemo } from "react";
 import { useToast } from "@/components/ui/use-toast";
 import { type Database } from "@/integrations/supabase/types";
@@ -19,7 +18,6 @@ export function useAssessmentData(assessment: AssessmentState) {
   const [isPreloaded, setIsPreloaded] = useState(false);
   const [assessmentId, setAssessmentId] = useState<string | null>(null);
   const [hasCompletedAssessment, setHasCompletedAssessment] = useState(false);
-  const [isHealthCheckComplete, setIsHealthCheckComplete] = useState(false);
 
   // Only fetch assessment if user is logged in
   const { data: existingAssessment, isLoading: isLoadingAssessment, isSuccess: isFetchSuccess } = useFetchAssessment(user?.id ?? null);
@@ -30,32 +28,33 @@ export function useAssessmentData(assessment: AssessmentState) {
     }
     return {
       user_id: user.id,
-      has_regular_income: true,
+      employment_status: assessment.employmentStatus,
+      has_regular_income: assessment.hasRegularIncome,
       income_sources: assessment.incomeSources,
       expense_items: assessment.expenseItems,
+      financial_knowledge_level: assessment.financialKnowledgeLevel,
       investment_experience: assessment.investmentExperience,
       goals: assessment.goals,
       other_goal: assessment.otherGoal,
       debt_types: assessment.debtTypes,
       debt_details: assessment.debtDetails,
-      postcode: assessment.postcode || null,
-      age: assessment.age || null,
-      super_balance: assessment.superBalance || null,
-      insurances: assessment.insurances || null,
+      debt_management_confidence: assessment.debtManagementConfidence,
+      free_text_comments: assessment.freeTextComments,
     };
   }, [
     user,
+    assessment.employmentStatus,
+    assessment.hasRegularIncome,
     assessment.incomeSources,
     assessment.expenseItems,
+    assessment.financialKnowledgeLevel,
     assessment.investmentExperience,
     assessment.goals,
     assessment.otherGoal,
     assessment.debtTypes,
     assessment.debtDetails,
-    assessment.postcode,
-    assessment.age,
-    assessment.superBalance,
-    assessment.insurances,
+    assessment.debtManagementConfidence,
+    assessment.freeTextComments,
   ]);
 
   const { mutate: saveAssessment, isPending: isSaving } = useSaveAssessment((data) => {
@@ -74,11 +73,6 @@ export function useAssessmentData(assessment: AssessmentState) {
 
   const isComplete = assessment.step >= questions.length;
 
-  // For Full Financial Health Check, only show summary when explicitly marked complete
-  const shouldShowSummary = assessment.goals.includes('Full Financial Health Check') 
-    ? isHealthCheckComplete 
-    : isComplete;
-
   // Track if assessment has been completed
   useEffect(() => {
     if (isComplete) {
@@ -88,16 +82,18 @@ export function useAssessmentData(assessment: AssessmentState) {
 
   // Only auto-save for logged-in users
   useEffect(() => {
-    if (shouldShowSummary && !isSubmitted && !isSaving && assessmentData && user) {
+    if (isComplete && !isSubmitted && !isSaving && assessmentData && user) {
       saveAssessment(assessmentData);
     }
-  }, [shouldShowSummary, isSubmitted, isSaving, saveAssessment, assessmentData, user]);
+  }, [isComplete, isSubmitted, isSaving, saveAssessment, assessmentData, user]);
 
   // Only load existing assessment for logged-in users
   useEffect(() => {
     if (isFetchSuccess && user && existingAssessment) {
         const typedAssessment = existingAssessment;
         setAssessmentId(typedAssessment.id);
+        assessment.setEmploymentStatus(typedAssessment.employment_status ?? undefined);
+        assessment.setHasRegularIncome(typedAssessment.has_regular_income ?? undefined);
         assessment.setIncomeSources((typedAssessment.income_sources as any) || [{ category: "", amount: "", frequency: "Monthly" }]);
         
         const oldExpenseItems = (typedAssessment.expense_items as any[]) || [];
@@ -113,6 +109,7 @@ export function useAssessmentData(assessment: AssessmentState) {
         });
         assessment.setExpenseItems(newExpenseItems);
         
+        assessment.setFinancialKnowledgeLevel(typedAssessment.financial_knowledge_level ?? undefined);
         assessment.setInvestmentExperience(typedAssessment.investment_experience ?? []);
         assessment.setOtherGoal(typedAssessment.other_goal ?? "");
         assessment.setDebtTypes(typedAssessment.debt_types ?? []);
@@ -120,9 +117,13 @@ export function useAssessmentData(assessment: AssessmentState) {
         assessment.setPostcode(typedAssessment.postcode ?? "");
         assessment.setAge(typedAssessment.age ?? undefined);
         assessment.setSuperBalance(typedAssessment.super_balance ?? undefined);
+        assessment.setSuperFund(typedAssessment.super_fund ?? "");
+        assessment.setMortgageRate(typedAssessment.mortgage_rate ?? undefined);
         assessment.setInsurances((typedAssessment.insurances as string[]) ?? []);
+        assessment.setAssets((typedAssessment.assets as any) ?? []);
         assessment.setDebtDetails((typedAssessment.debt_details as any) || []);
-        assessment.setAssets([]); // Initialize assets as empty array
+        assessment.setDebtManagementConfidence(typedAssessment.debt_management_confidence ?? undefined);
+        assessment.setFreeTextComments(typedAssessment.free_text_comments ?? "");
 
         toast({ title: "Welcome back!", description: "We've pre-filled your previous assessment data." });
         setIsPreloaded(true);
@@ -145,8 +146,11 @@ export function useAssessmentData(assessment: AssessmentState) {
 
     // Otherwise, do a full reset
     assessment.setStep(0);
+    assessment.setEmploymentStatus(undefined);
+    assessment.setHasRegularIncome(undefined);
     assessment.setIncomeSources([{ category: "", amount: "", frequency: "Monthly" }]);
     assessment.setExpenseItems(PRELOADED_EXPENSE_CATEGORIES.map((c) => ({ category: c, amount: "", frequency: "Monthly" })));
+    assessment.setFinancialKnowledgeLevel(undefined);
     assessment.setInvestmentExperience([]);
     assessment.setGoals([]);
     assessment.setOtherGoal("");
@@ -155,9 +159,13 @@ export function useAssessmentData(assessment: AssessmentState) {
     assessment.setPostcode("");
     assessment.setAge(undefined);
     assessment.setSuperBalance(undefined);
+    assessment.setSuperFund("");
+    assessment.setMortgageRate(undefined);
     assessment.setInsurances([]);
-    assessment.setDebtDetails([]);
     assessment.setAssets([]);
+    assessment.setDebtDetails([]);
+    assessment.setDebtManagementConfidence(undefined);
+    assessment.setFreeTextComments("");
     assessment.setShowAssessment(false);
 
     setIsSubmitted(false);
@@ -166,7 +174,6 @@ export function useAssessmentData(assessment: AssessmentState) {
     setAssessmentId(null);
     setIsPreloaded(false);
     setHasCompletedAssessment(false);
-    setIsHealthCheckComplete(false);
   };
 
   const handleChangeGoal = () => {
@@ -174,7 +181,6 @@ export function useAssessmentData(assessment: AssessmentState) {
     setAiSummary(null);
     setChartData(null);
     setIsSubmitted(false);
-    setIsHealthCheckComplete(false);
     assessment.setGoals([]);
     assessment.setStep(0);
     assessment.setShowAssessment(false);
@@ -202,17 +208,15 @@ export function useAssessmentData(assessment: AssessmentState) {
     }
   };
 
-  const handleCompleteHealthCheck = () => {
-    setIsHealthCheckComplete(true);
-  };
-
   // For anonymous users, create a temporary assessment data object for AI generation
   const generateSummary = ({ personality = 'default' }: { personality?: string } = {}) => {
     const dataForSummary = assessmentData || {
       user_id: 'anonymous',
-      has_regular_income: true,
+      employment_status: assessment.employmentStatus,
+      has_regular_income: assessment.hasRegularIncome,
       income_sources: assessment.incomeSources,
       expense_items: assessment.expenseItems,
+      financial_knowledge_level: assessment.financialKnowledgeLevel,
       investment_experience: assessment.investmentExperience,
       goals: assessment.goals,
       other_goal: assessment.otherGoal,
@@ -221,8 +225,13 @@ export function useAssessmentData(assessment: AssessmentState) {
       postcode: assessment.postcode || null,
       age: assessment.age || null,
       super_balance: assessment.superBalance || null,
+      super_fund: assessment.superFund || null,
+      mortgage_rate: assessment.mortgageRate || null,
       insurances: assessment.insurances || null,
+      assets: assessment.assets || null,
       debt_details: assessment.debtDetails,
+      debt_management_confidence: assessment.debtManagementConfidence,
+      free_text_comments: assessment.freeTextComments,
     };
     
     generateSummaryMutation({ assessmentData: dataForSummary, personality });
@@ -235,12 +244,10 @@ export function useAssessmentData(assessment: AssessmentState) {
     isLoadingAssessment: user ? isLoadingAssessment : false,
     isGeneratingSummary,
     isComplete,
-    shouldShowSummary,
     generateSummary,
     handleStartOver,
     handleChangeGoal,
     handleSetBudgetGoal,
-    handleCompleteHealthCheck,
     assessmentId,
     updateHomeLoanExtraRepayment,
     isUpdatingRepayment,
