@@ -6,12 +6,12 @@ import { Loader2 } from "lucide-react";
 import AISearchSection from "./components/AISearchSection";
 
 const goalPanels = [
+  { title: "Full Financial Health Check", description: "Get a comprehensive analysis of your entire financial situation.", emoji: "📊" },
+  { title: "Reduce debt", description: "Create a strategy to pay down debts and achieve freedom.", emoji: "💳" },
+  { title: "Set a budget", description: "Take control of your spending and master your cash flow.", emoji: "💰" },
   { title: "Buy a house", description: "Turn your dream of homeownership into a reality with a solid plan.", emoji: "🏠" },
   { title: "Buy an investment property", description: "Build wealth through property investment with smart strategies.", emoji: "🏘️" },
-  { title: "Full Financial Health Check", description: "Get a comprehensive analysis of your entire financial situation.", emoji: "📊" },
   { title: "Improve financial literacy", description: "Gain the knowledge to make confident decisions for your future.", emoji: "📚" },
-  { title: "Set a budget", description: "Take control of your spending and master your cash flow.", emoji: "💰" },
-  { title: "Reduce debt", description: "Create a strategy to pay down debts and achieve freedom.", emoji: "💳" },
   { title: "Grow investments", description: "Make your money work for you and build long-term wealth.", emoji: "📈" },
   { title: "Save for a purchase", description: "Whether it's a car or a holiday, we'll help you reach your savings goals.", emoji: "🎯" },
   { title: "Pay off home loan sooner", description: "Learn strategies to clear your mortgage faster and save thousands.", emoji: "🏡" },

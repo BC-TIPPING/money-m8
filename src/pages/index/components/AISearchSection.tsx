@@ -90,11 +90,11 @@ const AISearchSection: React.FC<AISearchSectionProps> = ({ onGoalSuggested }) =>
         </div>
         
         <Select onValueChange={(value) => setQuestion(value)}>
-          <SelectTrigger className="w-full bg-white/10 border-white/20 text-white backdrop-blur-md">
+          <SelectTrigger className="bg-white/10 border-white/20 text-white backdrop-blur-md">
             <SelectValue placeholder="Or choose from common Australian financial questions..." />
             <ChevronDown className="h-4 w-4 text-white/60" />
           </SelectTrigger>
-          <SelectContent>
+          <SelectContent className="bg-white z-50">
             {australianQuestions.map((q, index) => (
               <SelectItem key={index} value={q}>{q}</SelectItem>
             ))}

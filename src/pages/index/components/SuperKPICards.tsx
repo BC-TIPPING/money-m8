@@ -27,7 +27,7 @@ const SuperKPICards: React.FC<SuperKPICardsProps> = ({ currentAge, currentBalanc
     );
   }
 
-  // Australian super benchmarks by age
+  // Australian super benchmarks by age (updated 2024)
   const benchmarks = {
     25: 30000, 30: 60000, 35: 110000, 40: 180000, 45: 270000,
     50: 390000, 55: 550000, 60: 750000, 65: 1000000
@@ -42,30 +42,39 @@ const SuperKPICards: React.FC<SuperKPICardsProps> = ({ currentAge, currentBalanc
   const currentBenchmark = benchmarks[closestAge as keyof typeof benchmarks];
   const benchmarkRatio = (currentBalance / currentBenchmark) * 100;
 
-  // Project super at 67
+  // Project super at 67 with proper calculations
   const retirementYears = Math.max(67 - currentAge, 0);
-  const monthlyGrowthRate = 0.07 / 12; // 7% annual growth
+  const monthlyGrowthRate = 0.07 / 12; // 7% annual growth assumption
   const months = retirementYears * 12;
   
-  // Current employer contributions (11.5%)
+  // Current employer contributions (11.5% for 2024)
   const annualEmployerContrib = currentSalary * 0.115;
   
-  // Future value with current contributions
-  const futureValueCurrent = currentBalance * Math.pow(1 + monthlyGrowthRate, months) +
-    (annualEmployerContrib / 12) * ((Math.pow(1 + monthlyGrowthRate, months) - 1) / monthlyGrowthRate);
+  // Future value with current contributions - proper formula
+  const currentGrowthFactor = currentBalance > 0 ? Math.pow(1 + monthlyGrowthRate, months) : 1;
+  const annuityFactor = months > 0 ? ((Math.pow(1 + monthlyGrowthRate, months) - 1) / monthlyGrowthRate) : 0;
+  
+  const futureValueCurrent = currentBalance * currentGrowthFactor + 
+    (annualEmployerContrib / 12) * annuityFactor;
 
   // Future value with additional 10% salary sacrifice
   const additionalContrib = currentSalary * 0.10;
   const totalAnnualContrib = annualEmployerContrib + additionalContrib;
-  const futureValueExtra = currentBalance * Math.pow(1 + monthlyGrowthRate, months) +
-    (totalAnnualContrib / 12) * ((Math.pow(1 + monthlyGrowthRate, months) - 1) / monthlyGrowthRate);
+  const futureValueExtra = currentBalance * currentGrowthFactor + 
+    (totalAnnualContrib / 12) * annuityFactor;
 
-  // Retirement target (10x current salary)
-  const retirementTarget = currentSalary * 10;
+  // 4% rule calculation - how much annual income this provides
+  const retirementIncomeeCurrent = futureValueCurrent * 0.04;
+  const retirementIncomeExtra = futureValueExtra * 0.04;
+
+  // Target using 4% rule (assume need 70% of current salary)
+  const targetAnnualIncome = currentSalary * 0.70;
+  const retirementTarget = targetAnnualIncome / 0.04; // 4% rule reversed
   const retirementReadiness = (futureValueCurrent / retirementTarget) * 100;
 
-  // Tax savings from salary sacrifice (assuming 30% tax rate)
-  const taxRate = currentSalary > 45000 ? 0.30 : 0.19; // Simplified tax calculation
+  // Tax savings from salary sacrifice (marginal tax rate estimation)
+  const taxRate = currentSalary > 120000 ? 0.37 : 
+                 currentSalary > 45000 ? 0.30 : 0.19;
   const annualTaxSavings = additionalContrib * taxRate;
   const monthlySacrificeNet = (additionalContrib / 12) * (1 - taxRate);
 
@@ -93,7 +102,9 @@ const SuperKPICards: React.FC<SuperKPICardsProps> = ({ currentAge, currentBalanc
           <p className="text-2xl font-bold text-green-600">
             ${(futureValueCurrent / 1000000).toFixed(1)}M
           </p>
-          <p className="text-xs text-muted-foreground">projected at 67</p>
+          <p className="text-xs text-muted-foreground">
+            ${retirementIncomeeCurrent.toLocaleString()}/year (4% rule)
+          </p>
         </CardContent>
       </Card>
 
@@ -104,9 +115,11 @@ const SuperKPICards: React.FC<SuperKPICardsProps> = ({ currentAge, currentBalanc
             <span className="text-sm text-muted-foreground">Retirement Ready</span>
           </div>
           <p className="text-2xl font-bold text-purple-600">
-            {retirementReadiness.toFixed(0)}%
+            {Math.min(retirementReadiness, 999).toFixed(0)}%
           </p>
-          <p className="text-xs text-muted-foreground">of target needed</p>
+          <p className="text-xs text-muted-foreground">
+            Target: ${(retirementTarget / 1000000).toFixed(1)}M
+          </p>
         </CardContent>
       </Card>
 
@@ -114,13 +127,13 @@ const SuperKPICards: React.FC<SuperKPICardsProps> = ({ currentAge, currentBalanc
         <CardContent className="p-4">
           <div className="flex items-center gap-2">
             <DollarSign className="h-4 w-4 text-orange-600" />
-            <span className="text-sm text-muted-foreground">Tax Savings</span>
+            <span className="text-sm text-muted-foreground">Extra +10%</span>
           </div>
           <p className="text-2xl font-bold text-orange-600">
-            ${annualTaxSavings.toLocaleString()}
+            ${(retirementIncomeExtra.toLocaleString())}
           </p>
           <p className="text-xs text-muted-foreground">
-            with 10% sacrifice (${monthlySacrificeNet.toFixed(0)}/month net)
+            annual income (${annualTaxSavings.toLocaleString()} tax saved)
           </p>
         </CardContent>
       </Card>

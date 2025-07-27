@@ -107,12 +107,12 @@ export default function Index() {
     }
   }, [user, assessment]);
 
-  // Auto-generate summary when assessment is complete
+  // Only auto-generate summary when assessment is complete AND it's not Full Financial Health Check
   useEffect(() => {
-    if (isComplete && !aiSummary && !isGeneratingSummary) {
+    if (isComplete && !aiSummary && !isGeneratingSummary && !assessment.goals.includes('Full Financial Health Check')) {
       generateSummary({});
     }
-  }, [isComplete, aiSummary, isGeneratingSummary, generateSummary]);
+  }, [isComplete, aiSummary, isGeneratingSummary, generateSummary, assessment.goals]);
 
   const handleStartOverWithReset = () => {
     resetDismissedFlag();
@@ -171,19 +171,16 @@ export default function Index() {
                       age={assessment.age}
                       postcode={assessment.postcode}
                       superBalance={assessment.superBalance}
-                      superFund={assessment.superFund}
-                      mortgageRate={assessment.mortgageRate}
-                      insurances={assessment.insurances}
-                      assets={assessment.assets}
                       debtTypes={assessment.debtTypes}
                       debtDetails={assessment.debtDetails}
                       incomeSources={assessment.incomeSources}
                       expenseItems={assessment.expenseItems}
                       goals={assessment.goals}
+                      insurances={assessment.insurances}
                     />
                     
-                    {/* AI Summary positioned after Full Financial Health Check */}
-                    {aiSummary && (
+                    {/* AI Summary positioned after Full Financial Health Check - only show when complete */}
+                    {aiSummary && isComplete && (
                       <div className="mt-8">
                         <Card className="border-emerald-200 bg-gradient-to-br from-emerald-50 to-white">
                           <CardHeader>

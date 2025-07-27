@@ -46,21 +46,24 @@ const SuperBenchmarkChart: React.FC<SuperBenchmarkChartProps> = ({ currentAge, c
         };
       }
 
-      // Assume average income of $80k for calculations
-      const averageIncome = 80000;
+      // Use median income for calculations
+      const medianIncome = 72592; // Updated ABS data
       const monthlyGrowthRate = 0.07 / 12; // 7% annual growth
       const months = yearsToProject * 12;
       
-      // Current trend: just employer contributions (9.5%)
-      const monthlyEmployerContrib = (averageIncome * 0.095) / 12;
-      const currentTrendProjection = currentBalance * Math.pow(1 + monthlyGrowthRate, months) +
-        monthlyEmployerContrib * ((Math.pow(1 + monthlyGrowthRate, months) - 1) / monthlyGrowthRate);
+      // Current trend: employer contributions (11.5%)
+      const monthlyEmployerContrib = (medianIncome * 0.115) / 12;
+      const growthFactor = Math.pow(1 + monthlyGrowthRate, months);
+      const annuityFactor = (growthFactor - 1) / monthlyGrowthRate;
+      
+      const currentTrendProjection = currentBalance * growthFactor + 
+        monthlyEmployerContrib * annuityFactor;
       
       // With additional 10% personal contributions
-      const additionalContrib = (averageIncome * 0.10) / 12;
+      const additionalContrib = (medianIncome * 0.10) / 12;
       const totalMonthlyContrib = monthlyEmployerContrib + additionalContrib;
-      const plus10Projection = currentBalance * Math.pow(1 + monthlyGrowthRate, months) +
-        totalMonthlyContrib * ((Math.pow(1 + monthlyGrowthRate, months) - 1) / monthlyGrowthRate);
+      const plus10Projection = currentBalance * growthFactor + 
+        totalMonthlyContrib * annuityFactor;
 
       return {
         ...point,
@@ -87,6 +90,10 @@ const SuperBenchmarkChart: React.FC<SuperBenchmarkChartProps> = ({ currentAge, c
     }
     return null;
   };
+
+  const retirementData = chartData.find(d => d.age === 65);
+  const fourPercentIncomeeCurrent = retirementData?.currentTrend ? retirementData.currentTrend * 0.04 : 0;
+  const fourPercentIncomeExtra = retirementData?.currentPlus10 ? retirementData.currentPlus10 * 0.04 : 0;
 
   return (
     <Card className="w-full">
@@ -157,12 +164,16 @@ const SuperBenchmarkChart: React.FC<SuperBenchmarkChartProps> = ({ currentAge, c
               Current Balance: ${currentBalance.toLocaleString()}
             </p>
             <p className="text-sm text-blue-800">
-              With current contributions, you're projected to have{' '}
-              ${chartData.find(d => d.age === 67)?.currentTrend?.toLocaleString() || 'N/A'} at retirement.
+              With current contributions: ${retirementData?.currentTrend?.toLocaleString() || 'N/A'} at 65
+              <span className="text-green-600 ml-2">
+                (${fourPercentIncomeeCurrent.toLocaleString()}/year using 4% rule)
+              </span>
             </p>
             <p className="text-sm text-green-800">
-              Adding 10% personal contributions would give you{' '}
-              ${chartData.find(d => d.age === 67)?.currentPlus10?.toLocaleString() || 'N/A'} at retirement.
+              Adding 10% personal contributions: ${retirementData?.currentPlus10?.toLocaleString() || 'N/A'} at 65
+              <span className="text-green-600 ml-2">
+                (${fourPercentIncomeExtra.toLocaleString()}/year using 4% rule)
+              </span>
             </p>
           </div>
         )}
