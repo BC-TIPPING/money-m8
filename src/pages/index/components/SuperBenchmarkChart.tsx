@@ -8,9 +8,18 @@ interface SuperBenchmarkChartProps {
   currentBalance?: number;
 }
 
+interface BenchmarkDataPoint {
+  age: number;
+  benchmark: number;
+  percentile25: number;
+  percentile75: number;
+  currentTrend?: number;
+  currentPlus10?: number;
+}
+
 const SuperBenchmarkChart: React.FC<SuperBenchmarkChartProps> = ({ currentAge, currentBalance }) => {
   // Australian super benchmark data by age (based on ASFA/ATO data)
-  const benchmarkData = [
+  const benchmarkData: BenchmarkDataPoint[] = [
     { age: 25, benchmark: 30000, percentile25: 15000, percentile75: 50000 },
     { age: 30, benchmark: 60000, percentile25: 35000, percentile75: 90000 },
     { age: 35, benchmark: 110000, percentile25: 70000, percentile75: 160000 },
@@ -23,7 +32,7 @@ const SuperBenchmarkChart: React.FC<SuperBenchmarkChartProps> = ({ currentAge, c
   ];
 
   // Calculate projection lines if current age and balance are provided
-  const calculateProjections = () => {
+  const calculateProjections = (): BenchmarkDataPoint[] => {
     if (!currentAge || !currentBalance) return benchmarkData;
 
     return benchmarkData.map(point => {
