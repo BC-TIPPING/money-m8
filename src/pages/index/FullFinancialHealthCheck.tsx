@@ -1,593 +1,349 @@
-
 import React from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
-import { ArrowRight, TrendingUp, Shield, Home, PiggyBank, Target, BarChart3, DollarSign, Calendar, TrendingDown } from "lucide-react";
-import { Link } from "react-router-dom";
-import IncomeComparisonChart from "./components/IncomeComparisonChart";
-import SuperBenchmarkChart from "./components/SuperBenchmarkChart";
-import DebtPayoffVisualization from "./components/DebtPayoffVisualization";
-import InvestmentRiskProfile from "./components/InvestmentRiskProfile";
-import BudgetRecap from "./components/BudgetRecap";
-import DebtSummaryTable from "./components/DebtSummaryTable";
-import SuperKPICards from "./components/SuperKPICards";
-import { calculateMonthlyAmount, calculateAustralianIncomeTax } from "@/lib/financialCalculations";
+import { AlertTriangle, CheckCircle, TrendingUp, TrendingDown, DollarSign, PiggyBank, Shield, Home, Target } from 'lucide-react';
+import { type DebtDetail } from './assessmentHooks';
+import { calculateMonthlyAmount, calculateAustralianIncomeTax } from '@/lib/financialCalculations';
+import IncomeComparisonChart from './components/IncomeComparisonChart';
+import SuperKPICards from './components/SuperKPICards';
+import SuperBenchmarkChart from './components/SuperBenchmarkChart';
+import InvestmentRiskProfile from './components/InvestmentRiskProfile';
+import DebtSummaryTable from './components/DebtSummaryTable';
+import BudgetRecap from './components/BudgetRecap';
+import GoalSuggestion from './components/GoalSuggestion';
 
-interface FullFinancialHealthCheckProps {
-  age?: number;
-  postcode?: string;
-  superBalance?: number;
-  superFund?: string;
-  mortgageRate?: number;
-  insurances: string[];
-  assets: { type: string; value: string; description: string }[];
+export interface FullFinancialHealthCheckProps {
+  age: number | undefined;
+  postcode: string;
+  superBalance: number | undefined;
   debtTypes: string[];
-  debtDetails: any[];
+  debtDetails: DebtDetail[];
   incomeSources: { category: string; amount: string; frequency: string }[];
   expenseItems: { category: string; amount: string; frequency: string }[];
   goals: string[];
+  insurances: string[];
 }
 
-const FullFinancialHealthCheck: React.FC<FullFinancialHealthCheckProps> = ({
+export default function FullFinancialHealthCheck({
   age,
   postcode,
   superBalance,
-  superFund,
-  mortgageRate,
-  insurances,
-  assets,
   debtTypes,
   debtDetails,
   incomeSources,
   expenseItems,
-  goals
-}) => {
-  // Calculate income using the established function
-  const monthlyIncome = calculateMonthlyAmount(incomeSources);
-  const annualIncome = monthlyIncome * 12;
-  const annualTax = calculateAustralianIncomeTax(annualIncome);
-  const monthlyNetIncome = annualIncome > 0 ? (annualIncome - annualTax) / 12 : 0;
-  const monthlyExpenses = calculateMonthlyAmount(expenseItems);
-  const monthlySurplus = monthlyNetIncome - monthlyExpenses;
+  goals,
+  insurances,
+}: FullFinancialHealthCheckProps) {
+  
+  const totalMonthlyGrossIncome = calculateMonthlyAmount(incomeSources);
+  const totalAnnualGrossIncome = totalMonthlyGrossIncome * 12;
+  const annualTax = calculateAustralianIncomeTax(totalAnnualGrossIncome);
+  const totalMonthlyNetIncome = totalAnnualGrossIncome > 0 ? (totalAnnualGrossIncome - annualTax) / 12 : 0;
+  const totalMonthlyExpenses = calculateMonthlyAmount(expenseItems);
+  const monthlySurplus = totalMonthlyNetIncome - totalMonthlyExpenses;
 
-  // Australian income benchmarks
-  const nationalMedian = 65000;
-  const nationalAverage = 89000;
-  const postcodeMedian = postcode ? 
-    (parseInt(postcode.substring(0, 1)) > 3 ? 52000 : 78000) : nationalMedian;
+  const totalDebt = debtDetails.reduce((sum, debt) => sum + parseFloat(debt.balance || '0'), 0);
+  const totalMonthlyDebtRepayments = debtDetails.reduce((sum, debt) => sum + parseFloat(debt.repayments || '0'), 0);
 
-  // Income analysis
-  const getIncomePercentile = () => {
-    if (annualIncome >= 180000) return { percentile: 90, level: "Top 10%" };
-    if (annualIncome >= 120000) return { percentile: 80, level: "Top 20%" };
-    if (annualIncome >= 80000) return { percentile: 65, level: "Above Average" };
-    if (annualIncome >= 50000) return { percentile: 50, level: "Median" };
-    return { percentile: 30, level: "Below Average" };
-  };
+  const netWorth = (superBalance || 0) - totalDebt;
+  const debtToIncomeRatio = totalAnnualGrossIncome > 0 ? (totalDebt / totalAnnualGrossIncome) * 100 : 0;
+  const savingsRate = totalMonthlyNetIncome > 0 ? (monthlySurplus / totalMonthlyNetIncome) * 100 : 0;
 
-  // High-interest debt analysis
-  const getHighInterestDebtAnalysis = () => {
-    const highInterestDebts = debtDetails.filter(debt => 
-      ['Credit Card', 'Personal Loan', 'BNPL (e.g. Afterpay)'].includes(debt.type) && 
-      parseFloat(debt.balance) > 0
-    );
-    
-    if (highInterestDebts.length === 0) return null;
-    
-    const totalBalance = highInterestDebts.reduce((sum, debt) => sum + parseFloat(debt.balance), 0);
-    const weightedRate = highInterestDebts.reduce((sum, debt) => 
-      sum + (parseFloat(debt.balance) * parseFloat(debt.interestRate)), 0
-    ) / totalBalance;
-    
-    return { totalBalance, weightedRate, debts: highInterestDebts };
-  };
-
-  // Insurance analysis
-  const getInsuranceAnalysis = () => {
-    const recommendations = [];
-    
-    if (!insurances.includes("Life Insurance")) {
-      recommendations.push({
-        type: "Life Insurance",
-        recommended: annualIncome * 10,
-        reason: "10x annual income is standard coverage"
-      });
-    }
-    
-    if (!insurances.includes("Income Protection")) {
-      recommendations.push({
-        type: "Income Protection",
-        recommended: annualIncome * 0.75,
-        reason: "75% of income replacement until age 65"
-      });
-    }
-    
-    // Medicare Levy Surcharge thresholds for 2024-25
-    const medicareThreshold = 97000; // Single person
-    const surchargeRate = annualIncome > medicareThreshold ? 
-      (annualIncome <= 113000 ? 0.01 : 
-       annualIncome <= 151000 ? 0.0125 : 0.015) : 0;
-    const surchargeAmount = Math.max(0, (annualIncome - medicareThreshold) * surchargeRate);
-    
-    const needsPrivateHealth = annualIncome > medicareThreshold && 
-      !insurances.includes("Health Insurance");
-    
-    if (needsPrivateHealth) {
-      recommendations.push({
-        type: "Private Health Insurance",
-        recommended: 2500,
-        reason: `Avoid Medicare Levy Surcharge of $${surchargeAmount.toLocaleString()}`
-      });
-    }
-    
-    return { recommendations, needsPrivateHealth, medicareThreshold, surchargeAmount };
-  };
-
-  // Calculate financial health score
-  const calculateHealthScore = () => {
+  const getHealthScore = () => {
     let score = 0;
     
-    // Income score (20 points)
-    const incomeData = getIncomePercentile();
-    score += Math.min(incomeData.percentile / 100 * 20, 20);
+    // Income stability (20 points)
+    if (totalMonthlyNetIncome > 0) score += 20;
     
-    // Super score (25 points)
+    // Savings rate (20 points)
+    if (savingsRate > 20) score += 20;
+    else if (savingsRate > 10) score += 15;
+    else if (savingsRate > 0) score += 10;
+    
+    // Debt management (20 points)
+    if (debtToIncomeRatio === 0) score += 20;
+    else if (debtToIncomeRatio < 20) score += 15;
+    else if (debtToIncomeRatio < 40) score += 10;
+    else if (debtToIncomeRatio < 60) score += 5;
+    
+    // Emergency fund (15 points) - approximated by monthly surplus
+    if (monthlySurplus > totalMonthlyExpenses * 0.5) score += 15;
+    else if (monthlySurplus > totalMonthlyExpenses * 0.25) score += 10;
+    else if (monthlySurplus > 0) score += 5;
+    
+    // Super balance (15 points) - age-based benchmark
     if (age && superBalance) {
-      const benchmarks = { 25: 30000, 30: 60000, 35: 110000, 40: 180000, 45: 270000, 50: 390000, 55: 550000, 60: 750000, 65: 1000000 };
-      const closestAge = Object.keys(benchmarks).map(Number).reduce((prev, curr) => 
-        Math.abs(curr - age) < Math.abs(prev - age) ? curr : prev
-      );
-      const benchmark = benchmarks[closestAge as keyof typeof benchmarks];
-      score += Math.min((superBalance / benchmark) * 25, 25);
+      const superBenchmark = age * (totalAnnualGrossIncome / 10);
+      if (superBalance >= superBenchmark) score += 15;
+      else if (superBalance >= superBenchmark * 0.75) score += 10;
+      else if (superBalance >= superBenchmark * 0.5) score += 5;
     }
     
-    // Insurance score (20 points)
-    const insuranceAnalysis = getInsuranceAnalysis();
-    const insuranceScore = Math.max(0, 20 - (insuranceAnalysis.recommendations.length * 7));
-    score += insuranceScore;
+    // Insurance coverage (10 points)
+    const hasEssentialInsurance = insurances.some(ins => 
+      ins === 'Life Insurance' || ins === 'Income Protection' || ins === 'Health Insurance'
+    );
+    if (hasEssentialInsurance) score += 10;
+    else if (insurances.length > 0) score += 5;
     
-    // Debt score (25 points)
-    const highInterestDebt = getHighInterestDebtAnalysis();
-    if (!highInterestDebt) {
-      score += 25;
-    } else {
-      score += Math.max(0, 25 - Math.min(highInterestDebt.totalBalance / 1000, 25));
-    }
-    
-    // Savings rate (10 points)
-    const savingsRate = monthlyNetIncome > 0 ? (monthlySurplus / monthlyNetIncome) * 100 : 0;
-    score += Math.min(savingsRate / 2, 10); // Up to 10 points for 20% savings rate
-    
-    return Math.min(Math.round(score), 100);
+    return Math.min(score, 100);
   };
 
-  // Get what's needed for 100/100 score
-  const getScoreRequirements = () => {
-    const requirements = [];
-    const currentScore = calculateHealthScore();
+  const healthScore = getHealthScore();
+
+  const getScoreColor = (score: number) => {
+    if (score >= 80) return 'text-green-600';
+    if (score >= 60) return 'text-yellow-600';
+    return 'text-red-600';
+  };
+
+  const getScoreLabel = (score: number) => {
+    if (score >= 80) return 'Excellent';
+    if (score >= 60) return 'Good';
+    if (score >= 40) return 'Fair';
+    return 'Needs Improvement';
+  };
+
+  const identifyGaps = () => {
+    const gaps = [];
     
-    if (currentScore >= 100) return ["You already have a perfect financial health score! 🎉"];
-    
-    // Income requirements
-    const incomeData = getIncomePercentile();
-    if (incomeData.percentile < 80) {
-      requirements.push(`Increase income to top 20% (${nationalAverage.toLocaleString()}+ annually)`);
+    if (savingsRate < 10) {
+      gaps.push({
+        icon: <PiggyBank className="h-5 w-5 text-red-500" />,
+        title: "Low Savings Rate",
+        description: `Your savings rate is ${savingsRate.toFixed(1)}%. Aim for at least 10-20% of your income.`,
+        priority: "High"
+      });
     }
     
-    // Super requirements
+    if (debtToIncomeRatio > 40) {
+      gaps.push({
+        icon: <AlertTriangle className="h-5 w-5 text-red-500" />,
+        title: "High Debt-to-Income Ratio",
+        description: `Your debt is ${debtToIncomeRatio.toFixed(1)}% of your income. Consider debt consolidation or reduction strategies.`,
+        priority: "High"
+      });
+    }
+    
     if (age && superBalance) {
-      const benchmarks = { 25: 30000, 30: 60000, 35: 110000, 40: 180000, 45: 270000, 50: 390000, 55: 550000, 60: 750000, 65: 1000000 };
-      const closestAge = Object.keys(benchmarks).map(Number).reduce((prev, curr) => 
-        Math.abs(curr - age) < Math.abs(prev - age) ? curr : prev
-      );
-      const benchmark = benchmarks[closestAge as keyof typeof benchmarks];
-      if (superBalance < benchmark) {
-        requirements.push(`Increase super to ${benchmark.toLocaleString()} (age ${age} benchmark)`);
+      const superBenchmark = age * (totalAnnualGrossIncome / 10);
+      if (superBalance < superBenchmark * 0.5) {
+        gaps.push({
+          icon: <TrendingDown className="h-5 w-5 text-orange-500" />,
+          title: "Superannuation Shortfall",
+          description: `Your super balance is below recommended levels for your age. Consider increasing contributions.`,
+          priority: "Medium"
+        });
       }
     }
     
-    // Insurance requirements
-    const insuranceAnalysis = getInsuranceAnalysis();
-    insuranceAnalysis.recommendations.forEach(rec => {
-      requirements.push(`Get ${rec.type} coverage`);
-    });
-    
-    // Debt requirements
-    const highInterestDebt = getHighInterestDebtAnalysis();
-    if (highInterestDebt) {
-      requirements.push(`Eliminate all high-interest debt ($${highInterestDebt.totalBalance.toLocaleString()})`);
+    if (!insurances.includes('Income Protection')) {
+      gaps.push({
+        icon: <Shield className="h-5 w-5 text-orange-500" />,
+        title: "Income Protection",
+        description: "Consider income protection insurance to safeguard your earning capacity.",
+        priority: "Medium"
+      });
     }
     
-    // Savings requirements
-    const savingsRate = monthlyNetIncome > 0 ? (monthlySurplus / monthlyNetIncome) * 100 : 0;
-    if (savingsRate < 20) {
-      requirements.push(`Achieve 20% savings rate (currently ${savingsRate.toFixed(1)}%)`);
+    if (!insurances.includes('Health Insurance') && totalAnnualGrossIncome > 97000) {
+      const surcharge = Math.min(totalAnnualGrossIncome * 0.015, totalAnnualGrossIncome * 0.01);
+      gaps.push({
+        icon: <Shield className="h-5 w-5 text-orange-500" />,
+        title: "Private Health Insurance",
+        description: `Consider private health insurance to avoid Medicare Levy Surcharge of $${surcharge.toFixed(0)}`,
+        priority: "Medium"
+      });
     }
     
-    return requirements;
+    return gaps;
   };
 
-  const healthScore = calculateHealthScore();
-  const incomeData = getIncomePercentile();
-  const highInterestDebt = getHighInterestDebtAnalysis();
-  const insuranceAnalysis = getInsuranceAnalysis();
-  const scoreRequirements = getScoreRequirements();
-
-  // Determine risk profile
-  const riskProfile = age && age < 40 ? 'Growth' : age && age < 55 ? 'Balanced' : 'Conservative';
-
-  // KPI calculations
-  const postcodeIncomeRatio = ((annualIncome / postcodeMedian) * 100).toFixed(0);
-  const nationalIncomeRatio = ((annualIncome / nationalMedian) * 100).toFixed(0);
+  const coverageGaps = identifyGaps();
 
   return (
-    <div className="space-y-8">
-      <div className="text-center mb-8">
-        <h2 className="text-3xl font-bold bg-gradient-to-r from-emerald-600 to-blue-600 bg-clip-text text-transparent">
-          Your Complete Financial Health Check
-        </h2>
-        <p className="text-muted-foreground mt-2">
-          Comprehensive analysis based on Australian financial benchmarks
-        </p>
-      </div>
-
+    <div className="space-y-6">
       {/* Financial Health Score */}
-      <Card className="border-emerald-200 bg-gradient-to-br from-emerald-50 to-white">
+      <Card className="border-2 border-blue-200 bg-gradient-to-br from-blue-50 to-white">
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            <BarChart3 className="h-5 w-5 text-emerald-600" />
+            <Target className="h-6 w-6 text-blue-600" />
             Financial Health Score
           </CardTitle>
+          <CardDescription>
+            Your overall financial wellness based on key metrics
+          </CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="flex items-center gap-4 mb-4">
-            <Progress value={healthScore} className="flex-1" />
-            <span className="text-2xl font-bold text-emerald-600">{healthScore}/100</span>
-          </div>
-          <div className="text-sm text-emerald-800 mb-4">
-            {healthScore >= 80 && "Excellent financial health! You're on track for a secure financial future."}
-            {healthScore >= 60 && healthScore < 80 && "Good financial health with room for improvement in key areas."}
-            {healthScore >= 40 && healthScore < 60 && "Moderate financial health. Focus on the action items below."}
-            {healthScore < 40 && "Your financial health needs attention. Start with high-priority items."}
-          </div>
-          
-          {healthScore < 100 && (
-            <div className="bg-blue-50 p-4 rounded-lg">
-              <h4 className="font-semibold text-blue-900 mb-2">To achieve 100/100 score:</h4>
-              <ul className="text-sm text-blue-800 space-y-1">
-                {scoreRequirements.map((requirement, index) => (
-                  <li key={index}>• {requirement}</li>
-                ))}
-              </ul>
+          <div className="flex items-center gap-6">
+            <div className="text-center">
+              <div className={`text-6xl font-bold ${getScoreColor(healthScore)}`}>
+                {healthScore}
+              </div>
+              <div className="text-sm text-gray-600">out of 100</div>
+              <Badge variant={healthScore >= 80 ? "default" : healthScore >= 60 ? "secondary" : "destructive"}>
+                {getScoreLabel(healthScore)}
+              </Badge>
             </div>
-          )}
+            <div className="flex-1">
+              <Progress value={healthScore} className="h-4 mb-2" />
+              <div className="text-sm text-gray-600">
+                {healthScore >= 80 ? "You're doing great! Keep up the good work." :
+                 healthScore >= 60 ? "Good progress! There's room for improvement." :
+                 "Focus on the key areas below to improve your financial health."}
+              </div>
+            </div>
+          </div>
         </CardContent>
       </Card>
 
-      {/* KPI Cards */}
+      {/* Key Metrics Overview */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
         <Card>
-          <CardContent className="p-4">
-            <div className="flex items-center gap-2">
-              <DollarSign className="h-4 w-4 text-green-600" />
-              <span className="text-sm text-muted-foreground">vs Postcode</span>
+          <CardHeader className="pb-3">
+            <CardTitle className="flex items-center gap-2 text-sm">
+              <DollarSign className="h-4 w-4" />
+              Net Worth
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">
+              ${netWorth.toLocaleString()}
             </div>
-            <p className="text-2xl font-bold text-green-600">{postcodeIncomeRatio}%</p>
-            <p className="text-xs text-muted-foreground">of postcode median</p>
-          </CardContent>
-        </Card>
-        
-        <Card>
-          <CardContent className="p-4">
-            <div className="flex items-center gap-2">
-              <TrendingUp className="h-4 w-4 text-blue-600" />
-              <span className="text-sm text-muted-foreground">vs National</span>
+            <div className="text-xs text-gray-600">
+              Assets minus liabilities
             </div>
-            <p className="text-2xl font-bold text-blue-600">{nationalIncomeRatio}%</p>
-            <p className="text-xs text-muted-foreground">of national median</p>
           </CardContent>
         </Card>
 
         <Card>
-          <CardContent className="p-4">
-            <div className="flex items-center gap-2">
-              <Target className="h-4 w-4 text-purple-600" />
-              <span className="text-sm text-muted-foreground">Savings Rate</span>
+          <CardHeader className="pb-3">
+            <CardTitle className="flex items-center gap-2 text-sm">
+              <TrendingUp className="h-4 w-4" />
+              Savings Rate
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">
+              {savingsRate.toFixed(1)}%
             </div>
-            <p className="text-2xl font-bold text-purple-600">
-              {monthlyNetIncome > 0 ? ((monthlySurplus / monthlyNetIncome) * 100).toFixed(1) : 0}%
-            </p>
-            <p className="text-xs text-muted-foreground">target: 10-20%</p>
+            <div className="text-xs text-gray-600">
+              Monthly surplus/income
+            </div>
           </CardContent>
         </Card>
 
         <Card>
-          <CardContent className="p-4">
-            <div className="flex items-center gap-2">
-              <Calendar className="h-4 w-4 text-orange-600" />
-              <span className="text-sm text-muted-foreground">Age</span>
+          <CardHeader className="pb-3">
+            <CardTitle className="flex items-center gap-2 text-sm">
+              <AlertTriangle className="h-4 w-4" />
+              Debt Ratio
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">
+              {debtToIncomeRatio.toFixed(1)}%
             </div>
-            <p className="text-2xl font-bold text-orange-600">{age || 'N/A'}</p>
-            <p className="text-xs text-muted-foreground">years old</p>
+            <div className="text-xs text-gray-600">
+              Total debt/annual income
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader className="pb-3">
+            <CardTitle className="flex items-center gap-2 text-sm">
+              <PiggyBank className="h-4 w-4" />
+              Monthly Surplus
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">
+              ${monthlySurplus.toLocaleString()}
+            </div>
+            <div className="text-xs text-gray-600">
+              Available for savings/investments
+            </div>
           </CardContent>
         </Card>
       </div>
 
-      {/* Section 1: Income Analysis & Budget */}
-      <Card className="border-emerald-200 bg-gradient-to-br from-emerald-50 to-white">
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <span className="w-8 h-8 bg-emerald-600 text-white rounded-full flex items-center justify-center text-sm font-bold">1</span>
-            <TrendingUp className="h-5 w-5 text-emerald-600" />
-            Income Analysis & Budget Health
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <p className="text-sm text-muted-foreground">Annual Income</p>
-              <p className="text-2xl font-bold">${annualIncome.toLocaleString()}</p>
-              <Badge variant="secondary" className="mt-1">
-                {incomeData.level}
-              </Badge>
-            </div>
-            <div>
-              <p className="text-sm text-muted-foreground">Monthly Net Income</p>
-              <p className="text-2xl font-bold">${monthlyNetIncome.toLocaleString()}</p>
-              <p className="text-xs text-muted-foreground">after tax</p>
-            </div>
-          </div>
-
-          <IncomeComparisonChart userIncome={annualIncome} postcode={postcode} />
-          
-          <BudgetRecap 
-            totalMonthlyNetIncome={monthlyNetIncome}
-            totalMonthlyExpenses={monthlyExpenses}
-            expenseItems={expenseItems}
-          />
-          
-          <div className="bg-blue-50 p-4 rounded-lg">
-            <h4 className="font-semibold text-blue-900 mb-2">Understanding Your Income Position</h4>
-            <p className="text-sm text-blue-800">
-              Your income of ${annualIncome.toLocaleString()} puts you in the {incomeData.level.toLowerCase()} range nationally. 
-              The <strong>median</strong> represents the middle point where half earn more and half earn less, 
-              giving a better picture than the average (which can be skewed by very high earners).
-            </p>
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Section 2: Superannuation Health */}
-      <Card className="border-blue-200 bg-gradient-to-br from-blue-50 to-white">
-        <CardHeader className="flex flex-row items-center justify-between">
-          <CardTitle className="flex items-center gap-2">
-            <span className="w-8 h-8 bg-blue-600 text-white rounded-full flex items-center justify-center text-sm font-bold">2</span>
-            <PiggyBank className="h-5 w-5 text-blue-600" />
-            Superannuation Health
-          </CardTitle>
-          <Link to="/maximise-super">
-            <Button variant="outline" size="sm">
-              Super Calculator <ArrowRight className="h-4 w-4 ml-1" />
-            </Button>
-          </Link>
-        </CardHeader>
-        <CardContent className="space-y-6">
-          <SuperKPICards 
-            currentAge={age}
-            currentBalance={superBalance}
-            currentSalary={annualIncome}
-          />
-
-          <SuperBenchmarkChart currentAge={age} currentBalance={superBalance} />
-        </CardContent>
-      </Card>
-
-      {/* Section 3: Insurance Protection */}
-      <Card className="border-purple-200 bg-gradient-to-br from-purple-50 to-white">
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <span className="w-8 h-8 bg-purple-600 text-white rounded-full flex items-center justify-center text-sm font-bold">3</span>
-            <Shield className="h-5 w-5 text-purple-600" />
-            Insurance Protection
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div>
-            <p className="text-sm text-muted-foreground mb-2">Current Coverage</p>
-            <div className="flex flex-wrap gap-2">
-              {insurances.map((insurance, index) => (
-                <Badge key={index} variant="secondary">{insurance}</Badge>
-              ))}
-              {insurances.length === 0 && (
-                <p className="text-muted-foreground italic">No insurance coverage selected</p>
-              )}
-            </div>
-          </div>
-
-          <div className="bg-blue-50 p-4 rounded-lg">
-            <h4 className="font-semibold text-blue-900 mb-2">Why Insurance is Critical</h4>
-            <p className="text-sm text-blue-800 mb-2">
-              Insurance isn't just about money - it's about protecting your family's future and your peace of mind. 
-              Without proper coverage, a single unexpected event could derail decades of financial planning.
-            </p>
-            <ul className="text-sm text-blue-800 space-y-1">
-              <li>• <strong>Financial Protection:</strong> Covers debts, living expenses, and future goals</li>
-              <li>• <strong>Emotional Security:</strong> Reduces stress and anxiety about "what if" scenarios</li>
-              <li>• <strong>Asset Protection:</strong> Prevents forced sale of home or investments</li>
-              <li>• <strong>Family Stability:</strong> Ensures your dependents can maintain their lifestyle</li>
-            </ul>
-          </div>
-
-          {insuranceAnalysis.recommendations.length > 0 && (
-            <div className="bg-red-50 p-4 rounded-lg">
-              <h4 className="font-semibold text-red-900 mb-3">Coverage Gaps Identified</h4>
-              {insuranceAnalysis.recommendations.map((gap, index) => (
-                <div key={index} className="mb-2">
-                  <p className="font-medium text-red-800">{gap.type}</p>
-                  <p className="text-sm text-red-700">{gap.reason}</p>
+      {/* Coverage Gaps */}
+      {coverageGaps.length > 0 && (
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <AlertTriangle className="h-5 w-5 text-orange-500" />
+              Coverage Gaps Identified
+            </CardTitle>
+            <CardDescription>
+              Areas that need your attention to improve your financial security
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-4">
+              {coverageGaps.map((gap, index) => (
+                <div key={index} className="flex items-start gap-3 p-3 border rounded-lg">
+                  {gap.icon}
+                  <div className="flex-1">
+                    <div className="font-semibold">{gap.title}</div>
+                    <div className="text-sm text-gray-600">{gap.description}</div>
+                  </div>
+                  <Badge variant={gap.priority === "High" ? "destructive" : "secondary"}>
+                    {gap.priority}
+                  </Badge>
                 </div>
               ))}
             </div>
-          )}
+          </CardContent>
+        </Card>
+      )}
 
-          {insuranceAnalysis.needsPrivateHealth && (
-            <div className="bg-orange-50 p-4 rounded-lg">
-              <h4 className="font-semibold text-orange-900 mb-2">Medicare Levy Surcharge Alert</h4>
-              <p className="text-sm text-orange-800">
-                With an income of ${annualIncome.toLocaleString()}, you're above the Medicare Levy Surcharge threshold 
-                of ${insuranceAnalysis.medicareThreshold.toLocaleString()}. Without private health insurance, you'll pay 
-                an additional ${insuranceAnalysis.surchargeAmount.toLocaleString()} in Medicare Levy Surcharge.
-              </p>
-            </div>
-          )}
-        </CardContent>
-      </Card>
+      {/* Detailed Analysis Sections */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <IncomeComparisonChart 
+          currentIncome={totalAnnualGrossIncome}
+          postcode={postcode}
+        />
+        
+        <SuperKPICards 
+          currentBalance={superBalance || 0}
+          age={age || 30}
+          annualIncome={totalAnnualGrossIncome}
+        />
+      </div>
 
-      {/* Section 4: Debt Strategy */}
-      <Card className="border-red-200 bg-gradient-to-br from-red-50 to-white">
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <span className="w-8 h-8 bg-red-600 text-white rounded-full flex items-center justify-center text-sm font-bold">4</span>
-            <TrendingDown className="h-5 w-5 text-red-600" />
-            Debt Strategy
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-6">
-          <DebtSummaryTable 
-            debtDetails={debtDetails}
-            monthlySurplus={monthlySurplus}
-          />
+      <SuperBenchmarkChart 
+        currentBalance={superBalance || 0}
+        age={age || 30}
+        annualIncome={totalAnnualGrossIncome}
+      />
 
-          {highInterestDebt && (
-            <DebtPayoffVisualization debtDetails={debtDetails} monthlyIncome={monthlyIncome} />
-          )}
-        </CardContent>
-      </Card>
+      <InvestmentRiskProfile 
+        age={age || 30}
+        monthlySurplus={monthlySurplus}
+        totalDebt={totalDebt}
+      />
 
-      {/* Section 5: Investment Strategy */}
-      <Card className="border-indigo-200 bg-gradient-to-br from-indigo-50 to-white">
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <span className="w-8 h-8 bg-indigo-600 text-white rounded-full flex items-center justify-center text-sm font-bold">5</span>
-            <Target className="h-5 w-5 text-indigo-600" />
-            Investment Strategy
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-6">
-          <InvestmentRiskProfile 
-            riskProfile={riskProfile}
-            hasHighInterestDebt={!!highInterestDebt}
-          />
+      {debtDetails.length > 0 && (
+        <DebtSummaryTable debtDetails={debtDetails} />
+      )}
 
-          {!highInterestDebt && (
-            <div className="bg-green-50 p-4 rounded-lg">
-              <h4 className="font-semibold text-green-900 mb-2">Investment Projection</h4>
-              <p className="text-sm text-green-800">
-                Investing $500/month in a balanced portfolio (7% annual return) would give you approximately 
-                ${((500 * 12 * 20) * 1.4).toLocaleString()} after 20 years through compound growth.
-              </p>
-            </div>
-          )}
-        </CardContent>
-      </Card>
+      <BudgetRecap 
+        totalMonthlyNetIncome={totalMonthlyNetIncome}
+        totalMonthlyExpenses={totalMonthlyExpenses}
+        expenseItems={expenseItems}
+      />
 
-      {/* Section 6: Financial Action Plan */}
-      <Card className="border-emerald-200 bg-gradient-to-br from-emerald-50 to-white">
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <span className="w-8 h-8 bg-emerald-600 text-white rounded-full flex items-center justify-center text-sm font-bold">6</span>
-            Your Financial Action Plan
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="space-y-3">
-            <div className="flex items-center gap-2">
-              <div className="w-8 h-8 bg-emerald-600 text-white rounded-full flex items-center justify-center text-sm font-bold">1</div>
-              <p className="font-medium">Create a comprehensive budget</p>
-              <Button variant="outline" size="sm" onClick={() => {
-                const event = new CustomEvent('selectGoal', { detail: 'Set a budget' });
-                window.dispatchEvent(event);
-              }}>
-                Start Budget <ArrowRight className="h-4 w-4 ml-1" />
-              </Button>
-            </div>
-            
-            {highInterestDebt && (
-              <div className="flex items-center gap-2">
-                <div className="w-8 h-8 bg-red-600 text-white rounded-full flex items-center justify-center text-sm font-bold">2</div>
-                <p className="font-medium">Eliminate high-interest debt immediately</p>
-                <Button variant="outline" size="sm" onClick={() => {
-                  const event = new CustomEvent('selectGoal', { detail: 'Reduce debt' });
-                  window.dispatchEvent(event);
-                }}>
-                  Debt Plan <ArrowRight className="h-4 w-4 ml-1" />
-                </Button>
-              </div>
-            )}
-            
-            {insuranceAnalysis.recommendations.length > 0 && (
-              <div className="flex items-center gap-2">
-                <div className="w-8 h-8 bg-purple-600 text-white rounded-full flex items-center justify-center text-sm font-bold">3</div>
-                <p className="font-medium">Address insurance coverage gaps</p>
-              </div>
-            )}
-            
-            <div className="flex items-center gap-2">
-              <div className="w-8 h-8 bg-blue-600 text-white rounded-full flex items-center justify-center text-sm font-bold">4</div>
-              <p className="font-medium">Boost superannuation contributions</p>
-              <Link to="/maximise-super">
-                <Button variant="outline" size="sm">
-                  Super Calc <ArrowRight className="h-4 w-4 ml-1" />
-                </Button>
-              </Link>
-            </div>
-
-            {!highInterestDebt && (
-              <div className="flex items-center gap-2">
-                <div className="w-8 h-8 bg-indigo-600 text-white rounded-full flex items-center justify-center text-sm font-bold">5</div>
-                <p className="font-medium">Start investing for long-term growth</p>
-                <Button variant="outline" size="sm" onClick={() => {
-                  const event = new CustomEvent('selectGoal', { detail: 'Grow investments' });
-                  window.dispatchEvent(event);
-                }}>
-                  Invest <ArrowRight className="h-4 w-4 ml-1" />
-                </Button>
-              </div>
-            )}
-          </div>
-
-          <div className="bg-emerald-50 p-4 rounded-lg">
-            <h4 className="font-semibold text-emerald-900 mb-2">Ready to Take Action?</h4>
-            <p className="text-sm text-emerald-800 mb-3">
-              Click any goal below to get started, then return to this comprehensive summary.
-            </p>
-            <div className="flex flex-wrap gap-2">
-              <Button size="sm" variant="outline" onClick={() => {
-                const event = new CustomEvent('selectGoal', { detail: 'Set a budget' });
-                window.dispatchEvent(event);
-              }}>
-                Budget Planner
-              </Button>
-              <Link to="/maximise-super">
-                <Button size="sm" variant="outline">Super Calculator</Button>
-              </Link>
-              <Link to="/pay-off-home-loan">
-                <Button size="sm" variant="outline">Debt Calculator</Button>
-              </Link>
-              <Button size="sm" variant="outline" onClick={() => {
-                const event = new CustomEvent('selectGoal', { detail: 'Grow investments' });
-                window.dispatchEvent(event);
-              }}>
-                Investment Growth
-              </Button>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
+      <GoalSuggestion 
+        monthlySurplus={monthlySurplus}
+        age={age || 30}
+        totalDebt={totalDebt}
+        superBalance={superBalance || 0}
+        currentGoals={goals}
+      />
     </div>
   );
-};
-
-export default FullFinancialHealthCheck;
+}
