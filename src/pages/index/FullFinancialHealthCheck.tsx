@@ -322,11 +322,11 @@ export default function FullFinancialHealthCheck({
       <SuperBenchmarkChart 
         currentBalance={superBalance || 0}
         currentAge={age || 30}
-        currentSalary={totalAnnualGrossIncome}
+        annualIncome={totalAnnualGrossIncome}
       />
 
       <InvestmentRiskProfile 
-        age={age || 30}
+        currentAge={age || 30}
         monthlySurplus={monthlySurplus}
         totalDebt={totalDebt}
       />
@@ -346,7 +346,7 @@ export default function FullFinancialHealthCheck({
 
       <GoalSuggestion 
         monthlySurplus={monthlySurplus}
-        age={age || 30}
+        currentAge={age || 30}
         totalDebt={totalDebt}
         superBalance={superBalance || 0}
         currentGoals={goals}
