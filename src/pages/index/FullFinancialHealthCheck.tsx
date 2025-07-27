@@ -324,7 +324,7 @@ export default function FullFinancialHealthCheck({
       />
 
       <InvestmentRiskProfile 
-        age={age || 30}
+        currentAge={age || 30}
         monthlySurplus={monthlySurplus}
         totalDebt={totalDebt}
       />
@@ -347,7 +347,7 @@ export default function FullFinancialHealthCheck({
         age={age || 30}
         totalDebt={totalDebt}
         superBalance={superBalance || 0}
-        goals={goals}
+        currentGoals={goals}
       />
     </div>
   );
