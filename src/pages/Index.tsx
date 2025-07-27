@@ -71,8 +71,7 @@ export default function Index() {
           </p>
           
           <AISearchSection 
-            onStartAssessment={(goal) => handleGoalSelect(goal, true)}
-            isLoading={false}
+            onGoalSuggested={(goal) => handleGoalSelect(goal, true)}
           />
         </div>
 
