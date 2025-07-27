@@ -139,6 +139,7 @@ export function useAssessmentState() {
   const [age, setAge] = useState<number | undefined>();
   const [superBalance, setSuperBalance] = useState<number | undefined>();
   const [insurances, setInsurances] = useState<string[]>([]);
+  const [assets, setAssets] = useState<{ type: string; value: string; description: string }[]>([]);
 
   return {
     step,
@@ -171,5 +172,7 @@ export function useAssessmentState() {
     setSuperBalance,
     insurances,
     setInsurances,
+    assets,
+    setAssets,
   };
 }

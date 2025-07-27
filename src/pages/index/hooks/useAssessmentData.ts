@@ -1,3 +1,4 @@
+
 import { useState, useEffect, useMemo } from "react";
 import { useToast } from "@/components/ui/use-toast";
 import { type Database } from "@/integrations/supabase/types";
@@ -121,6 +122,7 @@ export function useAssessmentData(assessment: AssessmentState) {
         assessment.setSuperBalance(typedAssessment.super_balance ?? undefined);
         assessment.setInsurances((typedAssessment.insurances as string[]) ?? []);
         assessment.setDebtDetails((typedAssessment.debt_details as any) || []);
+        assessment.setAssets([]); // Initialize assets as empty array
 
         toast({ title: "Welcome back!", description: "We've pre-filled your previous assessment data." });
         setIsPreloaded(true);
@@ -155,6 +157,7 @@ export function useAssessmentData(assessment: AssessmentState) {
     assessment.setSuperBalance(undefined);
     assessment.setInsurances([]);
     assessment.setDebtDetails([]);
+    assessment.setAssets([]);
     assessment.setShowAssessment(false);
 
     setIsSubmitted(false);

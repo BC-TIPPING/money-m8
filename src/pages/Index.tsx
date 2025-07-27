@@ -163,7 +163,6 @@ export default function Index() {
               isGeneratingSummary={isGeneratingSummary}
               aiSummary={aiSummary}
               chartData={chartData}
-              onCompleteHealthCheck={handleCompleteHealthCheck}
             />
             
             {shouldShowSummary && (
@@ -175,6 +174,7 @@ export default function Index() {
                       postcode={assessment.postcode}
                       superBalance={assessment.superBalance}
                       insurances={assessment.insurances}
+                      assets={assessment.assets}
                       debtTypes={assessment.debtTypes}
                       debtDetails={assessment.debtDetails}
                       incomeSources={assessment.incomeSources}
