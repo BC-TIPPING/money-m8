@@ -1,35 +1,21 @@
 
-
 import React from 'react';
 import { type DebtDetail } from './assessmentHooks';
 import { calculateMonthlyAmount, calculateAustralianIncomeTax } from '@/lib/financialCalculations';
 
 interface AssessmentSummaryProps {
-  goals: string[];
+  employmentStatus?: string;
   hasRegularIncome?: boolean;
   incomeSources: { category: string; amount: string; frequency: string }[];
   expenseItems: { category: string; amount: string; frequency: string }[];
-  investmentExperience: string[];
-  debtTypes: string[];
-  debtDetails: DebtDetail[];
-  postcode: string;
-  age?: number;
-  superBalance?: number;
-  insurances: string[];
-  assets: { type: string; value: string; description: string }[];
-  onGenerateSummary: (options?: { personality?: string }) => void;
-  aiSummary?: string | null;
-  chartData?: any;
-  isGeneratingSummary: boolean;
-  onChangeGoal: () => void;
-  onSetBudgetGoal: () => void;
-  updateHomeLoanExtraRepayment: (data: any) => void;
-  isUpdatingRepayment: boolean;
-  employmentStatus?: string;
   uploadedFile?: File | null;
   financialKnowledgeLevel?: string;
+  investmentExperience: string[];
+  goals: string[];
   otherGoal?: string;
   goalTimeframe?: string;
+  debtTypes: string[];
+  debtDetails: DebtDetail[];
   debtManagementConfidence?: string;
   freeTextComments?: string;
 }
@@ -63,25 +49,21 @@ const Section: React.FC<{ title: string; children: React.ReactNode }> = ({ title
     </div>
 );
 
+
 const AssessmentSummary: React.FC<AssessmentSummaryProps> = (props) => {
   const {
-    goals,
+    employmentStatus,
     hasRegularIncome,
     incomeSources,
     expenseItems,
-    investmentExperience,
-    debtTypes,
-    debtDetails,
-    postcode,
-    age,
-    superBalance,
-    insurances,
-    assets,
-    employmentStatus,
     uploadedFile,
     financialKnowledgeLevel,
+    investmentExperience,
+    goals,
     otherGoal,
     goalTimeframe,
+    debtTypes,
+    debtDetails,
     debtManagementConfidence,
     freeTextComments,
   } = props;
@@ -98,6 +80,7 @@ const AssessmentSummary: React.FC<AssessmentSummaryProps> = (props) => {
 
   const monthlySavings = totalMonthlyNetIncome - totalMonthlyExpenses;
   const savingsPercentage = totalMonthlyNetIncome > 0 ? (monthlySavings / totalMonthlyNetIncome) * 100 : 0;
+
 
   return (
     <div className="space-y-8 text-sm">
@@ -141,13 +124,6 @@ const AssessmentSummary: React.FC<AssessmentSummaryProps> = (props) => {
         <SummaryItem label="Investment Experience" value={investmentExperience} />
       </Section>
 
-      <Section title="Personal Details">
-        <SummaryItem label="Age" value={age} />
-        <SummaryItem label="Postcode" value={postcode} />
-        <SummaryItem label="Super Balance" value={superBalance ? `$${superBalance.toLocaleString()}` : undefined} />
-        <SummaryItem label="Insurances" value={insurances} />
-      </Section>
-
       <Section title="Debts & Liabilities">
         <SummaryItem label="Debts Held" value={debtTypes.join(', ')} />
         <SummaryItem label="Confidence" value={debtManagementConfidence} />
@@ -167,18 +143,6 @@ const AssessmentSummary: React.FC<AssessmentSummaryProps> = (props) => {
           </div>
         )}
       </Section>
-
-      {assets.length > 0 && (
-        <Section title="Assets">
-          <ul className="list-disc list-inside text-gray-800 space-y-1 pl-1">
-            {assets.map((asset, index) => (
-              <li key={index}>
-                {asset.type}: ${asset.value} - {asset.description}
-              </li>
-            ))}
-          </ul>
-        </Section>
-      )}
       
       {freeTextComments && (
         <Section title="Additional Notes">
@@ -212,4 +176,3 @@ const AssessmentSummary: React.FC<AssessmentSummaryProps> = (props) => {
 };
 
 export default AssessmentSummary;
-

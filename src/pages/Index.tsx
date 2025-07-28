@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -6,14 +5,12 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/components/ui/use-toast";
 import { Sparkles } from "lucide-react";
-import AssessmentStepper from './index/AssessmentStepper';
-import AssessmentSummary from './index/AssessmentSummary';
-import FullFinancialHealthCheck from './index/FullFinancialHealthCheck';
-import SaveResultsModal from './index/components/SaveResultsModal';
-import { questions, useAssessmentState } from './index/assessmentHooks';
-import { useAssessmentData } from './index/hooks/useAssessmentData';
-import { useSavePrompt } from './index/hooks/useSavePrompt';
-import { useAuth } from "@/contexts/AuthContext";
+import { AssessmentStepper } from './AssessmentStepper';
+import { AssessmentSummary } from './AssessmentSummary';
+import { FullFinancialHealthCheck } from './FullFinancialHealthCheck';
+import { SaveResultsModal } from './SaveResultsModal';
+import { questions, useAssessmentState } from './assessmentHooks';
+import { useAssessmentData } from './hooks/useAssessmentData';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { Link } from 'react-router-dom';
@@ -36,14 +33,9 @@ const EditAssessmentButton = ({ onClick, disabled }: { onClick: () => void, disa
 const IndexPage: React.FC = () => {
   const assessment = useAssessmentState();
   const { toast } = useToast();
-  const { user } = useAuth();
   const [selectedGoal, setSelectedGoal] = useState<string | null>(null);
 
   const assessmentData = useAssessmentData(assessment);
-  const savePrompt = useSavePrompt({ 
-    isComplete: assessmentData.isComplete, 
-    user 
-  });
 
   useEffect(() => {
     const handleGoalSelectEvent = (event: CustomEvent) => {
@@ -130,11 +122,43 @@ const IndexPage: React.FC = () => {
               />
               
               <AssessmentStepper 
-                {...assessment}
-                generateSummary={assessmentData.generateSummary}
-                aiSummary={assessmentData.aiSummary}
-                chartData={assessmentData.chartData}
-                isGeneratingSummary={assessmentData.isGeneratingSummary}
+                currentStep={assessment.step}
+                totalSteps={questions.length}
+                hasRegularIncome={assessment.hasRegularIncome}
+                setHasRegularIncome={assessment.setHasRegularIncome}
+                incomeSources={assessment.incomeSources}
+                setIncomeSources={assessment.setIncomeSources}
+                expenseItems={assessment.expenseItems}
+                setExpenseItems={assessment.setExpenseItems}
+                investmentExperience={assessment.investmentExperience}
+                setInvestmentExperience={assessment.setInvestmentExperience}
+                goals={assessment.goals}
+                setGoals={assessment.setGoals}
+                otherGoal={assessment.otherGoal}
+                setOtherGoal={assessment.setOtherGoal}
+                debtTypes={assessment.debtTypes}
+                setDebtTypes={assessment.setDebtTypes}
+                postcode={assessment.postcode}
+                setPostcode={assessment.setPostcode}
+                age={assessment.age}
+                setAge={assessment.setAge}
+                superBalance={assessment.superBalance}
+                setSuperBalance={assessment.setSuperBalance}
+                insurances={assessment.insurances}
+                setInsurances={assessment.setInsurances}
+                debtDetails={assessment.debtDetails}
+                setDebtDetails={assessment.setDebtDetails}
+                assets={assessment.assets}
+                setAssets={assessment.setAssets}
+                onNext={() => assessment.setStep(assessment.step + 1)}
+                onPrevious={() => assessment.setStep(assessment.step - 1)}
+                onFinish={() => {
+                  assessment.setStep(questions.length);
+                  toast({ 
+                    title: "Assessment Complete!", 
+                    description: "Your personalized financial recommendations are ready." 
+                  });
+                }}
               />
             </>
           )}
@@ -181,12 +205,11 @@ const IndexPage: React.FC = () => {
                   incomeSources={assessment.incomeSources}
                   expenseItems={assessment.expenseItems}
                   goals={assessment.goals}
-                  isAssessmentComplete={assessment.step >= questions.length}
+                  isAssessmentComplete={true}
                 />
               )}
               
-              {/* Only show AI summary after assessment is complete */}
-              {assessmentData.aiSummary && assessment.step >= questions.length && (
+              {assessmentData.aiSummary && (
                 <Card className="border-blue-200 bg-gradient-to-br from-blue-50 to-white">
                   <CardHeader>
                     <CardTitle className="flex items-center gap-2">
@@ -223,11 +246,7 @@ const IndexPage: React.FC = () => {
         </div>
       )}
 
-      <SaveResultsModal 
-        showSavePrompt={savePrompt.showSavePrompt}
-        onSaveResults={savePrompt.handleSaveResults}
-        onContinueAnonymous={savePrompt.handleContinueAnonymous}
-      />
+      <SaveResultsModal />
     </div>
   );
 };
