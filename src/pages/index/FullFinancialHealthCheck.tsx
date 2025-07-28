@@ -29,7 +29,6 @@ interface FullFinancialHealthCheckProps {
   incomeSources: { category: string; amount: string; frequency: string }[];
   expenseItems: { category: string; amount: string; frequency: string }[];
   goals: string[];
-  assessment: any;
 }
 
 const FullFinancialHealthCheck: React.FC<FullFinancialHealthCheckProps> = ({
@@ -44,8 +43,7 @@ const FullFinancialHealthCheck: React.FC<FullFinancialHealthCheckProps> = ({
   debtDetails,
   incomeSources,
   expenseItems,
-  goals,
-  assessment
+  goals
 }) => {
   // Calculate income using the established function
   const monthlyIncome = calculateMonthlyAmount(incomeSources);
@@ -228,30 +226,9 @@ const FullFinancialHealthCheck: React.FC<FullFinancialHealthCheckProps> = ({
   return (
     <div className="space-y-8">
       <div className="text-center mb-8">
-        <div className="flex items-center justify-between mb-4">
-          <h2 className="text-3xl font-bold bg-gradient-to-r from-emerald-600 to-blue-600 bg-clip-text text-transparent flex-1">
-            Your Complete Financial Health Check
-          </h2>
-          <Button 
-            variant="outline" 
-            size="sm"
-            onClick={() => {
-              // Reset the assessment but keep Full Financial Health Check goal
-              // This will restart the survey from the beginning
-              assessment.setStep(0);
-              assessment.setShowAssessment(true);
-              // Clear existing data to restart fresh
-              assessment.setIncomeSources([{ category: "", amount: "", frequency: "Monthly" }]);
-              assessment.setExpenseItems(assessment.expenseItems.map((item: any) => ({ ...item, amount: "" })));
-              assessment.setDebtTypes([]);
-              assessment.setDebtDetails([]);
-              assessment.setInvestmentExperience([]);
-            }}
-            className="ml-4"
-          >
-            Edit Survey
-          </Button>
-        </div>
+        <h2 className="text-3xl font-bold bg-gradient-to-r from-emerald-600 to-blue-600 bg-clip-text text-transparent">
+          Your Complete Financial Health Check
+        </h2>
         <p className="text-muted-foreground mt-2">
           Comprehensive analysis based on Australian financial benchmarks
         </p>
@@ -694,14 +671,11 @@ const FullFinancialHealthCheck: React.FC<FullFinancialHealthCheckProps> = ({
               <div className="flex items-center gap-2">
                 <div className="w-8 h-8 bg-blue-600 text-white rounded-full flex items-center justify-center text-sm font-bold">4</div>
                 <p className="font-medium">Boost superannuation contributions</p>
-                <Button variant="outline" size="sm" onClick={() => {
-                  // Store current goal before navigating
-                  localStorage.setItem('selectedGoal', 'Full Financial Health Check');
-                }}>
-                  <Link to="/maximise-super">
+                <Link to="/maximise-super">
+                  <Button variant="outline" size="sm">
                     Super Calc <ArrowRight className="h-4 w-4 ml-1" />
-                  </Link>
-                </Button>
+                  </Button>
+                </Link>
               </div>
 
               {!highInterestDebt && (
@@ -730,16 +704,12 @@ const FullFinancialHealthCheck: React.FC<FullFinancialHealthCheckProps> = ({
                 }}>
                   Budget Planner
                 </Button>
-                <Button size="sm" variant="outline" onClick={() => {
-                  localStorage.setItem('selectedGoal', 'Full Financial Health Check');
-                }}>
-                  <Link to="/maximise-super">Super Calculator</Link>
-                </Button>
-                <Button size="sm" variant="outline" onClick={() => {
-                  localStorage.setItem('selectedGoal', 'Full Financial Health Check');
-                }}>
-                  <Link to="/pay-off-home-loan">Debt Calculator</Link>
-                </Button>
+                <Link to="/maximise-super">
+                  <Button size="sm" variant="outline">Super Calculator</Button>
+                </Link>
+                <Link to="/pay-off-home-loan">
+                  <Button size="sm" variant="outline">Debt Calculator</Button>
+                </Link>
                 <Button size="sm" variant="outline" onClick={() => {
                   const event = new CustomEvent('selectGoal', { detail: 'Grow investments' });
                   window.dispatchEvent(event);

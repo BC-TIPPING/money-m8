@@ -25,7 +25,6 @@ import { Link } from "react-router-dom";
 import { ArrowLeft } from "lucide-react";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend } from "recharts";
 import { ChartContainer, ChartTooltipContent, type ChartConfig } from "@/components/ui/chart";
-import BackButton from '@/components/ui/back-button';
 
 
 const formSchema = z.object({
@@ -186,7 +185,9 @@ export default function PayOffHomeLoanPage() {
     return (
         <div className="container mx-auto px-4 py-8">
             <div className="mb-6">
-                <BackButton />
+                <Button asChild variant="ghost">
+                    <Link to="/"><ArrowLeft className="mr-2 h-4 w-4" /> Back to Dashboard</Link>
+                </Button>
             </div>
             <div className="grid gap-8 md:grid-cols-2">
                 <Card>
