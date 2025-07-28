@@ -130,10 +130,10 @@ const SuperKPICards: React.FC<SuperKPICardsProps> = ({ currentAge, currentBalanc
             <span className="text-sm text-muted-foreground">+10% Impact</span>
           </div>
           <p className="text-2xl font-bold text-orange-600">
-            +${((retirementIncomeExtra - retirementIncomeeCurrent) / 1000).toFixed(0)}k
+            +${((futureValueExtra - futureValueCurrent) / 1000).toFixed(0)}k
           </p>
           <p className="text-xs text-muted-foreground">
-            extra annual income (${annualTaxSavings.toLocaleString()} tax saved)
+            additional super (${monthlySacrificeNet.toLocaleString()}/month out of pocket)
           </p>
         </CardContent>
       </Card>
