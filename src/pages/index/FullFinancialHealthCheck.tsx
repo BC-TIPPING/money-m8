@@ -61,7 +61,7 @@ const FullFinancialHealthCheck: React.FC<FullFinancialHealthCheckProps> = ({
 
   // Income analysis
   const getIncomePercentile = () => {
-    if (annualIncome >= 180000) return { percentile: 90, level: "Top 10%" };
+    if (annualIncome >= 225000) return { percentile: 90, level: "Top 10%" };
     if (annualIncome >= 120000) return { percentile: 80, level: "Top 20%" };
     if (annualIncome >= 80000) return { percentile: 65, level: "Above Average" };
     if (annualIncome >= 50000) return { percentile: 50, level: "Median" };
@@ -474,7 +474,25 @@ const FullFinancialHealthCheck: React.FC<FullFinancialHealthCheckProps> = ({
           />
 
           {highInterestDebt && (
-            <DebtPayoffVisualization debtDetails={debtDetails} monthlyIncome={monthlyIncome} />
+            <>
+              <div className="bg-yellow-50 border-l-4 border-yellow-400 p-4 rounded-r-lg">
+                <div className="flex items-center gap-2 mb-2">
+                  <Badge variant="outline" className="bg-yellow-100 text-yellow-800 border-yellow-400">
+                    Dave Ramsey Says
+                  </Badge>
+                </div>
+                <p className="text-sm text-yellow-800">
+                  <strong>"Debt is the enemy of your most powerful wealth-building tool: your income!"</strong> 
+                  With ${highInterestDebt.totalBalance.toLocaleString()} in high-interest debt at {highInterestDebt.weightedRate.toFixed(1)}% average rate, 
+                  you're bleeding money every month. Stop investing, cut up the credit cards, and attack this debt with gazelle intensity. 
+                  Every dollar thrown at this debt is a <strong>guaranteed {highInterestDebt.weightedRate.toFixed(1)}% return</strong> - 
+                  better than any investment! Use the debt snowball method: list all debts smallest to largest, 
+                  pay minimums on all, then throw every extra penny at the smallest debt until it's gone. 
+                  This isn't about math, it's about changing behavior and building momentum!
+                </p>
+              </div>
+              <DebtPayoffVisualization debtDetails={debtDetails} monthlyIncome={monthlyIncome} />
+            </>
           )}
         </CardContent>
       </Card>
@@ -493,6 +511,56 @@ const FullFinancialHealthCheck: React.FC<FullFinancialHealthCheckProps> = ({
             riskProfile={riskProfile}
             hasHighInterestDebt={!!highInterestDebt}
           />
+
+          {assets.length > 0 && (
+            <div className="bg-indigo-50 p-4 rounded-lg">
+              <h4 className="font-semibold text-indigo-900 mb-3">Debt Recycling Strategy</h4>
+              <p className="text-sm text-indigo-800 mb-4">
+                Since you own assets, debt recycling could convert non-deductible debt into tax-deductible debt while building your investment portfolio.
+              </p>
+              
+              <div className="overflow-x-auto">
+                <table className="w-full text-sm border-collapse">
+                  <thead>
+                    <tr className="border-b-2 border-indigo-200">
+                      <th className="text-left p-2 text-indigo-900">Strategy</th>
+                      <th className="text-left p-2 text-indigo-900">How It Works</th>
+                      <th className="text-left p-2 text-indigo-900">Tax Benefit</th>
+                      <th className="text-left p-2 text-indigo-900">Risk Level</th>
+                    </tr>
+                  </thead>
+                  <tbody className="text-indigo-800">
+                    <tr className="border-b border-indigo-100">
+                      <td className="p-2 font-medium">Property Equity Access</td>
+                      <td className="p-2">Use property equity to invest in shares/managed funds</td>
+                      <td className="p-2">Interest becomes tax-deductible</td>
+                      <td className="p-2">Medium</td>
+                    </tr>
+                    <tr className="border-b border-indigo-100">
+                      <td className="p-2 font-medium">Debt Conversion</td>
+                      <td className="p-2">Gradually replace non-deductible debt with investment debt</td>
+                      <td className="p-2">{annualIncome > 120000 ? '37%' : annualIncome > 45000 ? '30%' : '19%'} tax saving on interest</td>
+                      <td className="p-2">Medium</td>
+                    </tr>
+                    <tr>
+                      <td className="p-2 font-medium">Investment Loan</td>
+                      <td className="p-2">Borrow against assets to purchase income-producing investments</td>
+                      <td className="p-2">Full interest + management fees deductible</td>
+                      <td className="p-2">Higher</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+              
+              <div className="mt-4 p-3 bg-yellow-50 border border-yellow-200 rounded">
+                <p className="text-xs text-yellow-800">
+                  <strong>Important:</strong> Debt recycling involves investment risk and complex tax implications. 
+                  Seek professional financial and tax advice before implementing any strategy. 
+                  Investment returns are not guaranteed and you could lose money.
+                </p>
+              </div>
+            </div>
+          )}
 
           <PostDebtInvestmentVisualization 
             debtDetails={debtDetails}
