@@ -3,7 +3,6 @@ import React from 'react';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from 'recharts';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { CreditCard, Scissors, Car, Home, DollarSign } from 'lucide-react';
-import PostDebtInvestmentVisualization from './PostDebtInvestmentVisualization';
 
 interface DebtPayoffVisualizationProps {
   debtDetails: any[];
@@ -36,7 +35,7 @@ const DebtPayoffVisualization: React.FC<DebtPayoffVisualizationProps> = ({ debtD
     const extraPayment = Math.min(monthlyIncome * 0.15, 500); // 15% of income or $500 cap
     const totalAvailablePayment = totalMinPayments + extraPayment;
 
-    // Calculate minimum payment scenario
+    // Calculate MINIMUM payment scenario (paying only minimums)
     let minScenarioDebts = sortedDebts.map(debt => ({
       ...debt,
       balance: parseFloat(debt.balance),
@@ -44,27 +43,38 @@ const DebtPayoffVisualization: React.FC<DebtPayoffVisualizationProps> = ({ debtD
       rate: parseFloat(debt.interestRate) / 100 / 12
     }));
 
-    // Calculate snowball scenario
-    let snowballDebts = JSON.parse(JSON.stringify(minScenarioDebts));
+    // Calculate AVALANCHE scenario (with extra payments)
+    let avalancheDebts = JSON.parse(JSON.stringify(minScenarioDebts));
 
     const data = [];
     let month = 0;
     let minTotalInterest = 0;
-    let snowballTotalInterest = 0;
+    let avalancheTotalInterest = 0;
+    let minPayoffMonth = 0;
+    let avalanchePayoffMonth = 0;
 
-    while ((minScenarioDebts.some(d => d.balance > 0) || snowballDebts.some(d => d.balance > 0)) && month < 120) {
+    while (month < 360) { // 30 year cap
+      // Check if scenarios are complete
+      const minComplete = minScenarioDebts.every(d => d.balance <= 0);
+      const avalancheComplete = avalancheDebts.every(d => d.balance <= 0);
+      
+      if (minComplete && minPayoffMonth === 0) minPayoffMonth = month;
+      if (avalancheComplete && avalanchePayoffMonth === 0) avalanchePayoffMonth = month;
+      
+      if (minComplete && avalancheComplete) break;
+
       // Calculate balances for chart
       const minTotal = minScenarioDebts.reduce((sum, debt) => sum + Math.max(0, debt.balance), 0);
-      const snowballTotal = snowballDebts.reduce((sum, debt) => sum + Math.max(0, debt.balance), 0);
+      const avalancheTotal = avalancheDebts.reduce((sum, debt) => sum + Math.max(0, debt.balance), 0);
       
       data.push({
         month,
         minimumPayment: Math.max(0, minTotal),
-        snowballPayment: Math.max(0, snowballTotal)
+        snowballPayment: Math.max(0, avalancheTotal)
       });
 
       if (month > 0) {
-        // Process minimum payment scenario
+        // Process MINIMUM payment scenario
         minScenarioDebts.forEach(debt => {
           if (debt.balance > 0) {
             const interest = debt.balance * debt.rate;
@@ -73,14 +83,14 @@ const DebtPayoffVisualization: React.FC<DebtPayoffVisualizationProps> = ({ debtD
           }
         });
 
-        // Process snowball scenario
+        // Process AVALANCHE scenario
         let remainingPayment = totalAvailablePayment;
         
         // Pay minimums first
-        snowballDebts.forEach(debt => {
+        avalancheDebts.forEach(debt => {
           if (debt.balance > 0) {
             const interest = debt.balance * debt.rate;
-            snowballTotalInterest += interest;
+            avalancheTotalInterest += interest;
             debt.balance += interest;
             
             const payment = Math.min(debt.minPayment, debt.balance, remainingPayment);
@@ -92,7 +102,7 @@ const DebtPayoffVisualization: React.FC<DebtPayoffVisualizationProps> = ({ debtD
         });
 
         // Apply extra payment to highest interest debt
-        for (let debt of snowballDebts) {
+        for (let debt of avalancheDebts) {
           if (debt.balance > 0 && remainingPayment > 0) {
             const extraPayment = Math.min(remainingPayment, debt.balance);
             debt.balance -= extraPayment;
@@ -107,24 +117,26 @@ const DebtPayoffVisualization: React.FC<DebtPayoffVisualizationProps> = ({ debtD
       month++;
     }
 
-    const minPayoffMonths = month;
-    const snowballPayoffMonths = snowballDebts.every(d => d.balance === 0) ? 
-      month - 1 : Math.min(month, 120);
+    // Set final payoff months if not set (for very long debt scenarios)
+    if (minPayoffMonth === 0) minPayoffMonth = month;
+    if (avalanchePayoffMonth === 0) avalanchePayoffMonth = month;
 
-    const monthsSaved = minPayoffMonths - snowballPayoffMonths;
-    const interestSaved = minTotalInterest - snowballTotalInterest;
+    const monthsSaved = Math.max(0, minPayoffMonth - avalanchePayoffMonth);
+    const interestSaved = Math.max(0, minTotalInterest - avalancheTotalInterest);
     const monthlyFreedUp = totalAvailablePayment; // After debt is paid off
 
     return {
-      data: data.slice(0, Math.min(60, Math.max(minPayoffMonths, snowballPayoffMonths) + 6)),
+      data: data.slice(0, Math.min(120, Math.max(minPayoffMonth, avalanchePayoffMonth) + 6)),
       metrics: {
-        monthsSaved: Math.max(0, monthsSaved),
-        interestSaved: Math.max(0, interestSaved),
+        monthsSaved,
+        interestSaved,
         monthlyFreedUp,
         extraPayment,
-        timeToPayoff: snowballPayoffMonths,
+        timeToPayoff: avalanchePayoffMonth,
         totalDebts: sortedDebts.length,
-        highestRateDebt: sortedDebts[0]?.type
+        highestRateDebt: sortedDebts[0]?.type,
+        minPayoffMonth,
+        avalanchePayoffMonth
       }
     };
   };
@@ -414,13 +426,6 @@ const DebtPayoffVisualization: React.FC<DebtPayoffVisualizationProps> = ({ debtD
         </Card>
       )}
 
-      {/* Investment Growth After Debt Elimination */}
-      {highInterestDebts.length > 0 && (
-        <PostDebtInvestmentVisualization 
-          debtDetails={debtDetails}
-          monthlyIncome={monthlyIncome}
-        />
-      )}
     </div>
   );
 };

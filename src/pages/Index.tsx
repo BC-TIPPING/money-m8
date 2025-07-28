@@ -25,6 +25,7 @@ import SkipToSummaryButton from "./index/components/SkipToSummaryButton";
 import GoalNavigationHeader from "./index/components/GoalNavigationHeader";
 import DebtSnowballCalculator from "./index/DebtSnowballCalculator";
 import InvestmentGrowthCalculator from "./index/InvestmentGrowthCalculator";
+import PostDebtInvestmentVisualization from "./index/components/PostDebtInvestmentVisualization";
 import PayOffHomeLoanCalculator from "./index/components/PayOffHomeLoanCalculator";
 import EditAssessmentButton from "./index/components/EditAssessmentButton";
 import { usePDFExport } from "./index/hooks/usePDFExport";
@@ -252,10 +253,16 @@ export default function Index() {
                         />
                     )}
                     {assessment.goals.includes('Grow investments') && (
-                        <InvestmentGrowthCalculator 
-                          defaultInvestmentAmount={Math.max(monthlySurplus * 0.7, 100)}
-                          currentAge={30}
-                        />
+                        <>
+                          <InvestmentGrowthCalculator 
+                            defaultInvestmentAmount={Math.max(monthlySurplus * 0.7, 100)}
+                            currentAge={30}
+                          />
+                          <PostDebtInvestmentVisualization 
+                            debtDetails={assessment.debtDetails}
+                            monthlyIncome={totalMonthlyNetIncome}
+                          />
+                        </>
                     )}
                     {chartData?.debtReductionData && <DebtReductionChart data={chartData.debtReductionData} />}
                     {chartData?.interestSavedData && <InterestSavedChart data={chartData.interestSavedData} />}
