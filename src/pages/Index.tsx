@@ -5,12 +5,12 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/components/ui/use-toast";
 import { Sparkles } from "lucide-react";
-import { AssessmentStepper } from './AssessmentStepper';
-import { AssessmentSummary } from './AssessmentSummary';
-import { FullFinancialHealthCheck } from './FullFinancialHealthCheck';
-import { SaveResultsModal } from './SaveResultsModal';
-import { questions, useAssessmentState } from './assessmentHooks';
-import { useAssessmentData } from './hooks/useAssessmentData';
+import { AssessmentStepper } from './index/AssessmentStepper';
+import { AssessmentSummary } from './index/AssessmentSummary';
+import { FullFinancialHealthCheck } from './index/FullFinancialHealthCheck';
+import { SaveResultsModal } from './index/components/SaveResultsModal';
+import { questions, useAssessmentState } from './index/assessmentHooks';
+import { useAssessmentData } from './index/hooks/useAssessmentData';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { Link } from 'react-router-dom';
@@ -205,11 +205,12 @@ const IndexPage: React.FC = () => {
                   incomeSources={assessment.incomeSources}
                   expenseItems={assessment.expenseItems}
                   goals={assessment.goals}
-                  isAssessmentComplete={true}
+                  isAssessmentComplete={assessment.step >= questions.length}
                 />
               )}
               
-              {assessmentData.aiSummary && (
+              {/* Only show AI summary after assessment is complete */}
+              {assessmentData.aiSummary && assessment.step >= questions.length && (
                 <Card className="border-blue-200 bg-gradient-to-br from-blue-50 to-white">
                   <CardHeader>
                     <CardTitle className="flex items-center gap-2">
