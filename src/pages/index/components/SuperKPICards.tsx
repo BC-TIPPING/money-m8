@@ -70,6 +70,13 @@ const SuperKPICards: React.FC<SuperKPICardsProps> = ({ currentAge, currentBalanc
   // Target using 4% rule (assume need 70% of current salary)
   const targetAnnualIncome = currentSalary * 0.70;
   const retirementTarget = targetAnnualIncome / 0.04; // 4% rule reversed
+  
+  // Calculate what they should have NOW to be on track for retirement target
+  // Work backwards from retirement target to current age
+  const yearsToRetirement = Math.max(67 - currentAge, 0);
+  const ageBasedTarget = yearsToRetirement > 0 ? 
+    retirementTarget / Math.pow(1.07, yearsToRetirement) : retirementTarget;
+  
   const retirementReadiness = (futureValueCurrent / retirementTarget) * 100;
 
   // Tax savings from salary sacrifice (marginal tax rate estimation)
@@ -84,13 +91,19 @@ const SuperKPICards: React.FC<SuperKPICardsProps> = ({ currentAge, currentBalanc
         <CardContent className="p-4">
           <div className="flex items-center gap-2">
             <PiggyBank className="h-4 w-4 text-blue-600" />
-            <span className="text-sm text-muted-foreground">vs 4% Target</span>
+            <span className="text-sm text-muted-foreground">Age {currentAge} vs 4% Track</span>
           </div>
           <p className="text-2xl font-bold text-blue-600">
-            {((currentBalance / retirementTarget) * 100).toFixed(0)}%
+            {((currentBalance / ageBasedTarget) * 100).toFixed(0)}%
           </p>
           <p className="text-xs text-muted-foreground">
-            ${currentBalance.toLocaleString()} / ${(retirementTarget / 1000000).toFixed(1)}M target
+            ${currentBalance.toLocaleString()} / ${(() => {
+              if (ageBasedTarget >= 1000000) {
+                return `$${(ageBasedTarget / 1000000).toFixed(1)}M target`;
+              } else {
+                return `$${(ageBasedTarget / 1000).toFixed(0)}k target`;
+              }
+            })()}
           </p>
         </CardContent>
       </Card>
