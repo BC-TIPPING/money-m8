@@ -327,37 +327,47 @@ const FullFinancialHealthCheck: React.FC<FullFinancialHealthCheckProps> = ({
             Income Analysis & Budget Health
           </CardTitle>
         </CardHeader>
-        <CardContent className="space-y-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <p className="text-sm text-muted-foreground">Annual Income</p>
-              <p className="text-2xl font-bold">${annualIncome.toLocaleString()}</p>
-              <Badge variant="secondary" className="mt-1">
-                {incomeData.level}
-              </Badge>
-            </div>
-            <div>
-              <p className="text-sm text-muted-foreground">Monthly Net Income</p>
-              <p className="text-2xl font-bold">${monthlyNetIncome.toLocaleString()}</p>
-              <p className="text-xs text-muted-foreground">after tax</p>
-            </div>
-          </div>
-
-          <IncomeComparisonChart userIncome={annualIncome} postcode={postcode} />
-          
-          <BudgetRecap 
-            totalMonthlyNetIncome={monthlyNetIncome}
-            totalMonthlyExpenses={monthlyExpenses}
-            expenseItems={expenseItems}
-          />
-          
-          <div className="bg-blue-50 p-4 rounded-lg">
-            <h4 className="font-semibold text-blue-900 mb-2">Understanding Your Income Position</h4>
-            <p className="text-sm text-blue-800">
-              Your income of ${annualIncome.toLocaleString()} puts you in the {incomeData.level.toLowerCase()} range nationally. 
-              The <strong>median</strong> represents the middle point where half earn more and half earn less, 
-              giving a better picture than the average (which can be skewed by very high earners).
+        <CardContent className="space-y-4">
+          <div className="bg-emerald-50 p-3 rounded-lg mb-4">
+            <p className="text-sm text-emerald-800">
+              <strong>Your income is the foundation of your financial health.</strong> 
+              Understanding where you stand compared to national benchmarks helps identify opportunities for growth. 
+              A healthy budget with 10-20% savings rate creates the foundation for wealth building and financial security.
             </p>
+          </div>
+          
+          <div className="space-y-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <p className="text-sm text-muted-foreground">Annual Income</p>
+                <p className="text-2xl font-bold">${annualIncome.toLocaleString()}</p>
+                <Badge variant="secondary" className="mt-1">
+                  {incomeData.level}
+                </Badge>
+              </div>
+              <div>
+                <p className="text-sm text-muted-foreground">Monthly Net Income</p>
+                <p className="text-2xl font-bold">${monthlyNetIncome.toLocaleString()}</p>
+                <p className="text-xs text-muted-foreground">after tax</p>
+              </div>
+            </div>
+
+            <IncomeComparisonChart userIncome={annualIncome} postcode={postcode} />
+            
+            <BudgetRecap 
+              totalMonthlyNetIncome={monthlyNetIncome}
+              totalMonthlyExpenses={monthlyExpenses}
+              expenseItems={expenseItems}
+            />
+            
+            <div className="bg-blue-50 p-4 rounded-lg">
+              <h4 className="font-semibold text-blue-900 mb-2">Understanding Your Income Position</h4>
+              <p className="text-sm text-blue-800">
+                Your income of ${annualIncome.toLocaleString()} puts you in the {incomeData.level.toLowerCase()} range nationally. 
+                The <strong>median</strong> represents the middle point where half earn more and half earn less, 
+                giving a better picture than the average (which can be skewed by very high earners).
+              </p>
+            </div>
           </div>
         </CardContent>
       </Card>
@@ -376,8 +386,8 @@ const FullFinancialHealthCheck: React.FC<FullFinancialHealthCheckProps> = ({
             </Button>
           </Link>
         </CardHeader>
-        <CardContent className="space-y-6">
-          <div className="bg-blue-50 p-4 rounded-lg mb-6">
+        <CardContent className="space-y-4">
+          <div className="bg-blue-50 p-3 rounded-lg mb-4">
             <p className="text-sm text-blue-800">
               <strong>Superannuation is one of Australia's most powerful wealth-building tools.</strong> 
               It's typically the most tax-effective investment vehicle available, with contributions taxed at just 15% 
@@ -416,18 +426,28 @@ const FullFinancialHealthCheck: React.FC<FullFinancialHealthCheckProps> = ({
             Insurance Protection
           </CardTitle>
         </CardHeader>
-        <CardContent className="space-y-4">
-          <div>
-            <p className="text-sm text-muted-foreground mb-2">Current Coverage</p>
-            <div className="flex flex-wrap gap-2">
-              {insurances.map((insurance, index) => (
-                <Badge key={index} variant="secondary">{insurance}</Badge>
-              ))}
-              {insurances.length === 0 && (
-                <p className="text-muted-foreground italic">No insurance coverage selected</p>
-              )}
-            </div>
+        <CardContent className="space-y-3">
+          <div className="bg-purple-50 p-3 rounded-lg mb-4">
+            <p className="text-sm text-purple-800">
+              <strong>Insurance is your financial safety net.</strong> 
+              Life insurance, income protection, and health insurance protect you and your family from financial 
+              catastrophe when unexpected events occur. Without adequate coverage, a serious illness or accident 
+              could destroy years of financial progress in an instant.
+            </p>
           </div>
+          
+          <div>
+            <div>
+              <p className="text-sm text-muted-foreground mb-2">Current Coverage</p>
+              <div className="flex flex-wrap gap-2">
+                {insurances.map((insurance, index) => (
+                  <Badge key={index} variant="secondary">{insurance}</Badge>
+                ))}
+                {insurances.length === 0 && (
+                  <p className="text-muted-foreground italic">No insurance coverage selected</p>
+                )}
+              </div>
+            </div>
 
             <div className="bg-blue-50 p-4 rounded-lg">
               <h4 className="font-semibold text-blue-900 mb-2">Coverage Gaps Identified</h4>
@@ -439,32 +459,33 @@ const FullFinancialHealthCheck: React.FC<FullFinancialHealthCheckProps> = ({
                 <li>• <strong>Income Protection:</strong> Replaces up to 75% of your income if illness or injury prevents you from working</li>
                 <li>• <strong>TPD Insurance:</strong> Provides a lump sum if you become totally and permanently disabled, covering medical costs and lifestyle modifications</li>
                 <li>• <strong>Private Health Insurance:</strong> Avoids Medicare Levy Surcharge and provides faster access to medical treatment when you need it most</li>
-              <li>• <strong>Family Stability:</strong> Ensures your dependents can maintain their lifestyle</li>
-            </ul>
+                <li>• <strong>Family Stability:</strong> Ensures your dependents can maintain their lifestyle</li>
+              </ul>
+            </div>
+
+            {insuranceAnalysis.recommendations.length > 0 && (
+              <div className="bg-red-50 p-4 rounded-lg">
+                <h4 className="font-semibold text-red-900 mb-3">Coverage Gaps Identified</h4>
+                {insuranceAnalysis.recommendations.map((gap, index) => (
+                  <div key={index} className="mb-2">
+                    <p className="font-medium text-red-800">{gap.type}</p>
+                    <p className="text-sm text-red-700">{gap.reason}</p>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {insuranceAnalysis.needsPrivateHealth && (
+              <div className="bg-orange-50 p-4 rounded-lg">
+                <h4 className="font-semibold text-orange-900 mb-2">Medicare Levy Surcharge Alert</h4>
+                <p className="text-sm text-orange-800">
+                  With an income of ${annualIncome.toLocaleString()}, you're above the Medicare Levy Surcharge threshold 
+                  of ${insuranceAnalysis.medicareThreshold.toLocaleString()}. Without private health insurance, you'll pay 
+                  an additional ${insuranceAnalysis.surchargeAmount.toLocaleString()} in Medicare Levy Surcharge.
+                </p>
+              </div>
+            )}
           </div>
-
-          {insuranceAnalysis.recommendations.length > 0 && (
-            <div className="bg-red-50 p-4 rounded-lg">
-              <h4 className="font-semibold text-red-900 mb-3">Coverage Gaps Identified</h4>
-              {insuranceAnalysis.recommendations.map((gap, index) => (
-                <div key={index} className="mb-2">
-                  <p className="font-medium text-red-800">{gap.type}</p>
-                  <p className="text-sm text-red-700">{gap.reason}</p>
-                </div>
-              ))}
-            </div>
-          )}
-
-          {insuranceAnalysis.needsPrivateHealth && (
-            <div className="bg-orange-50 p-4 rounded-lg">
-              <h4 className="font-semibold text-orange-900 mb-2">Medicare Levy Surcharge Alert</h4>
-              <p className="text-sm text-orange-800">
-                With an income of ${annualIncome.toLocaleString()}, you're above the Medicare Levy Surcharge threshold 
-                of ${insuranceAnalysis.medicareThreshold.toLocaleString()}. Without private health insurance, you'll pay 
-                an additional ${insuranceAnalysis.surchargeAmount.toLocaleString()} in Medicare Levy Surcharge.
-              </p>
-            </div>
-          )}
         </CardContent>
       </Card>
 
@@ -477,8 +498,17 @@ const FullFinancialHealthCheck: React.FC<FullFinancialHealthCheckProps> = ({
             Debt Strategy
           </CardTitle>
         </CardHeader>
-        <CardContent className="space-y-6">
-          <DebtSummaryTable 
+        <CardContent className="space-y-4">
+          <div className="bg-red-50 p-3 rounded-lg mb-4">
+            <p className="text-sm text-red-800">
+              <strong>High-interest debt is wealth destruction in action.</strong> 
+              Credit cards and personal loans typically charge 15-25% interest, making them impossible to outpace 
+              with investments. Eliminating high-interest debt provides a guaranteed return equal to the interest rate 
+              - often better than any investment you could make.
+            </p>
+          </div>
+          
+          <DebtSummaryTable
             debtDetails={debtDetails}
             monthlySurplus={monthlySurplus}
           />
@@ -516,8 +546,17 @@ const FullFinancialHealthCheck: React.FC<FullFinancialHealthCheckProps> = ({
             Investment Strategy
           </CardTitle>
         </CardHeader>
-        <CardContent className="space-y-6">
-          <InvestmentRiskProfile 
+        <CardContent className="space-y-4">
+          <div className="bg-indigo-50 p-3 rounded-lg mb-4">
+            <p className="text-sm text-indigo-800">
+              <strong>Investing grows your wealth through compound returns.</strong> 
+              After eliminating high-interest debt and building an emergency fund, investing allows your money 
+              to work for you. The key is starting early, staying consistent, and choosing investments that match 
+              your risk tolerance and time horizon.
+            </p>
+          </div>
+          
+          <InvestmentRiskProfile
             riskProfile={riskProfile}
             hasHighInterestDebt={!!highInterestDebt}
           />
@@ -587,87 +626,97 @@ const FullFinancialHealthCheck: React.FC<FullFinancialHealthCheckProps> = ({
             Your Financial Action Plan
           </CardTitle>
         </CardHeader>
-        <CardContent className="space-y-4">
+        <CardContent className="space-y-3">
+          <div className="bg-emerald-50 p-3 rounded-lg mb-4">
+            <p className="text-sm text-emerald-800">
+              <strong>Knowledge without action is worthless.</strong> 
+              Your financial health check reveals the areas that need attention. The key to building wealth 
+              is taking consistent action on these priorities, starting with the highest-impact items first.
+            </p>
+          </div>
+          
           <div className="space-y-3">
-            <div className="flex items-center gap-2">
-              <div className="w-8 h-8 bg-emerald-600 text-white rounded-full flex items-center justify-center text-sm font-bold">1</div>
-              <p className="font-medium">Create a comprehensive budget</p>
-              <Button variant="outline" size="sm" onClick={() => {
-                const event = new CustomEvent('selectGoal', { detail: 'Set a budget' });
-                window.dispatchEvent(event);
-              }}>
-                Start Budget <ArrowRight className="h-4 w-4 ml-1" />
-              </Button>
-            </div>
-            
-            {highInterestDebt && (
+            <div className="space-y-3">
               <div className="flex items-center gap-2">
-                <div className="w-8 h-8 bg-red-600 text-white rounded-full flex items-center justify-center text-sm font-bold">2</div>
-                <p className="font-medium">Eliminate high-interest debt immediately</p>
+                <div className="w-8 h-8 bg-emerald-600 text-white rounded-full flex items-center justify-center text-sm font-bold">1</div>
+                <p className="font-medium">Create a comprehensive budget</p>
                 <Button variant="outline" size="sm" onClick={() => {
-                  const event = new CustomEvent('selectGoal', { detail: 'Reduce debt' });
+                  const event = new CustomEvent('selectGoal', { detail: 'Set a budget' });
                   window.dispatchEvent(event);
                 }}>
-                  Debt Plan <ArrowRight className="h-4 w-4 ml-1" />
+                  Start Budget <ArrowRight className="h-4 w-4 ml-1" />
                 </Button>
               </div>
-            )}
-            
-            {insuranceAnalysis.recommendations.length > 0 && (
+              
+              {highInterestDebt && (
+                <div className="flex items-center gap-2">
+                  <div className="w-8 h-8 bg-red-600 text-white rounded-full flex items-center justify-center text-sm font-bold">2</div>
+                  <p className="font-medium">Eliminate high-interest debt immediately</p>
+                  <Button variant="outline" size="sm" onClick={() => {
+                    const event = new CustomEvent('selectGoal', { detail: 'Reduce debt' });
+                    window.dispatchEvent(event);
+                  }}>
+                    Debt Plan <ArrowRight className="h-4 w-4 ml-1" />
+                  </Button>
+                </div>
+              )}
+              
+              {insuranceAnalysis.recommendations.length > 0 && (
+                <div className="flex items-center gap-2">
+                  <div className="w-8 h-8 bg-purple-600 text-white rounded-full flex items-center justify-center text-sm font-bold">3</div>
+                  <p className="font-medium">Address insurance coverage gaps</p>
+                </div>
+              )}
+              
               <div className="flex items-center gap-2">
-                <div className="w-8 h-8 bg-purple-600 text-white rounded-full flex items-center justify-center text-sm font-bold">3</div>
-                <p className="font-medium">Address insurance coverage gaps</p>
+                <div className="w-8 h-8 bg-blue-600 text-white rounded-full flex items-center justify-center text-sm font-bold">4</div>
+                <p className="font-medium">Boost superannuation contributions</p>
+                <Link to="/maximise-super">
+                  <Button variant="outline" size="sm">
+                    Super Calc <ArrowRight className="h-4 w-4 ml-1" />
+                  </Button>
+                </Link>
               </div>
-            )}
-            
-            <div className="flex items-center gap-2">
-              <div className="w-8 h-8 bg-blue-600 text-white rounded-full flex items-center justify-center text-sm font-bold">4</div>
-              <p className="font-medium">Boost superannuation contributions</p>
-              <Link to="/maximise-super">
-                <Button variant="outline" size="sm">
-                  Super Calc <ArrowRight className="h-4 w-4 ml-1" />
-                </Button>
-              </Link>
+
+              {!highInterestDebt && (
+                <div className="flex items-center gap-2">
+                  <div className="w-8 h-8 bg-indigo-600 text-white rounded-full flex items-center justify-center text-sm font-bold">5</div>
+                  <p className="font-medium">Start investing for long-term growth</p>
+                  <Button variant="outline" size="sm" onClick={() => {
+                    const event = new CustomEvent('selectGoal', { detail: 'Grow investments' });
+                    window.dispatchEvent(event);
+                  }}>
+                    Invest <ArrowRight className="h-4 w-4 ml-1" />
+                  </Button>
+                </div>
+              )}
             </div>
 
-            {!highInterestDebt && (
-              <div className="flex items-center gap-2">
-                <div className="w-8 h-8 bg-indigo-600 text-white rounded-full flex items-center justify-center text-sm font-bold">5</div>
-                <p className="font-medium">Start investing for long-term growth</p>
-                <Button variant="outline" size="sm" onClick={() => {
+            <div className="bg-emerald-50 p-4 rounded-lg">
+              <h4 className="font-semibold text-emerald-900 mb-2">Ready to Take Action?</h4>
+              <p className="text-sm text-emerald-800 mb-3">
+                Click any goal below to get started, then return to this comprehensive summary.
+              </p>
+              <div className="flex flex-wrap gap-2">
+                <Button size="sm" variant="outline" onClick={() => {
+                  const event = new CustomEvent('selectGoal', { detail: 'Set a budget' });
+                  window.dispatchEvent(event);
+                }}>
+                  Budget Planner
+                </Button>
+                <Link to="/maximise-super">
+                  <Button size="sm" variant="outline">Super Calculator</Button>
+                </Link>
+                <Link to="/pay-off-home-loan">
+                  <Button size="sm" variant="outline">Debt Calculator</Button>
+                </Link>
+                <Button size="sm" variant="outline" onClick={() => {
                   const event = new CustomEvent('selectGoal', { detail: 'Grow investments' });
                   window.dispatchEvent(event);
                 }}>
-                  Invest <ArrowRight className="h-4 w-4 ml-1" />
+                  Investment Growth
                 </Button>
               </div>
-            )}
-          </div>
-
-          <div className="bg-emerald-50 p-4 rounded-lg">
-            <h4 className="font-semibold text-emerald-900 mb-2">Ready to Take Action?</h4>
-            <p className="text-sm text-emerald-800 mb-3">
-              Click any goal below to get started, then return to this comprehensive summary.
-            </p>
-            <div className="flex flex-wrap gap-2">
-              <Button size="sm" variant="outline" onClick={() => {
-                const event = new CustomEvent('selectGoal', { detail: 'Set a budget' });
-                window.dispatchEvent(event);
-              }}>
-                Budget Planner
-              </Button>
-              <Link to="/maximise-super">
-                <Button size="sm" variant="outline">Super Calculator</Button>
-              </Link>
-              <Link to="/pay-off-home-loan">
-                <Button size="sm" variant="outline">Debt Calculator</Button>
-              </Link>
-              <Button size="sm" variant="outline" onClick={() => {
-                const event = new CustomEvent('selectGoal', { detail: 'Grow investments' });
-                window.dispatchEvent(event);
-              }}>
-                Investment Growth
-              </Button>
             </div>
           </div>
         </CardContent>
