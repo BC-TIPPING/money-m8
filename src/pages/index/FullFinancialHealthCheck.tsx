@@ -226,9 +226,22 @@ const FullFinancialHealthCheck: React.FC<FullFinancialHealthCheckProps> = ({
   return (
     <div className="space-y-8">
       <div className="text-center mb-8">
-        <h2 className="text-3xl font-bold bg-gradient-to-r from-emerald-600 to-blue-600 bg-clip-text text-transparent">
-          Your Complete Financial Health Check
-        </h2>
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-3xl font-bold bg-gradient-to-r from-emerald-600 to-blue-600 bg-clip-text text-transparent flex-1">
+            Your Complete Financial Health Check
+          </h2>
+          <Button 
+            variant="outline" 
+            size="sm"
+            onClick={() => {
+              const event = new CustomEvent('editAssessment');
+              window.dispatchEvent(event);
+            }}
+            className="ml-4"
+          >
+            Edit Survey
+          </Button>
+        </div>
         <p className="text-muted-foreground mt-2">
           Comprehensive analysis based on Australian financial benchmarks
         </p>

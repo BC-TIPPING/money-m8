@@ -90,14 +90,22 @@ export default function Index() {
     }
   };
 
-  // Listen for goal selection events
+  // Listen for goal selection events and edit assessment events
   useEffect(() => {
     const handleGoalEvent = (event: CustomEvent) => {
       handleGoalSelection(event.detail);
     };
 
+    const handleEditEvent = () => {
+      assessment.setStep(0);
+    };
+
     window.addEventListener('selectGoal', handleGoalEvent as EventListener);
-    return () => window.removeEventListener('selectGoal', handleGoalEvent as EventListener);
+    window.addEventListener('editAssessment', handleEditEvent as EventListener);
+    return () => {
+      window.removeEventListener('selectGoal', handleGoalEvent as EventListener);
+      window.removeEventListener('editAssessment', handleEditEvent as EventListener);
+    };
   }, [assessment.goals, hasCompletedAssessment, generateSummary]);
   
   // Store goal selection in localStorage for persistence across navigation
@@ -245,6 +253,18 @@ export default function Index() {
             
             {isComplete && !assessment.goals.includes('Full Financial Health Check') && (
               <>
+                {/* Edit Survey Button for other goals */}
+                <div className="container mx-auto px-4 py-2 sm:px-6 lg:px-8 text-center">
+                  <Button 
+                    variant="outline" 
+                    size="sm"
+                    onClick={() => assessment.setStep(0)}
+                    className="mb-4"
+                  >
+                    Edit Survey
+                  </Button>
+                </div>
+                
                 {/* Other goal-specific components */}
                 <div className="container mx-auto grid gap-6 px-4 py-6 sm:px-6 lg:grid-cols-2 lg:px-8">
                     {assessment.goals.includes('Buy a house') && (
