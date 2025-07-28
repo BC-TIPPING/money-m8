@@ -77,7 +77,12 @@ export default function Index() {
       // Go to the summary step with this specific goal
       assessment.setStep(questions.length);
       assessment.setShowAssessment(true);
-      generateSummary({});
+      // For Full Financial Health Check, auto-generate summary
+      if (goal === 'Full Financial Health Check') {
+        setTimeout(() => generateSummary({}), 100);
+      } else {
+        generateSummary({});
+      }
     } else {
       // If no assessment data, start the assessment process
       assessment.setShowAssessment(true);
@@ -95,17 +100,24 @@ export default function Index() {
     return () => window.removeEventListener('selectGoal', handleGoalEvent as EventListener);
   }, [assessment.goals, hasCompletedAssessment, generateSummary]);
   
-  // Remove the localStorage goal handling since we're allowing anonymous access
+  // Store goal selection in localStorage for persistence across navigation
   useEffect(() => {
     if (user) {
       const goal = localStorage.getItem('selectedGoal');
-      if (goal) {
+      if (goal && hasCompletedAssessment) {
+        // Only auto-select goal if we have assessment data
         assessment.setGoals([goal]);
+        assessment.setStep(questions.length);
         assessment.setShowAssessment(true);
+        if (goal === 'Full Financial Health Check') {
+          setTimeout(() => generateSummary({}), 100);
+        } else {
+          generateSummary({});
+        }
         localStorage.removeItem('selectedGoal');
       }
     }
-  }, [user, assessment]);
+  }, [user, hasCompletedAssessment, generateSummary]);
 
   // Only auto-generate summary when assessment is complete AND it's not Full Financial Health Check
   useEffect(() => {

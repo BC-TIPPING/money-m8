@@ -671,11 +671,14 @@ const FullFinancialHealthCheck: React.FC<FullFinancialHealthCheckProps> = ({
               <div className="flex items-center gap-2">
                 <div className="w-8 h-8 bg-blue-600 text-white rounded-full flex items-center justify-center text-sm font-bold">4</div>
                 <p className="font-medium">Boost superannuation contributions</p>
-                <Link to="/maximise-super">
-                  <Button variant="outline" size="sm">
+                <Button variant="outline" size="sm" onClick={() => {
+                  // Store current goal before navigating
+                  localStorage.setItem('selectedGoal', 'Full Financial Health Check');
+                }}>
+                  <Link to="/maximise-super">
                     Super Calc <ArrowRight className="h-4 w-4 ml-1" />
-                  </Button>
-                </Link>
+                  </Link>
+                </Button>
               </div>
 
               {!highInterestDebt && (
@@ -704,12 +707,16 @@ const FullFinancialHealthCheck: React.FC<FullFinancialHealthCheckProps> = ({
                 }}>
                   Budget Planner
                 </Button>
-                <Link to="/maximise-super">
-                  <Button size="sm" variant="outline">Super Calculator</Button>
-                </Link>
-                <Link to="/pay-off-home-loan">
-                  <Button size="sm" variant="outline">Debt Calculator</Button>
-                </Link>
+                <Button size="sm" variant="outline" onClick={() => {
+                  localStorage.setItem('selectedGoal', 'Full Financial Health Check');
+                }}>
+                  <Link to="/maximise-super">Super Calculator</Link>
+                </Button>
+                <Button size="sm" variant="outline" onClick={() => {
+                  localStorage.setItem('selectedGoal', 'Full Financial Health Check');
+                }}>
+                  <Link to="/pay-off-home-loan">Debt Calculator</Link>
+                </Button>
                 <Button size="sm" variant="outline" onClick={() => {
                   const event = new CustomEvent('selectGoal', { detail: 'Grow investments' });
                   window.dispatchEvent(event);
