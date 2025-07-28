@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Loader2, Send, ChevronDown } from "lucide-react";
+import { Loader2, Send } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import GoalSuggestion from "./GoalSuggestion";
 
@@ -92,7 +92,6 @@ const AISearchSection: React.FC<AISearchSectionProps> = ({ onGoalSuggested }) =>
         <Select onValueChange={(value) => setQuestion(value)}>
           <SelectTrigger className="bg-white/10 border-white/20 text-white backdrop-blur-md w-full h-10">
             <SelectValue placeholder="Or choose from common Australian financial questions..." />
-            <ChevronDown className="h-4 w-4 text-white/60" />
           </SelectTrigger>
           <SelectContent className="bg-white z-50">
             {australianQuestions.map((q, index) => (
