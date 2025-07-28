@@ -23,7 +23,7 @@ import remarkGfm from 'remark-gfm';
 import FloatingActionButtons from "./index/components/FloatingActionButtons";
 import SkipToSummaryButton from "./index/components/SkipToSummaryButton";
 import GoalNavigationHeader from "./index/components/GoalNavigationHeader";
-import DebtSnowballCalculator from "./index/DebtSnowballCalculator";
+import EnhancedDebtCalculator from "./index/components/EnhancedDebtCalculator";
 import InvestmentGrowthCalculator from "./index/InvestmentGrowthCalculator";
 import PostDebtInvestmentVisualization from "./index/components/PostDebtInvestmentVisualization";
 import PayOffHomeLoanCalculator from "./index/components/PayOffHomeLoanCalculator";
@@ -247,7 +247,7 @@ export default function Index() {
                         <BudgetPlanner expenseItems={assessment.expenseItems} totalMonthlyNetIncome={totalMonthlyNetIncome} />
                     )}
                     {assessment.goals.includes('Reduce debt') && assessment.debtDetails && assessment.debtDetails.length > 0 && (
-                        <DebtSnowballCalculator 
+                        <EnhancedDebtCalculator 
                           debtDetails={assessment.debtDetails}
                           totalMonthlySurplus={monthlySurplus}
                         />
