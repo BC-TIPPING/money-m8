@@ -267,21 +267,6 @@ export default function Index() {
                     {chartData?.debtReductionData && <DebtReductionChart data={chartData.debtReductionData} />}
                     {chartData?.interestSavedData && <InterestSavedChart data={chartData.interestSavedData} />}
                     
-                    {/* AI Summary for other goals */}
-                    {aiSummary && (
-                      <Card className="border-emerald-200 bg-gradient-to-br from-emerald-50 to-white">
-                        <CardHeader>
-                          <CardTitle>AI-Generated Financial Summary</CardTitle>
-                        </CardHeader>
-                        <CardContent>
-                          <div className="prose prose-emerald max-w-none prose-headings:text-emerald-800 prose-strong:text-emerald-700">
-                            <ReactMarkdown remarkPlugins={[remarkGfm]}>
-                              {aiSummary}
-                            </ReactMarkdown>
-                          </div>
-                        </CardContent>
-                      </Card>
-                    )}
                     
                     <ActionItemsSection 
                       assessmentData={assessment} 
