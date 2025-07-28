@@ -9,8 +9,8 @@ interface IncomeComparisonChartProps {
 }
 
 const IncomeComparisonChart: React.FC<IncomeComparisonChartProps> = ({ userIncome, postcode }) => {
-  // ABS August 2024 data - National median weekly earnings $1,396 (annual $72,592)
-  const nationalMedian = 72592;
+  // National median full-time wage $88,400
+  const nationalMedian = 88400;
   const nationalAverage = 92000; // Updated based on ABS data
   
   // Simplified postcode-based median using ATO data patterns
