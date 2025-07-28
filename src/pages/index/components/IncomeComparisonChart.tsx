@@ -63,7 +63,7 @@ const IncomeComparisonChart: React.FC<IncomeComparisonChartProps> = ({ userIncom
           <CardTitle>Income Position (0 - $300k)</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="relative h-32 bg-gradient-to-r from-red-100 via-yellow-100 via-green-100 to-emerald-200 rounded-lg border">
+          <div className="relative h-32 bg-gradient-to-r from-red-100 via-yellow-100 via-green-100 to-emerald-200 rounded-lg border mb-6">
             {/* User income marker */}
             <div 
               className="absolute top-2 transform -translate-x-1/2 flex flex-col items-center"
@@ -96,16 +96,18 @@ const IncomeComparisonChart: React.FC<IncomeComparisonChartProps> = ({ userIncom
                 Local: ${(postcodeMedian / 1000).toFixed(0)}k
               </Badge>
             </div>
-            
-            {/* Scale markers */}
-            <div className="absolute bottom-1 left-0 text-xs text-gray-500">$0</div>
-            <div className="absolute bottom-1 left-1/4 text-xs text-gray-500">$75k</div>
-            <div className="absolute bottom-1 left-1/2 text-xs text-gray-500">$150k</div>
-            <div className="absolute bottom-1 left-3/4 text-xs text-gray-500">$225k</div>
-            <div className="absolute bottom-1 right-0 text-xs text-gray-500">$300k</div>
           </div>
           
-          <div className="mt-4 text-sm text-muted-foreground text-center">
+          {/* Scale markers below the graph */}
+          <div className="relative w-full mb-4">
+            <div className="absolute left-0 text-xs text-gray-500">$0</div>
+            <div className="absolute left-1/4 transform -translate-x-1/2 text-xs text-gray-500">$75k</div>
+            <div className="absolute left-1/2 transform -translate-x-1/2 text-xs text-gray-500">$150k</div>
+            <div className="absolute left-3/4 transform -translate-x-1/2 text-xs text-gray-500">$225k</div>
+            <div className="absolute right-0 text-xs text-gray-500">$300k</div>
+          </div>
+          
+          <div className="text-sm text-muted-foreground text-center">
             Income comparison based on Australian full-time median wages
           </div>
         </CardContent>
