@@ -91,17 +91,17 @@ const SuperKPICards: React.FC<SuperKPICardsProps> = ({ currentAge, currentBalanc
         <CardContent className="p-4">
           <div className="flex items-center gap-2">
             <PiggyBank className="h-4 w-4 text-blue-600" />
-            <span className="text-sm text-muted-foreground">Age {currentAge} vs 4% Track</span>
+            <span className="text-sm text-muted-foreground">Age {currentAge} vs Benchmark</span>
           </div>
           <p className="text-2xl font-bold text-blue-600">
-            {((currentBalance / ageBasedTarget) * 100).toFixed(0)}%
+            {benchmarkRatio.toFixed(0)}%
           </p>
           <p className="text-xs text-muted-foreground">
             ${currentBalance.toLocaleString()} / ${(() => {
-              if (ageBasedTarget >= 1000000) {
-                return `$${(ageBasedTarget / 1000000).toFixed(1)}M target`;
+              if (currentBenchmark >= 1000000) {
+                return `$${(currentBenchmark / 1000000).toFixed(1)}M benchmark`;
               } else {
-                return `$${(ageBasedTarget / 1000).toFixed(0)}k target`;
+                return `$${(currentBenchmark / 1000).toFixed(0)}k benchmark`;
               }
             })()}
           </p>
