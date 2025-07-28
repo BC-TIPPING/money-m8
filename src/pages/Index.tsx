@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -5,10 +6,10 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/components/ui/use-toast";
 import { Sparkles } from "lucide-react";
-import { AssessmentStepper } from './index/AssessmentStepper';
-import { AssessmentSummary } from './index/AssessmentSummary';
-import { FullFinancialHealthCheck } from './index/FullFinancialHealthCheck';
-import { SaveResultsModal } from './index/components/SaveResultsModal';
+import AssessmentStepper from './index/AssessmentStepper';
+import AssessmentSummary from './index/AssessmentSummary';
+import FullFinancialHealthCheck from './index/FullFinancialHealthCheck';
+import SaveResultsModal from './index/components/SaveResultsModal';
 import { questions, useAssessmentState } from './index/assessmentHooks';
 import { useAssessmentData } from './index/hooks/useAssessmentData';
 import ReactMarkdown from 'react-markdown';
