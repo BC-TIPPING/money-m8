@@ -111,28 +111,6 @@ const IncomeComparisonChart: React.FC<IncomeComparisonChartProps> = ({ userIncom
         </CardContent>
       </Card>
 
-      {/* KPI Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <Card>
-          <CardContent className="p-4">
-            <div className="text-center">
-              <p className="text-sm text-muted-foreground">National Ranking</p>
-              <p className="text-2xl font-bold text-blue-600">{nationalPercentile}th percentile</p>
-              <p className="text-xs text-muted-foreground">vs full-time median (${(nationalMedian / 1000).toFixed(0)}k)</p>
-            </div>
-          </CardContent>
-        </Card>
-        
-        <Card>
-          <CardContent className="p-4">
-            <div className="text-center">
-              <p className="text-sm text-muted-foreground">Local Ranking</p>
-              <p className="text-2xl font-bold text-orange-600">{postcodePercentile}th percentile</p>
-              <p className="text-xs text-muted-foreground">vs local median (${(postcodeMedian / 1000).toFixed(0)}k)</p>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
     </div>
   );
 };

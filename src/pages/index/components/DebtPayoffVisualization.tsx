@@ -308,13 +308,13 @@ const DebtPayoffVisualization: React.FC<DebtPayoffVisualizationProps> = ({ debtD
             </div>
 
             {/* Chart */}
-            <div className="h-64">
+            <div className="h-80">
               <ResponsiveContainer width="100%" height="100%">
-                <AreaChart data={debtData} margin={{ top: 20, right: 30, left: 20, bottom: 25 }}>
+                <AreaChart data={debtData} margin={{ top: 20, right: 30, left: 20, bottom: 40 }}>
                   <CartesianGrid strokeDasharray="3 3" />
                   <XAxis 
                     dataKey="month" 
-                    label={{ value: 'Months', position: 'insideBottom', offset: -10 }}
+                  label={{ value: 'Months', position: 'insideBottom', offset: -15 }}
                   />
                   <YAxis tickFormatter={(value) => `$${(value / 1000).toFixed(0)}k`} />
                   <Tooltip content={<CustomTooltip />} />
@@ -390,13 +390,13 @@ const DebtPayoffVisualization: React.FC<DebtPayoffVisualizationProps> = ({ debtD
             </div>
 
             {/* Chart */}
-            <div className="h-64">
+            <div className="h-80">
               <ResponsiveContainer width="100%" height="100%">
-                <AreaChart data={mortgageData} margin={{ top: 20, right: 30, left: 20, bottom: 25 }}>
+                <AreaChart data={mortgageData} margin={{ top: 20, right: 30, left: 20, bottom: 40 }}>
                   <CartesianGrid strokeDasharray="3 3" />
                   <XAxis 
                     dataKey="month" 
-                    label={{ value: 'Months', position: 'insideBottom', offset: -10 }}
+                    label={{ value: 'Months', position: 'insideBottom', offset: -15 }}
                   />
                   <YAxis tickFormatter={(value) => `$${(value / 1000).toFixed(0)}k`} />
                   <Tooltip content={<CustomTooltip />} />
