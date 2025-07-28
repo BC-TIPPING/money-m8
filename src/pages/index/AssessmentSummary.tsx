@@ -83,7 +83,12 @@ const AssessmentSummary: React.FC<AssessmentSummaryProps> = (props) => {
 
 
   return (
-    <div className="space-y-8 text-sm">
+    <div className="bg-gradient-to-br from-blue-50 to-white border border-blue-200 rounded-lg p-6">
+      <div className="text-center mb-6">
+        <h2 className="text-2xl font-bold text-gray-900 mb-2">Thank You!</h2>
+        <p className="text-muted-foreground">Your financial assessment is complete. Here is a summary of your responses.</p>
+      </div>
+      <div className="space-y-8 text-sm">
       <Section title="Primary Goal">
         <SummaryItem label="Your Goal" value={goals.includes('Other') && otherGoal ? otherGoal : goals.join(', ')} />
         <SummaryItem label="Timeframe" value={goalTimeframe} />
@@ -171,6 +176,7 @@ const AssessmentSummary: React.FC<AssessmentSummaryProps> = (props) => {
             />
           )}
       </Section>
+      </div>
     </div>
   );
 };

@@ -1,5 +1,6 @@
 import LandingSection from "./index/LandingSection";
 import AssessmentStepper from "./index/AssessmentStepper";
+import AssessmentSummary from "./index/AssessmentSummary";
 import { useAssessmentState, questions } from "./index/assessmentHooks";
 import { useAssessmentData } from "./index/hooks/useAssessmentData";
 import InterestSavedChart from "./index/InterestSavedChart";
@@ -184,29 +185,27 @@ export default function Index() {
                       expenseItems={assessment.expenseItems}
                       goals={assessment.goals}
                       insurances={assessment.insurances}
-                      assets={[]}
+                      assets={assessment.assets || []}
                     />
                     
-                    {/* AI Summary positioned after Full Financial Health Check */}
-                    {aiSummary && (
-                      <div className="mt-8">
-                        <Card className="border-emerald-200 bg-gradient-to-br from-emerald-50 to-white">
-                          <CardHeader>
-                            <CardTitle className="flex items-center gap-2">
-                              <BarChart3 className="h-5 w-5 text-emerald-600" />
-                              AI-Generated Financial Summary
-                            </CardTitle>
-                          </CardHeader>
-                          <CardContent>
-                            <div className="prose prose-emerald max-w-none prose-headings:text-emerald-800 prose-strong:text-emerald-700">
-                              <ReactMarkdown remarkPlugins={[remarkGfm]}>
-                                {aiSummary}
-                              </ReactMarkdown>
-                            </div>
-                          </CardContent>
-                        </Card>
-                      </div>
-                    )}
+                    {/* Thank You Assessment Summary after Full Financial Health Check */}
+                    <div className="mt-8">
+                      <AssessmentSummary 
+                        employmentStatus={assessment.employmentStatus}
+                        hasRegularIncome={assessment.hasRegularIncome}
+                        incomeSources={assessment.incomeSources}
+                        expenseItems={assessment.expenseItems}
+                        uploadedFile={assessment.uploadedFile}
+                        financialKnowledgeLevel={assessment.financialKnowledgeLevel}
+                        investmentExperience={assessment.investmentExperience}
+                        goals={assessment.goals}
+                        otherGoal={assessment.otherGoal}
+                        debtTypes={assessment.debtTypes}
+                        debtDetails={assessment.debtDetails}
+                        debtManagementConfidence={assessment.debtManagementConfidence}
+                        freeTextComments={assessment.freeTextComments}
+                      />
+                    </div>
                   </div>
                 )}
                 
