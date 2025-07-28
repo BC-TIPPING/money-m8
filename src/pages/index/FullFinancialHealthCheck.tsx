@@ -13,7 +13,7 @@ import InvestmentRiskProfile from "./components/InvestmentRiskProfile";
 import BudgetRecap from "./components/BudgetRecap";
 import DebtSummaryTable from "./components/DebtSummaryTable";
 import SuperKPICards from "./components/SuperKPICards";
-import { calculateMonthlyAmount, calculateNetMonthlyIncome } from "@/lib/financialCalculations";
+import { calculateMonthlyAmount, calculateAustralianIncomeTax } from "@/lib/financialCalculations";
 
 interface FullFinancialHealthCheckProps {
   age?: number;
@@ -28,7 +28,6 @@ interface FullFinancialHealthCheckProps {
   incomeSources: { category: string; amount: string; frequency: string }[];
   expenseItems: { category: string; amount: string; frequency: string }[];
   goals: string[];
-  isAssessmentComplete: boolean;
 }
 
 const FullFinancialHealthCheck: React.FC<FullFinancialHealthCheckProps> = ({
@@ -43,29 +42,28 @@ const FullFinancialHealthCheck: React.FC<FullFinancialHealthCheckProps> = ({
   debtDetails,
   incomeSources,
   expenseItems,
-  goals,
-  isAssessmentComplete
+  goals
 }) => {
-  // Calculate income using the updated function
+  // Calculate income using the established function
   const monthlyIncome = calculateMonthlyAmount(incomeSources);
   const annualIncome = monthlyIncome * 12;
-  const monthlyNetIncome = calculateNetMonthlyIncome(annualIncome);
+  const annualTax = calculateAustralianIncomeTax(annualIncome);
+  const monthlyNetIncome = annualIncome > 0 ? (annualIncome - annualTax) / 12 : 0;
   const monthlyExpenses = calculateMonthlyAmount(expenseItems);
   const monthlySurplus = monthlyNetIncome - monthlyExpenses;
 
-  // Australian income benchmarks (updated with full-time median data)
-  const nationalMedian = 73000;
+  // Australian income benchmarks
+  const nationalMedian = 65000;
+  const nationalAverage = 89000;
   const postcodeMedian = postcode ? 
-    (parseInt(postcode.substring(0, 1)) > 3 ? 65000 : 85000) : nationalMedian;
+    (parseInt(postcode.substring(0, 1)) > 3 ? 52000 : 78000) : nationalMedian;
 
   // Income analysis
   const getIncomePercentile = () => {
-    const ratio = annualIncome / nationalMedian;
-    if (ratio >= 2.5) return { percentile: 95, level: "Top 5%" };
-    if (ratio >= 2.0) return { percentile: 90, level: "Top 10%" };
-    if (ratio >= 1.6) return { percentile: 80, level: "Top 20%" };
-    if (ratio >= 1.3) return { percentile: 70, level: "Above Average" };
-    if (ratio >= 1.0) return { percentile: 50, level: "Median" };
+    if (annualIncome >= 180000) return { percentile: 90, level: "Top 10%" };
+    if (annualIncome >= 120000) return { percentile: 80, level: "Top 20%" };
+    if (annualIncome >= 80000) return { percentile: 65, level: "Above Average" };
+    if (annualIncome >= 50000) return { percentile: 50, level: "Median" };
     return { percentile: 30, level: "Below Average" };
   };
 
@@ -86,7 +84,7 @@ const FullFinancialHealthCheck: React.FC<FullFinancialHealthCheckProps> = ({
     return { totalBalance, weightedRate, debts: highInterestDebts };
   };
 
-  // Insurance analysis with updated descriptions
+  // Insurance analysis
   const getInsuranceAnalysis = () => {
     const recommendations = [];
     
@@ -94,7 +92,7 @@ const FullFinancialHealthCheck: React.FC<FullFinancialHealthCheckProps> = ({
       recommendations.push({
         type: "Life Insurance",
         recommended: annualIncome * 10,
-        reason: "Provides financial security for dependents by covering debts, living expenses, and future needs like children's education if you pass away unexpectedly."
+        reason: "10x annual income is standard coverage"
       });
     }
     
@@ -102,20 +100,12 @@ const FullFinancialHealthCheck: React.FC<FullFinancialHealthCheckProps> = ({
       recommendations.push({
         type: "Income Protection",
         recommended: annualIncome * 0.75,
-        reason: "Replaces up to 75% of your income if illness or injury prevents you from working, ensuring you can maintain your lifestyle and meet financial obligations."
+        reason: "75% of income replacement until age 65"
       });
     }
     
-    if (!insurances.includes("TPD Insurance")) {
-      recommendations.push({
-        type: "TPD Insurance",
-        recommended: annualIncome * 8,
-        reason: "Provides a lump sum if you become totally and permanently disabled, covering medical costs, home modifications, and ongoing care needs."
-      });
-    }
-    
-    // Medicare Levy Surcharge thresholds for 2025-26
-    const medicareThreshold = 97000;
+    // Medicare Levy Surcharge thresholds for 2024-25
+    const medicareThreshold = 97000; // Single person
     const surchargeRate = annualIncome > medicareThreshold ? 
       (annualIncome <= 113000 ? 0.01 : 
        annualIncome <= 151000 ? 0.0125 : 0.015) : 0;
@@ -128,7 +118,7 @@ const FullFinancialHealthCheck: React.FC<FullFinancialHealthCheckProps> = ({
       recommendations.push({
         type: "Private Health Insurance",
         recommended: 2500,
-        reason: `Avoids Medicare Levy Surcharge of $${surchargeAmount.toLocaleString()} and provides faster access to medical treatment when needed.`
+        reason: `Avoid Medicare Levy Surcharge of $${surchargeAmount.toLocaleString()}`
       });
     }
     
@@ -155,7 +145,7 @@ const FullFinancialHealthCheck: React.FC<FullFinancialHealthCheckProps> = ({
     
     // Insurance score (20 points)
     const insuranceAnalysis = getInsuranceAnalysis();
-    const insuranceScore = Math.max(0, 20 - (insuranceAnalysis.recommendations.length * 5));
+    const insuranceScore = Math.max(0, 20 - (insuranceAnalysis.recommendations.length * 7));
     score += insuranceScore;
     
     // Debt score (25 points)
@@ -168,7 +158,7 @@ const FullFinancialHealthCheck: React.FC<FullFinancialHealthCheckProps> = ({
     
     // Savings rate (10 points)
     const savingsRate = monthlyNetIncome > 0 ? (monthlySurplus / monthlyNetIncome) * 100 : 0;
-    score += Math.min(savingsRate / 2, 10);
+    score += Math.min(savingsRate / 2, 10); // Up to 10 points for 20% savings rate
     
     return Math.min(Math.round(score), 100);
   };
@@ -180,11 +170,13 @@ const FullFinancialHealthCheck: React.FC<FullFinancialHealthCheckProps> = ({
     
     if (currentScore >= 100) return ["You already have a perfect financial health score! 🎉"];
     
+    // Income requirements
     const incomeData = getIncomePercentile();
     if (incomeData.percentile < 80) {
-      requirements.push(`Increase income to top 20% (${(nationalMedian * 1.6).toLocaleString()}+ annually)`);
+      requirements.push(`Increase income to top 20% (${nationalAverage.toLocaleString()}+ annually)`);
     }
     
+    // Super requirements
     if (age && superBalance) {
       const benchmarks = { 25: 30000, 30: 60000, 35: 110000, 40: 180000, 45: 270000, 50: 390000, 55: 550000, 60: 750000, 65: 1000000 };
       const closestAge = Object.keys(benchmarks).map(Number).reduce((prev, curr) => 
@@ -196,16 +188,19 @@ const FullFinancialHealthCheck: React.FC<FullFinancialHealthCheckProps> = ({
       }
     }
     
+    // Insurance requirements
     const insuranceAnalysis = getInsuranceAnalysis();
     insuranceAnalysis.recommendations.forEach(rec => {
       requirements.push(`Get ${rec.type} coverage`);
     });
     
+    // Debt requirements
     const highInterestDebt = getHighInterestDebtAnalysis();
     if (highInterestDebt) {
       requirements.push(`Eliminate all high-interest debt ($${highInterestDebt.totalBalance.toLocaleString()})`);
     }
     
+    // Savings requirements
     const savingsRate = monthlyNetIncome > 0 ? (monthlySurplus / monthlyNetIncome) * 100 : 0;
     if (savingsRate < 20) {
       requirements.push(`Achieve 20% savings rate (currently ${savingsRate.toFixed(1)}%)`);
@@ -239,7 +234,7 @@ const FullFinancialHealthCheck: React.FC<FullFinancialHealthCheckProps> = ({
       </div>
 
       {/* Financial Health Score - Only show when assessment is complete */}
-      {isAssessmentComplete && (
+      {goals.includes('Full Financial Health Check') && (
         <Card className="border-emerald-200 bg-gradient-to-br from-emerald-50 to-white">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
@@ -343,7 +338,7 @@ const FullFinancialHealthCheck: React.FC<FullFinancialHealthCheckProps> = ({
             <div>
               <p className="text-sm text-muted-foreground">Monthly Net Income</p>
               <p className="text-2xl font-bold">${monthlyNetIncome.toLocaleString()}</p>
-              <p className="text-xs text-muted-foreground">after tax & Medicare levy</p>
+              <p className="text-xs text-muted-foreground">after tax</p>
             </div>
           </div>
 
@@ -393,9 +388,9 @@ const FullFinancialHealthCheck: React.FC<FullFinancialHealthCheckProps> = ({
             <h4 className="font-semibold text-blue-900">Understanding Your Superannuation Position</h4>
             <div className="text-sm text-blue-800 space-y-2">
               <p><strong>Current vs Benchmark:</strong> Your balance compared to the QSuper benchmark for your age group, indicating if you're on track.</p>
-              <p><strong>At Retirement (Age 67):</strong> Projected balance using current 12% employer contributions and 7% annual growth. The 4% rule suggests you can safely withdraw 4% annually in retirement.</p>
+              <p><strong>At Retirement (Age 67):</strong> Projected balance using current 11.5% employer contributions and 7% annual growth. The 4% rule suggests you can safely withdraw 4% annually in retirement.</p>
               <p><strong>Retirement Readiness:</strong> Whether your projected super will provide 70% of your current income (the recommended retirement income target).</p>
-              <p><strong>+10% Salary Sacrifice Impact:</strong> Adding 10% of your salary to super would boost your retirement income by ${age && superBalance && annualIncome ? `${((annualIncome * 0.10 * Math.pow(1.07, Math.max(67 - age, 0)) * 0.04) / 1000).toFixed(0)}k` : 'N/A'} annually. Out of a ${(annualIncome * 0.10 / 12).toLocaleString()}/month contribution, approximately ${Math.round((annualIncome * 0.10 / 12) * (annualIncome > 135000 ? 0.37 : annualIncome > 45000 ? 0.30 : 0.19)).toLocaleString()} would be tax savings, making your actual cost only ${Math.round((annualIncome * 0.10 / 12) * (1 - (annualIncome > 135000 ? 0.37 : annualIncome > 45000 ? 0.30 : 0.19))).toLocaleString()}/month.</p>
+              <p><strong>+10% Salary Sacrifice Impact:</strong> Adding 10% of your salary to super would boost your retirement income by ${age && superBalance ? `${((annualIncome * 0.10 * Math.pow(1.07, Math.max(67 - age, 0)) * 0.04) / 1000).toFixed(0)}k` : 'N/A'} annually. Out of a ${(annualIncome * 0.10 / 12).toLocaleString()}/month contribution, approximately ${Math.round((annualIncome * 0.10 / 12) * (annualIncome > 120000 ? 0.37 : annualIncome > 45000 ? 0.30 : 0.19)).toLocaleString()} would be tax savings, making your actual cost only ${Math.round((annualIncome * 0.10 / 12) * (1 - (annualIncome > 120000 ? 0.37 : annualIncome > 45000 ? 0.30 : 0.19))).toLocaleString()}/month.</p>
             </div>
           </div>
         </CardContent>
@@ -423,11 +418,25 @@ const FullFinancialHealthCheck: React.FC<FullFinancialHealthCheckProps> = ({
             </div>
           </div>
 
+            <div className="bg-blue-50 p-4 rounded-lg">
+              <h4 className="font-semibold text-blue-900 mb-2">Coverage Gaps Identified</h4>
+              <p className="text-sm text-blue-800 mb-2">
+                These insurance types provide critical financial protection for you and your family.
+              </p>
+              <ul className="text-sm text-blue-800 space-y-2">
+                <li>• <strong>Life Insurance:</strong> Pays off debts, replaces income, and funds children's education if you pass away unexpectedly</li>
+                <li>• <strong>Income Protection:</strong> Replaces up to 75% of your income if illness or injury prevents you from working</li>
+                <li>• <strong>TPD Insurance:</strong> Provides a lump sum if you become totally and permanently disabled, covering medical costs and lifestyle modifications</li>
+                <li>• <strong>Private Health Insurance:</strong> Avoids Medicare Levy Surcharge and provides faster access to medical treatment when you need it most</li>
+              <li>• <strong>Family Stability:</strong> Ensures your dependents can maintain their lifestyle</li>
+            </ul>
+          </div>
+
           {insuranceAnalysis.recommendations.length > 0 && (
             <div className="bg-red-50 p-4 rounded-lg">
               <h4 className="font-semibold text-red-900 mb-3">Coverage Gaps Identified</h4>
               {insuranceAnalysis.recommendations.map((gap, index) => (
-                <div key={index} className="mb-3">
+                <div key={index} className="mb-2">
                   <p className="font-medium text-red-800">{gap.type}</p>
                   <p className="text-sm text-red-700">{gap.reason}</p>
                 </div>

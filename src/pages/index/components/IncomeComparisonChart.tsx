@@ -9,13 +9,14 @@ interface IncomeComparisonChartProps {
 }
 
 const IncomeComparisonChart: React.FC<IncomeComparisonChartProps> = ({ userIncome, postcode }) => {
-  // ABS 2024 data - National median full-time earnings
-  const nationalMedian = 73000; // Updated based on ABS full-time median
+  // ABS August 2024 data - National median weekly earnings $1,396 (annual $72,592)
+  const nationalMedian = 72592;
+  const nationalAverage = 92000; // Updated based on ABS data
   
-  // Simplified postcode-based median using ABS data patterns
+  // Simplified postcode-based median using ATO data patterns
   const getPostcodeMedian = (postcode: string): number => {
     const firstDigit = parseInt(postcode.substring(0, 1));
-    // Based on ABS data patterns from the referenced spreadsheet
+    // Rough estimates based on state income patterns from ATO data
     switch (firstDigit) {
       case 1: return 65000; // NSW regional
       case 2: return 85000; // NSW metro (Sydney)
@@ -32,18 +33,17 @@ const IncomeComparisonChart: React.FC<IncomeComparisonChartProps> = ({ userIncom
 
   const postcodeMedian = postcode ? getPostcodeMedian(postcode) : nationalMedian;
 
-  // Calculate percentiles based on full-time median income distribution
+  // Calculate proper percentiles based on income distribution
   const calculatePercentile = (income: number, median: number) => {
-    const ratio = income / median;
-    if (ratio >= 2.5) return 95;
-    if (ratio >= 2.0) return 90;
-    if (ratio >= 1.6) return 80;
-    if (ratio >= 1.3) return 70;
-    if (ratio >= 1.1) return 60;
-    if (ratio >= 1.0) return 50;
-    if (ratio >= 0.8) return 40;
-    if (ratio >= 0.6) return 30;
-    if (ratio >= 0.4) return 20;
+    if (income >= 200000) return 95;
+    if (income >= 150000) return 90;
+    if (income >= 120000) return 80;
+    if (income >= 100000) return 70;
+    if (income >= 85000) return 60;
+    if (income >= median) return 50;
+    if (income >= median * 0.8) return 40;
+    if (income >= median * 0.6) return 30;
+    if (income >= median * 0.4) return 20;
     return 10;
   };
 
@@ -52,7 +52,7 @@ const IncomeComparisonChart: React.FC<IncomeComparisonChartProps> = ({ userIncom
 
   // Single column visualization data
   const maxIncome = 300000;
-  const userPosition = Math.min((userIncome / maxIncome) * 100, 98);
+  const userPosition = (userIncome / maxIncome) * 100;
   const nationalPosition = (nationalMedian / maxIncome) * 100;
   const postcodePosition = (postcodeMedian / maxIncome) * 100;
 
@@ -63,48 +63,46 @@ const IncomeComparisonChart: React.FC<IncomeComparisonChartProps> = ({ userIncom
           <CardTitle>Income Position (0 - $300k)</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="relative h-40 bg-gradient-to-r from-red-100 via-yellow-100 via-green-100 to-emerald-200 rounded-lg border overflow-hidden">
+          <div className="relative h-32 bg-gradient-to-r from-red-100 via-yellow-100 via-green-100 to-emerald-200 rounded-lg border">
             {/* User income marker */}
             <div 
-              className="absolute top-2 transform -translate-x-1/2 flex flex-col items-center z-10"
-              style={{ left: `${userPosition}%` }}
+              className="absolute top-2 transform -translate-x-1/2 flex flex-col items-center"
+              style={{ left: `${Math.min(userPosition, 95)}%` }}
             >
-              <div className="w-1 h-8 bg-emerald-600 rounded shadow-sm"></div>
-              <Badge variant="secondary" className="text-xs mt-1 bg-emerald-100 text-emerald-800 whitespace-nowrap">
+              <div className="w-1 h-6 bg-emerald-600 rounded"></div>
+              <Badge variant="secondary" className="text-xs mt-1 bg-emerald-100 text-emerald-800">
                 You: ${(userIncome / 1000).toFixed(0)}k
               </Badge>
             </div>
             
             {/* National median marker */}
             <div 
-              className="absolute top-14 transform -translate-x-1/2 flex flex-col items-center z-10"
+              className="absolute top-12 transform -translate-x-1/2 flex flex-col items-center"
               style={{ left: `${nationalPosition}%` }}
             >
-              <div className="w-1 h-6 bg-blue-600 rounded shadow-sm"></div>
-              <Badge variant="outline" className="text-xs mt-1 border-blue-600 text-blue-600 whitespace-nowrap">
+              <div className="w-1 h-4 bg-blue-600 rounded"></div>
+              <Badge variant="outline" className="text-xs mt-1 border-blue-600 text-blue-600">
                 National: ${(nationalMedian / 1000).toFixed(0)}k
               </Badge>
             </div>
             
             {/* Postcode median marker */}
             <div 
-              className="absolute top-24 transform -translate-x-1/2 flex flex-col items-center z-10"
+              className="absolute top-20 transform -translate-x-1/2 flex flex-col items-center"
               style={{ left: `${postcodePosition}%` }}
             >
-              <div className="w-1 h-6 bg-orange-600 rounded shadow-sm"></div>
-              <Badge variant="outline" className="text-xs mt-1 border-orange-600 text-orange-600 whitespace-nowrap">
+              <div className="w-1 h-4 bg-orange-600 rounded"></div>
+              <Badge variant="outline" className="text-xs mt-1 border-orange-600 text-orange-600">
                 Local: ${(postcodeMedian / 1000).toFixed(0)}k
               </Badge>
             </div>
             
             {/* Scale markers */}
-            <div className="absolute bottom-2 flex justify-between w-full px-2 text-xs text-gray-500">
-              <span>$0</span>
-              <span>$75k</span>
-              <span>$150k</span>
-              <span>$225k</span>
-              <span>$300k</span>
-            </div>
+            <div className="absolute bottom-1 left-0 text-xs text-gray-500">$0</div>
+            <div className="absolute bottom-1 left-1/4 text-xs text-gray-500">$75k</div>
+            <div className="absolute bottom-1 left-1/2 text-xs text-gray-500">$150k</div>
+            <div className="absolute bottom-1 left-3/4 text-xs text-gray-500">$225k</div>
+            <div className="absolute bottom-1 right-0 text-xs text-gray-500">$300k</div>
           </div>
           
           <div className="mt-4 text-sm text-muted-foreground text-center">

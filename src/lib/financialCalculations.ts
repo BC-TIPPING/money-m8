@@ -42,7 +42,8 @@ export function calculateMonthlyAmount(items: {amount: string, frequency: string
 
 export function calculateAustralianIncomeTax(income: number) {
   let tax = 0;
-  // Using 2025-26 tax brackets from ATO
+  // Note: Using 2024-25 tax brackets. These are subject to change.
+  // https://www.ato.gov.au/rates/individual-income-tax-rates/
   if (income > 190000) {
     tax += (income - 190000) * 0.45;
     income = 190000;
@@ -58,16 +59,5 @@ export function calculateAustralianIncomeTax(income: number) {
   if (income > 18200) {
     tax += (income - 18200) * 0.19;
   }
-  
-  // Add Medicare Levy (2%)
-  const medicareLevy = Math.max(0, income * 0.02);
-  
-  return tax + medicareLevy;
-}
-
-// Calculate net monthly income after tax and Medicare levy
-export function calculateNetMonthlyIncome(annualIncome: number): number {
-  const annualTax = calculateAustralianIncomeTax(annualIncome);
-  const netAnnualIncome = annualIncome - annualTax;
-  return netAnnualIncome / 12;
+  return tax;
 }
