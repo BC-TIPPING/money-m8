@@ -20,7 +20,6 @@ import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 
 // New component imports
-import SaveResultsModal from "./index/components/SaveResultsModal";
 import FloatingActionButtons from "./index/components/FloatingActionButtons";
 import SkipToSummaryButton from "./index/components/SkipToSummaryButton";
 import GoalNavigationHeader from "./index/components/GoalNavigationHeader";
@@ -29,7 +28,6 @@ import InvestmentGrowthCalculator from "./index/InvestmentGrowthCalculator";
 import PayOffHomeLoanCalculator from "./index/components/PayOffHomeLoanCalculator";
 import EditAssessmentButton from "./index/components/EditAssessmentButton";
 import { usePDFExport } from "./index/hooks/usePDFExport";
-import { useSavePrompt } from "./index/hooks/useSavePrompt";
 
 const DEBT_GOALS = ['Pay off home loan sooner', 'Reduce debt'];
 
@@ -51,13 +49,6 @@ export default function Index() {
     handleSetBudgetGoal,
     hasCompletedAssessment,
   } = useAssessmentData(assessment);
-
-  const {
-    showSavePrompt,
-    handleSaveResults,
-    handleContinueAnonymous,
-    resetDismissedFlag
-  } = useSavePrompt({ isComplete, user });
 
   const handleStartAssessment = (goal: string) => {
     // Check if user has completed assessment before and redirect accordingly
@@ -122,7 +113,6 @@ export default function Index() {
   }, [isComplete, aiSummary, isGeneratingSummary, generateSummary, assessment.goals]);
 
   const handleStartOverWithReset = () => {
-    resetDismissedFlag();
     handleStartOver();
   };
 
@@ -141,11 +131,6 @@ export default function Index() {
 
   return (
     <div className="relative min-h-screen">
-      <SaveResultsModal 
-        showSavePrompt={showSavePrompt}
-        onSaveResults={handleSaveResults}
-        onContinueAnonymous={handleContinueAnonymous}
-      />
 
       {!assessment.showAssessment ? (
         <LandingSection onStartAssessment={handleStartAssessment} isLoading={isLoadingAssessment} />
@@ -201,8 +186,8 @@ export default function Index() {
                       assets={[]}
                     />
                     
-                    {/* AI Summary positioned after Full Financial Health Check - only show when complete */}
-                    {aiSummary && isComplete && (
+                    {/* AI Summary positioned after Full Financial Health Check */}
+                    {aiSummary && (
                       <div className="mt-8">
                         <Card className="border-emerald-200 bg-gradient-to-br from-emerald-50 to-white">
                           <CardHeader>
@@ -315,7 +300,6 @@ export default function Index() {
             hasDebtGoal={hasDebtGoal}
             isGeneratingSummary={isGeneratingSummary}
             onExportToPDF={handleExportToPDF}
-            onSaveResults={handleSaveResults}
             onStartOver={handleStartOverWithReset}
             onChangeGoal={handleChangeGoal}
             onGenerateToughLove={() => generateSummary({ personality: 'dave_ramsey' })}

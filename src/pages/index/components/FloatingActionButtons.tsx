@@ -2,7 +2,7 @@
 import React from 'react';
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
-import { Loader2, FileText, Save, Target, RotateCcw } from 'lucide-react';
+import { Loader2, FileText, Target, RotateCcw } from 'lucide-react';
 
 interface FloatingActionButtonsProps {
   isComplete: boolean;
@@ -11,7 +11,6 @@ interface FloatingActionButtonsProps {
   hasDebtGoal: boolean;
   isGeneratingSummary: boolean;
   onExportToPDF: () => void;
-  onSaveResults: () => void;
   onStartOver: () => void;
   onChangeGoal: () => void;
   onGenerateToughLove: () => void;
@@ -24,10 +23,9 @@ const FloatingActionButtons: React.FC<FloatingActionButtonsProps> = ({
   hasDebtGoal,
   isGeneratingSummary,
   onExportToPDF,
-  onSaveResults,
   onStartOver,
   onChangeGoal,
-  onGenerateToughLove
+  onGenerateToughLove,
 }) => {
   if (!isComplete) return null;
 
@@ -65,16 +63,6 @@ const FloatingActionButtons: React.FC<FloatingActionButtonsProps> = ({
           Export to PDF
         </Button>
         
-        {!user && (
-          <Button 
-            onClick={onSaveResults}
-            className="shadow-lg w-2/3 text-sm px-3 py-2"
-            size="sm"
-          >
-            <Save className="mr-1 h-3 w-3" />
-            Save Results
-          </Button>
-        )}
         
         {!aiSummary && hasDebtGoal && (
           <Button 
