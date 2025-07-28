@@ -13,6 +13,7 @@ import InvestmentRiskProfile from "./components/InvestmentRiskProfile";
 import BudgetRecap from "./components/BudgetRecap";
 import DebtSummaryTable from "./components/DebtSummaryTable";
 import SuperKPICards from "./components/SuperKPICards";
+import PostDebtInvestmentVisualization from "./components/PostDebtInvestmentVisualization";
 import { calculateMonthlyAmount, calculateAustralianIncomeTax } from "@/lib/financialCalculations";
 
 interface FullFinancialHealthCheckProps {
@@ -493,15 +494,10 @@ const FullFinancialHealthCheck: React.FC<FullFinancialHealthCheckProps> = ({
             hasHighInterestDebt={!!highInterestDebt}
           />
 
-          {!highInterestDebt && (
-            <div className="bg-green-50 p-4 rounded-lg">
-              <h4 className="font-semibold text-green-900 mb-2">Investment Projection</h4>
-              <p className="text-sm text-green-800">
-                Investing $500/month in a balanced portfolio (7% annual return) would give you approximately 
-                ${((500 * 12 * 20) * 1.4).toLocaleString()} after 20 years through compound growth.
-              </p>
-            </div>
-          )}
+          <PostDebtInvestmentVisualization 
+            debtDetails={debtDetails}
+            monthlyIncome={monthlyIncome}
+          />
         </CardContent>
       </Card>
 
