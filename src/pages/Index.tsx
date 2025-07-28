@@ -76,14 +76,19 @@ export default function Index() {
 
   // Add goal selection event handler
   const handleGoalSelection = (goal: string) => {
-    if (!assessment.goals.includes(goal)) {
-      const newGoals = [...assessment.goals, goal];
-      assessment.setGoals(newGoals);
-      
-      // If we have assessment data, regenerate summary
-      if (hasCompletedAssessment) {
-        generateSummary({});
-      }
+    // Set this as the primary goal and show assessment/summary
+    assessment.setGoals([goal]);
+    
+    // If we have completed assessment data, show the summary directly
+    if (hasCompletedAssessment) {
+      // Go to the summary step with this specific goal
+      assessment.setStep(questions.length);
+      assessment.setShowAssessment(true);
+      generateSummary({});
+    } else {
+      // If no assessment data, start the assessment process
+      assessment.setShowAssessment(true);
+      assessment.setStep(0);
     }
   };
 
