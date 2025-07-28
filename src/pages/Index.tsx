@@ -16,6 +16,8 @@ import ActionItemsSection from "./index/ActionItemsSection";
 import { Link } from "react-router-dom";
 import FullFinancialHealthCheck from "./index/FullFinancialHealthCheck";
 import { BarChart3 } from "lucide-react";
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 
 // New component imports
 import SaveResultsModal from "./index/components/SaveResultsModal";
@@ -161,6 +163,20 @@ export default function Index() {
               isGeneratingSummary={isGeneratingSummary}
               aiSummary={aiSummary}
               chartData={chartData}
+              employmentStatus=""
+              setEmploymentStatus={() => {}}
+              financialKnowledgeLevel=""
+              setFinancialKnowledgeLevel={() => {}}
+              debtManagementConfidence=""
+              setDebtManagementConfidence={() => {}}
+              freeTextComments=""
+              setFreeTextComments={() => {}}
+              superFund=""
+              setSuperFund={() => {}}
+              mortgageRate={undefined}
+              setMortgageRate={() => {}}
+              assets={[]}
+              setAssets={() => {}}
             />
             
             {isComplete && (
@@ -177,6 +193,7 @@ export default function Index() {
                       expenseItems={assessment.expenseItems}
                       goals={assessment.goals}
                       insurances={assessment.insurances}
+                      assets={[]}
                     />
                     
                     {/* AI Summary positioned after Full Financial Health Check - only show when complete */}
@@ -190,8 +207,10 @@ export default function Index() {
                             </CardTitle>
                           </CardHeader>
                           <CardContent>
-                            <div className="prose prose-emerald max-w-none">
-                              <div dangerouslySetInnerHTML={{ __html: aiSummary }} />
+                            <div className="prose prose-emerald max-w-none prose-headings:text-emerald-800 prose-strong:text-emerald-700">
+                              <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                                {aiSummary}
+                              </ReactMarkdown>
                             </div>
                           </CardContent>
                         </Card>
@@ -258,8 +277,10 @@ export default function Index() {
                           <CardTitle>AI-Generated Financial Summary</CardTitle>
                         </CardHeader>
                         <CardContent>
-                          <div className="prose prose-emerald max-w-none">
-                            <div dangerouslySetInnerHTML={{ __html: aiSummary }} />
+                          <div className="prose prose-emerald max-w-none prose-headings:text-emerald-800 prose-strong:text-emerald-700">
+                            <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                              {aiSummary}
+                            </ReactMarkdown>
                           </div>
                         </CardContent>
                       </Card>

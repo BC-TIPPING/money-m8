@@ -233,15 +233,16 @@ const FullFinancialHealthCheck: React.FC<FullFinancialHealthCheckProps> = ({
         </p>
       </div>
 
-      {/* Financial Health Score */}
-      <Card className="border-emerald-200 bg-gradient-to-br from-emerald-50 to-white">
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <BarChart3 className="h-5 w-5 text-emerald-600" />
-            Financial Health Score
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
+      {/* Financial Health Score - Only show when assessment is complete */}
+      {goals.includes('Full Financial Health Check') && (
+        <Card className="border-emerald-200 bg-gradient-to-br from-emerald-50 to-white">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <BarChart3 className="h-5 w-5 text-emerald-600" />
+              Financial Health Score
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
           <div className="flex items-center gap-4 mb-4">
             <Progress value={healthScore} className="flex-1" />
             <span className="text-2xl font-bold text-emerald-600">{healthScore}/100</span>
@@ -265,6 +266,7 @@ const FullFinancialHealthCheck: React.FC<FullFinancialHealthCheckProps> = ({
           )}
         </CardContent>
       </Card>
+      )}
 
       {/* KPI Cards */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
@@ -381,6 +383,16 @@ const FullFinancialHealthCheck: React.FC<FullFinancialHealthCheckProps> = ({
           />
 
           <SuperBenchmarkChart currentAge={age} currentBalance={superBalance} />
+          
+          <div className="bg-blue-50 p-4 rounded-lg space-y-3">
+            <h4 className="font-semibold text-blue-900">Understanding Your Superannuation Position</h4>
+            <div className="text-sm text-blue-800 space-y-2">
+              <p><strong>Current vs Benchmark:</strong> Your balance compared to the QSuper benchmark for your age group, indicating if you're on track.</p>
+              <p><strong>At Retirement (Age 67):</strong> Projected balance using current 11.5% employer contributions and 7% annual growth. The 4% rule suggests you can safely withdraw 4% annually in retirement.</p>
+              <p><strong>Retirement Readiness:</strong> Whether your projected super will provide 70% of your current income (the recommended retirement income target).</p>
+              <p><strong>+10% Salary Sacrifice Impact:</strong> Adding 10% of your salary to super would boost your retirement income by ${age && superBalance ? `${((annualIncome * 0.10 * Math.pow(1.07, Math.max(67 - age, 0)) * 0.04) / 1000).toFixed(0)}k` : 'N/A'} annually. Out of a ${(annualIncome * 0.10 / 12).toLocaleString()}/month contribution, approximately ${Math.round((annualIncome * 0.10 / 12) * (annualIncome > 120000 ? 0.37 : annualIncome > 45000 ? 0.30 : 0.19)).toLocaleString()} would be tax savings, making your actual cost only ${Math.round((annualIncome * 0.10 / 12) * (1 - (annualIncome > 120000 ? 0.37 : annualIncome > 45000 ? 0.30 : 0.19))).toLocaleString()}/month.</p>
+            </div>
+          </div>
         </CardContent>
       </Card>
 
@@ -406,16 +418,16 @@ const FullFinancialHealthCheck: React.FC<FullFinancialHealthCheckProps> = ({
             </div>
           </div>
 
-          <div className="bg-blue-50 p-4 rounded-lg">
-            <h4 className="font-semibold text-blue-900 mb-2">Why Insurance is Critical</h4>
-            <p className="text-sm text-blue-800 mb-2">
-              Insurance isn't just about money - it's about protecting your family's future and your peace of mind. 
-              Without proper coverage, a single unexpected event could derail decades of financial planning.
-            </p>
-            <ul className="text-sm text-blue-800 space-y-1">
-              <li>• <strong>Financial Protection:</strong> Covers debts, living expenses, and future goals</li>
-              <li>• <strong>Emotional Security:</strong> Reduces stress and anxiety about "what if" scenarios</li>
-              <li>• <strong>Asset Protection:</strong> Prevents forced sale of home or investments</li>
+            <div className="bg-blue-50 p-4 rounded-lg">
+              <h4 className="font-semibold text-blue-900 mb-2">Coverage Gaps Identified</h4>
+              <p className="text-sm text-blue-800 mb-2">
+                These insurance types provide critical financial protection for you and your family.
+              </p>
+              <ul className="text-sm text-blue-800 space-y-2">
+                <li>• <strong>Life Insurance:</strong> Pays off debts, replaces income, and funds children's education if you pass away unexpectedly</li>
+                <li>• <strong>Income Protection:</strong> Replaces up to 75% of your income if illness or injury prevents you from working</li>
+                <li>• <strong>TPD Insurance:</strong> Provides a lump sum if you become totally and permanently disabled, covering medical costs and lifestyle modifications</li>
+                <li>• <strong>Private Health Insurance:</strong> Avoids Medicare Levy Surcharge and provides faster access to medical treatment when you need it most</li>
               <li>• <strong>Family Stability:</strong> Ensures your dependents can maintain their lifestyle</li>
             </ul>
           </div>

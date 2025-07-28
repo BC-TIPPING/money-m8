@@ -1,7 +1,7 @@
 
 import React from 'react';
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell } from 'recharts';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 
 interface IncomeComparisonChartProps {
   userIncome: number;
@@ -33,116 +33,102 @@ const IncomeComparisonChart: React.FC<IncomeComparisonChartProps> = ({ userIncom
 
   const postcodeMedian = postcode ? getPostcodeMedian(postcode) : nationalMedian;
 
-  const data = [
-    {
-      name: 'Your Income',
-      value: userIncome,
-      color: '#ff7300'
-    },
-    {
-      name: 'National Median',
-      value: nationalMedian,
-      color: '#8884d8'
-    },
-    {
-      name: 'National Average',
-      value: nationalAverage,
-      color: '#82ca9d'
-    },
-    {
-      name: postcode ? `Postcode ${postcode}` : 'Local Area',
-      value: postcodeMedian,
-      color: '#ffc658'
-    }
-  ];
-
-  // Calculate percentiles
-  const nationalPercentile = userIncome > nationalMedian ? 
-    Math.min(50 + ((userIncome - nationalMedian) / (nationalAverage - nationalMedian)) * 40, 95) : 
-    Math.max((userIncome / nationalMedian) * 50, 5);
-
-  const postcodePercentile = userIncome > postcodeMedian ? 
-    Math.min(50 + ((userIncome - postcodeMedian) / (Math.max(postcodeMedian * 1.5, nationalAverage) - postcodeMedian)) * 40, 95) : 
-    Math.max((userIncome / postcodeMedian) * 50, 5);
-
-  const CustomTooltip = ({ active, payload, label }: any) => {
-    if (active && payload && payload.length) {
-      return (
-        <div className="bg-white p-3 border rounded shadow-lg">
-          <p className="font-semibold">{label}</p>
-          <p style={{ color: payload[0].color }}>
-            {`$${payload[0].value.toLocaleString()}`}
-          </p>
-        </div>
-      );
-    }
-    return null;
+  // Calculate proper percentiles based on income distribution
+  const calculatePercentile = (income: number, median: number) => {
+    if (income >= 200000) return 95;
+    if (income >= 150000) return 90;
+    if (income >= 120000) return 80;
+    if (income >= 100000) return 70;
+    if (income >= 85000) return 60;
+    if (income >= median) return 50;
+    if (income >= median * 0.8) return 40;
+    if (income >= median * 0.6) return 30;
+    if (income >= median * 0.4) return 20;
+    return 10;
   };
+
+  const nationalPercentile = calculatePercentile(userIncome, nationalMedian);
+  const postcodePercentile = calculatePercentile(userIncome, postcodeMedian);
+
+  // Single column visualization data
+  const maxIncome = 300000;
+  const userPosition = (userIncome / maxIncome) * 100;
+  const nationalPosition = (nationalMedian / maxIncome) * 100;
+  const postcodePosition = (postcodeMedian / maxIncome) * 100;
 
   return (
     <div className="space-y-4">
-      <Card className="w-full">
+      <Card>
         <CardHeader>
-          <CardTitle>Income Comparison - Horizontal View</CardTitle>
+          <CardTitle>Income Position (0 - $300k)</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="h-64">
-            <ResponsiveContainer width="100%" height="100%">
-              <BarChart 
-                data={data} 
-                layout="horizontal"
-                margin={{ top: 20, right: 30, left: 80, bottom: 5 }}
-              >
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis 
-                  type="number"
-                  tickFormatter={(value) => `$${(value / 1000).toFixed(0)}k`} 
-                />
-                <YAxis 
-                  type="category"
-                  dataKey="name"
-                  width={80}
-                />
-                <Tooltip content={<CustomTooltip />} />
-                <Bar dataKey="value" radius={[0, 4, 4, 0]}>
-                  {data.map((entry, index) => (
-                    <Cell key={`cell-${index}`} fill={entry.color} />
-                  ))}
-                </Bar>
-              </BarChart>
-            </ResponsiveContainer>
+          <div className="relative h-32 bg-gradient-to-r from-red-100 via-yellow-100 via-green-100 to-emerald-200 rounded-lg border">
+            {/* User income marker */}
+            <div 
+              className="absolute top-2 transform -translate-x-1/2 flex flex-col items-center"
+              style={{ left: `${Math.min(userPosition, 95)}%` }}
+            >
+              <div className="w-1 h-6 bg-emerald-600 rounded"></div>
+              <Badge variant="secondary" className="text-xs mt-1 bg-emerald-100 text-emerald-800">
+                You: ${(userIncome / 1000).toFixed(0)}k
+              </Badge>
+            </div>
+            
+            {/* National median marker */}
+            <div 
+              className="absolute top-12 transform -translate-x-1/2 flex flex-col items-center"
+              style={{ left: `${nationalPosition}%` }}
+            >
+              <div className="w-1 h-4 bg-blue-600 rounded"></div>
+              <Badge variant="outline" className="text-xs mt-1 border-blue-600 text-blue-600">
+                National: ${(nationalMedian / 1000).toFixed(0)}k
+              </Badge>
+            </div>
+            
+            {/* Postcode median marker */}
+            <div 
+              className="absolute top-20 transform -translate-x-1/2 flex flex-col items-center"
+              style={{ left: `${postcodePosition}%` }}
+            >
+              <div className="w-1 h-4 bg-orange-600 rounded"></div>
+              <Badge variant="outline" className="text-xs mt-1 border-orange-600 text-orange-600">
+                Local: ${(postcodeMedian / 1000).toFixed(0)}k
+              </Badge>
+            </div>
+            
+            {/* Scale markers */}
+            <div className="absolute bottom-1 left-0 text-xs text-gray-500">$0</div>
+            <div className="absolute bottom-1 left-1/4 text-xs text-gray-500">$75k</div>
+            <div className="absolute bottom-1 left-1/2 text-xs text-gray-500">$150k</div>
+            <div className="absolute bottom-1 left-3/4 text-xs text-gray-500">$225k</div>
+            <div className="absolute bottom-1 right-0 text-xs text-gray-500">$300k</div>
+          </div>
+          
+          <div className="mt-4 text-sm text-muted-foreground text-center">
+            Income comparison based on Australian full-time median wages
           </div>
         </CardContent>
       </Card>
-      
-      {/* Percentile KPI Cards */}
+
+      {/* KPI Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <Card>
           <CardContent className="p-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-muted-foreground">National Percentile</p>
-                <p className="text-2xl font-bold text-blue-600">{nationalPercentile.toFixed(0)}th</p>
-                <p className="text-xs text-muted-foreground">
-                  vs National Median ${nationalMedian.toLocaleString()}
-                </p>
-              </div>
+            <div className="text-center">
+              <p className="text-sm text-muted-foreground">National Ranking</p>
+              <p className="text-2xl font-bold text-blue-600">{nationalPercentile}th percentile</p>
+              <p className="text-xs text-muted-foreground">vs full-time median (${(nationalMedian / 1000).toFixed(0)}k)</p>
             </div>
           </CardContent>
         </Card>
         
         <Card>
           <CardContent className="p-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-muted-foreground">
-                  {postcode ? `Postcode ${postcode}` : 'Local Area'} Percentile
-                </p>
-                <p className="text-2xl font-bold text-green-600">{postcodePercentile.toFixed(0)}th</p>
-                <p className="text-xs text-muted-foreground">
-                  vs Local Median ${postcodeMedian.toLocaleString()}
-                </p>
-              </div>
+            <div className="text-center">
+              <p className="text-sm text-muted-foreground">Local Ranking</p>
+              <p className="text-2xl font-bold text-orange-600">{postcodePercentile}th percentile</p>
+              <p className="text-xs text-muted-foreground">vs local median (${(postcodeMedian / 1000).toFixed(0)}k)</p>
             </div>
           </CardContent>
         </Card>

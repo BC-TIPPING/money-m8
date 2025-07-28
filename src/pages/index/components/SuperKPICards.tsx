@@ -127,13 +127,13 @@ const SuperKPICards: React.FC<SuperKPICardsProps> = ({ currentAge, currentBalanc
         <CardContent className="p-4">
           <div className="flex items-center gap-2">
             <DollarSign className="h-4 w-4 text-orange-600" />
-            <span className="text-sm text-muted-foreground">Extra +10%</span>
+            <span className="text-sm text-muted-foreground">+10% Impact</span>
           </div>
           <p className="text-2xl font-bold text-orange-600">
-            ${(retirementIncomeExtra.toLocaleString())}
+            +${((retirementIncomeExtra - retirementIncomeeCurrent) / 1000).toFixed(0)}k
           </p>
           <p className="text-xs text-muted-foreground">
-            annual income (${annualTaxSavings.toLocaleString()} tax saved)
+            extra annual income (${annualTaxSavings.toLocaleString()} tax saved)
           </p>
         </CardContent>
       </Card>
