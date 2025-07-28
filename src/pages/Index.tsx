@@ -1,5 +1,4 @@
 
-
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -132,7 +131,6 @@ const IndexPage: React.FC = () => {
               
               <AssessmentStepper 
                 step={assessment.step}
-                totalSteps={questions.length}
                 hasRegularIncome={assessment.hasRegularIncome}
                 setHasRegularIncome={assessment.setHasRegularIncome}
                 incomeSources={assessment.incomeSources}
@@ -266,4 +264,3 @@ const IndexPage: React.FC = () => {
 };
 
 export default IndexPage;
-
