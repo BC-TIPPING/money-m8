@@ -3,6 +3,7 @@ import React from 'react';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from 'recharts';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { CreditCard, Scissors, Car, Home, DollarSign } from 'lucide-react';
+import PostDebtInvestmentVisualization from './PostDebtInvestmentVisualization';
 
 interface DebtPayoffVisualizationProps {
   debtDetails: any[];
@@ -411,6 +412,14 @@ const DebtPayoffVisualization: React.FC<DebtPayoffVisualizationProps> = ({ debtD
             </div>
           </CardContent>
         </Card>
+      )}
+
+      {/* Investment Growth After Debt Elimination */}
+      {highInterestDebts.length > 0 && (
+        <PostDebtInvestmentVisualization 
+          debtDetails={debtDetails}
+          monthlyIncome={monthlyIncome}
+        />
       )}
     </div>
   );
