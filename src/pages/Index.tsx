@@ -103,19 +103,11 @@ export default function Index() {
       console.log('Step set to:', questions.length - 1);
     };
 
-    const handleEditSurvey = () => {
-      console.log('Edit survey event received, navigating to step 0');
-      assessment.setStep(0);
-      console.log('Step set to 0');
-    };
-
     window.addEventListener('selectGoal', handleGoalEvent as EventListener);
     window.addEventListener('editAssessment', handleEditEvent as EventListener);
-    window.addEventListener('editSurvey', handleEditSurvey as EventListener);
     return () => {
       window.removeEventListener('selectGoal', handleGoalEvent as EventListener);
       window.removeEventListener('editAssessment', handleEditEvent as EventListener);
-      window.removeEventListener('editSurvey', handleEditSurvey as EventListener);
     };
   }, [assessment.goals, hasCompletedAssessment, generateSummary]);
   
@@ -218,6 +210,7 @@ export default function Index() {
                   goals={assessment.goals}
                   insurances={assessment.insurances}
                   assets={assessment.assets || []}
+                  assessment={assessment}
                 />
                 
                 {/* Thank You Assessment Summary after Full Financial Health Check */}
@@ -269,13 +262,7 @@ export default function Index() {
                   <Button 
                     variant="outline" 
                     size="sm"
-                    onClick={(e) => {
-                      e.preventDefault();
-                      e.stopPropagation();
-                      console.log('Direct edit button clicked - other goals');
-                      assessment.setStep(0);
-                      console.log('Step set to 0');
-                    }}
+                    onClick={() => assessment.setStep(0)}
                     className="mb-4"
                   >
                     Edit Survey

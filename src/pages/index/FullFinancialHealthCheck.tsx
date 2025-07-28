@@ -29,6 +29,7 @@ interface FullFinancialHealthCheckProps {
   incomeSources: { category: string; amount: string; frequency: string }[];
   expenseItems: { category: string; amount: string; frequency: string }[];
   goals: string[];
+  assessment: any;
 }
 
 const FullFinancialHealthCheck: React.FC<FullFinancialHealthCheckProps> = ({
@@ -43,7 +44,8 @@ const FullFinancialHealthCheck: React.FC<FullFinancialHealthCheckProps> = ({
   debtDetails,
   incomeSources,
   expenseItems,
-  goals
+  goals,
+  assessment
 }) => {
   // Calculate income using the established function
   const monthlyIncome = calculateMonthlyAmount(incomeSources);
@@ -233,14 +235,7 @@ const FullFinancialHealthCheck: React.FC<FullFinancialHealthCheckProps> = ({
           <Button 
             variant="outline" 
             size="sm"
-            onClick={(e) => {
-              e.preventDefault();
-              e.stopPropagation();
-              console.log('Edit survey button clicked - FullFinancialHealthCheck');
-              // Direct approach - navigate back to step 0
-              window.location.hash = '#edit';
-              window.dispatchEvent(new CustomEvent('editSurvey'));
-            }}
+            onClick={() => assessment.setStep(0)}
             className="ml-4"
           >
             Edit Survey
