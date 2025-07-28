@@ -42,7 +42,7 @@ export function calculateMonthlyAmount(items: {amount: string, frequency: string
 
 export function calculateAustralianIncomeTax(income: number) {
   let tax = 0;
-  // Note: Using 2024-25 tax brackets. These are subject to change.
+  // Note: Using 2025-26 tax brackets. These are subject to change.
   // https://www.ato.gov.au/rates/individual-income-tax-rates/
   if (income > 190000) {
     tax += (income - 190000) * 0.45;
@@ -57,7 +57,7 @@ export function calculateAustralianIncomeTax(income: number) {
     income = 45000;
   }
   if (income > 18200) {
-    tax += (income - 18200) * 0.19;
+    tax += (income - 18200) * 0.16;
   }
   return tax;
 }

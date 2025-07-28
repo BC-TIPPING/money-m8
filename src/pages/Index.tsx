@@ -163,20 +163,20 @@ export default function Index() {
               isGeneratingSummary={isGeneratingSummary}
               aiSummary={aiSummary}
               chartData={chartData}
-              employmentStatus=""
-              setEmploymentStatus={() => {}}
-              financialKnowledgeLevel=""
-              setFinancialKnowledgeLevel={() => {}}
-              debtManagementConfidence=""
-              setDebtManagementConfidence={() => {}}
-              freeTextComments=""
-              setFreeTextComments={() => {}}
-              superFund=""
-              setSuperFund={() => {}}
-              mortgageRate={undefined}
-              setMortgageRate={() => {}}
-              assets={[]}
-              setAssets={() => {}}
+              employmentStatus={assessment.employmentStatus || ""}
+              setEmploymentStatus={assessment.setEmploymentStatus || (() => {})}
+              financialKnowledgeLevel={assessment.financialKnowledgeLevel || ""}
+              setFinancialKnowledgeLevel={assessment.setFinancialKnowledgeLevel || (() => {})}
+              debtManagementConfidence={assessment.debtManagementConfidence || ""}
+              setDebtManagementConfidence={assessment.setDebtManagementConfidence || (() => {})}
+              freeTextComments={assessment.freeTextComments || ""}
+              setFreeTextComments={assessment.setFreeTextComments || (() => {})}
+              superFund={assessment.superFund || ""}
+              setSuperFund={assessment.setSuperFund || (() => {})}
+              mortgageRate={assessment.mortgageRate}
+              setMortgageRate={assessment.setMortgageRate || (() => {})}
+              assets={assessment.assets || []}
+              setAssets={assessment.setAssets || (() => {})}
             />
             
             {isComplete && (

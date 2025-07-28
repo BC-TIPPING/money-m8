@@ -1,7 +1,9 @@
 export const BUDGET_CATEGORIES = [
-  { category: 'Housing', minPercent: 25, maxPercent: 35, notes: 'Rent/mortgage, utilities, rates' },
+  { category: 'Rent', minPercent: 15, maxPercent: 25, notes: 'Monthly rent payments' },
+  { category: 'Mortgage', minPercent: 15, maxPercent: 25, notes: 'Home loan repayments' },
+  { category: 'Utilities', minPercent: 3, maxPercent: 8, notes: 'Electricity, gas, water, internet' },
   { category: 'Food & Groceries', minPercent: 10, maxPercent: 15, notes: 'Includes groceries and eating out' },
-  { category: 'Transport', minPercent: 10, maxPercent: 10, notes: 'Fuel, public transport, insurance' },
+  { category: 'Transport', minPercent: 10, maxPercent: 15, notes: 'Fuel, public transport, car insurance' },
   { category: 'Health & Medical', minPercent: 3, maxPercent: 6, notes: 'Insurance, GP, dental, pharmacy' },
   { category: 'Debt Repayments', minPercent: 5, maxPercent: 10, notes: 'Loans, credit cards (excl. mortgage)' },
   { category: 'Savings & Investments', minPercent: 10, maxPercent: 20, notes: 'Emergency fund, super, investing' },

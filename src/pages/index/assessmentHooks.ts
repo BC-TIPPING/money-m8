@@ -140,6 +140,15 @@ export function useAssessmentState() {
   const [age, setAge] = useState<number | undefined>();
   const [superBalance, setSuperBalance] = useState<number | undefined>();
   const [insurances, setInsurances] = useState<string[]>([]);
+  
+  // Standard assessment fields
+  const [employmentStatus, setEmploymentStatus] = useState<string | undefined>();
+  const [financialKnowledgeLevel, setFinancialKnowledgeLevel] = useState<string | undefined>();
+  const [debtManagementConfidence, setDebtManagementConfidence] = useState<string | undefined>();
+  const [freeTextComments, setFreeTextComments] = useState("");
+  const [superFund, setSuperFund] = useState("");
+  const [mortgageRate, setMortgageRate] = useState<number | undefined>();
+  const [assets, setAssets] = useState<{ type: string; value: string; description: string }[]>([]);
 
   return {
     step,
@@ -174,5 +183,20 @@ export function useAssessmentState() {
     setSuperBalance,
     insurances,
     setInsurances,
+    // Standard assessment fields
+    employmentStatus,
+    setEmploymentStatus,
+    financialKnowledgeLevel,
+    setFinancialKnowledgeLevel,
+    debtManagementConfidence,
+    setDebtManagementConfidence,
+    freeTextComments,
+    setFreeTextComments,
+    superFund,
+    setSuperFund,
+    mortgageRate,
+    setMortgageRate,
+    assets,
+    setAssets,
   };
 }

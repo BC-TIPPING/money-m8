@@ -53,8 +53,8 @@ const FullFinancialHealthCheck: React.FC<FullFinancialHealthCheckProps> = ({
   const monthlySurplus = monthlyNetIncome - monthlyExpenses;
 
   // Australian income benchmarks
-  const nationalMedian = 65000;
-  const nationalAverage = 89000;
+  const nationalMedian = 88000; // Updated to median full-time ~A$88,000/year
+  const nationalAverage = 95000;
   const postcodeMedian = postcode ? 
     (parseInt(postcode.substring(0, 1)) > 3 ? 52000 : 78000) : nationalMedian;
 
