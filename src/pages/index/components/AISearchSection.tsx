@@ -73,13 +73,13 @@ const AISearchSection: React.FC<AISearchSectionProps> = ({ onGoalSuggested }) =>
             placeholder="Ask me anything about Australian finances..."
             value={question}
             onChange={(e) => setQuestion(e.target.value)}
-            className="bg-white/10 border-white/20 text-white placeholder:text-white/50 backdrop-blur-md flex-1"
+            className="bg-white/10 border-white/20 text-white placeholder:text-white/50 backdrop-blur-md flex-1 h-10"
             disabled={isLoading}
           />
           <Button 
             type="submit" 
             disabled={isLoading || !question.trim()}
-            className="bg-emerald-600 hover:bg-emerald-700 min-w-[120px]"
+            className="bg-emerald-600 hover:bg-emerald-700 min-w-[120px] h-10"
           >
             {isLoading ? (
               <Loader2 className="h-4 w-4 animate-spin" />
@@ -90,7 +90,7 @@ const AISearchSection: React.FC<AISearchSectionProps> = ({ onGoalSuggested }) =>
         </div>
         
         <Select onValueChange={(value) => setQuestion(value)}>
-          <SelectTrigger className="bg-white/10 border-white/20 text-white backdrop-blur-md">
+          <SelectTrigger className="bg-white/10 border-white/20 text-white backdrop-blur-md w-full h-10">
             <SelectValue placeholder="Or choose from common Australian financial questions..." />
             <ChevronDown className="h-4 w-4 text-white/60" />
           </SelectTrigger>
