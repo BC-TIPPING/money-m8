@@ -97,7 +97,8 @@ export default function Index() {
     };
 
     const handleEditEvent = () => {
-      assessment.setStep(0);
+      // Take users to the last step before summary so they can review/edit
+      assessment.setStep(questions.length - 1);
     };
 
     window.addEventListener('selectGoal', handleGoalEvent as EventListener);
@@ -258,7 +259,7 @@ export default function Index() {
                   <Button 
                     variant="outline" 
                     size="sm"
-                    onClick={() => assessment.setStep(0)}
+                    onClick={() => assessment.setStep(questions.length - 1)}
                     className="mb-4"
                   >
                     Edit Survey
