@@ -377,7 +377,17 @@ const FullFinancialHealthCheck: React.FC<FullFinancialHealthCheckProps> = ({
           </Link>
         </CardHeader>
         <CardContent className="space-y-6">
-          <SuperKPICards 
+          <div className="bg-blue-50 p-4 rounded-lg mb-6">
+            <p className="text-sm text-blue-800">
+              <strong>Superannuation is one of Australia's most powerful wealth-building tools.</strong> 
+              It's typically the most tax-effective investment vehicle available, with contributions taxed at just 15% 
+              (compared to your marginal tax rate of up to 47%) and investment earnings also taxed at only 15%. 
+              In retirement, withdrawals are generally tax-free after age 60. Building a strong super balance 
+              is crucial for maintaining your lifestyle in retirement.
+            </p>
+          </div>
+          
+          <SuperKPICards
             currentAge={age}
             currentBalance={superBalance}
             currentSalary={annualIncome}
