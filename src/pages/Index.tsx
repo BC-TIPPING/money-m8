@@ -1,192 +1,307 @@
-
-import React from "react";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { ArrowRight, Target, TrendingUp, PiggyBank, Home, DollarSign, BookOpen } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
-import { useAssessmentData } from "./index/hooks/useAssessmentData";
-import { useAssessmentState } from "./index/assessmentHooks";
-import AssessmentStepper from "./index/AssessmentStepper";
-import FullFinancialHealthCheck from "./index/FullFinancialHealthCheck";
 import LandingSection from "./index/LandingSection";
-import ActionItemsSection from "./index/ActionItemsSection";
-import InvestmentGrowthCalculator from "./index/InvestmentGrowthCalculator";
-import HouseBuyingCalculator from "./index/HouseBuyingCalculator";
-import DebtSnowballCalculator from "./index/DebtSnowballCalculator";
-import InvestmentPropertyCalculator from "./index/InvestmentPropertyCalculator";
+import AssessmentStepper from "./index/AssessmentStepper";
+import { useAssessmentState, questions } from "./index/assessmentHooks";
+import { useAssessmentData } from "./index/hooks/useAssessmentData";
+import InterestSavedChart from "./index/InterestSavedChart";
+import DebtReductionChart from "./index/DebtReductionChart";
 import BudgetPlanner from "./index/budget-planner";
-import AISearchSection from "./index/components/AISearchSection";
-import GoalNavigationHeader from "./index/components/GoalNavigationHeader";
-import HeaderButtons from "./index/components/HeaderButtons";
-import FloatingActionButtons from "./index/components/FloatingActionButtons";
-import { toast } from "sonner";
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { calculateMonthlyAmount, calculateAustralianIncomeTax } from "@/lib/financialCalculations";
 import { useAuth } from "@/contexts/AuthContext";
-import { calculateMonthlyAmount } from "@/lib/financialCalculations";
+import { useEffect } from "react";
+import HouseBuyingCalculator from "./index/HouseBuyingCalculator";
+import InvestmentPropertyCalculator from "./index/InvestmentPropertyCalculator";
+import ActionItemsSection from "./index/ActionItemsSection";
+import { Link } from "react-router-dom";
+import FullFinancialHealthCheck from "./index/FullFinancialHealthCheck";
+import { BarChart3 } from "lucide-react";
+
+// New component imports
+import SaveResultsModal from "./index/components/SaveResultsModal";
+import FloatingActionButtons from "./index/components/FloatingActionButtons";
+import SkipToSummaryButton from "./index/components/SkipToSummaryButton";
+import GoalNavigationHeader from "./index/components/GoalNavigationHeader";
+import DebtSnowballCalculator from "./index/DebtSnowballCalculator";
+import InvestmentGrowthCalculator from "./index/InvestmentGrowthCalculator";
+import PayOffHomeLoanCalculator from "./index/components/PayOffHomeLoanCalculator";
+import EditAssessmentButton from "./index/components/EditAssessmentButton";
+import { usePDFExport } from "./index/hooks/usePDFExport";
+import { useSavePrompt } from "./index/hooks/useSavePrompt";
+
+const DEBT_GOALS = ['Pay off home loan sooner', 'Reduce debt'];
 
 export default function Index() {
   const assessment = useAssessmentState();
-  const data = useAssessmentData(assessment);
   const { user, signOut } = useAuth();
+  const { handleExportToPDF } = usePDFExport();
 
-  const handleGoalSelect = (goal: string, startAssessment: boolean = false) => {
-    if (assessment.goals.includes(goal)) {
-      toast("Goal Already Selected", {
-        description: `You've already selected "${goal}". Check your results below.`
-      });
-      return;
-    }
+  const {
+    aiSummary,
+    chartData,
+    isPreloaded,
+    isLoadingAssessment,
+    isGeneratingSummary,
+    isComplete,
+    generateSummary,
+    handleStartOver,
+    handleChangeGoal,
+    handleSetBudgetGoal,
+    hasCompletedAssessment,
+  } = useAssessmentData(assessment);
 
-    const newGoals = [...assessment.goals, goal];
-    assessment.setGoals(newGoals);
-    
-    if (startAssessment) {
+  const {
+    showSavePrompt,
+    handleSaveResults,
+    handleContinueAnonymous,
+    resetDismissedFlag
+  } = useSavePrompt({ isComplete, user });
+
+  const handleStartAssessment = (goal: string) => {
+    // Check if user has completed assessment before and redirect accordingly
+    if (hasCompletedAssessment) {
+      assessment.setGoals([goal]);
+      assessment.setStep(questions.length); // Go directly to summary
+      assessment.setShowAssessment(true);
+      // Auto-generate summary with new goal
+      setTimeout(() => generateSummary({}), 100);
+    } else {
+      // Allow anonymous users to start assessment immediately
+      assessment.setGoals([goal]);
       assessment.setShowAssessment(true);
     }
-    
-    toast("Goal Selected", {
-      description: `Added "${goal}" to your goals. ${startAssessment ? 'Starting assessment...' : ''}`
-    });
   };
 
-  const showResults = assessment.goals.length > 0 && data.isComplete;
-  const showFullHealthCheck = assessment.goals.includes('Full Financial Health Check') && data.isComplete;
+  // Add goal selection event handler
+  const handleGoalSelection = (goal: string) => {
+    if (!assessment.goals.includes(goal)) {
+      const newGoals = [...assessment.goals, goal];
+      assessment.setGoals(newGoals);
+      
+      // If we have assessment data, regenerate summary
+      if (hasCompletedAssessment) {
+        generateSummary({});
+      }
+    }
+  };
 
-  // Calculate financial metrics for components
-  const totalMonthlyNetIncome = calculateMonthlyAmount(assessment.incomeSources) * 0.8; // Rough net income estimate
-  const totalAnnualGrossIncome = calculateMonthlyAmount(assessment.incomeSources) * 12;
+  // Listen for goal selection events
+  useEffect(() => {
+    const handleGoalEvent = (event: CustomEvent) => {
+      handleGoalSelection(event.detail);
+    };
+
+    window.addEventListener('selectGoal', handleGoalEvent as EventListener);
+    return () => window.removeEventListener('selectGoal', handleGoalEvent as EventListener);
+  }, [assessment.goals, hasCompletedAssessment, generateSummary]);
+  
+  // Remove the localStorage goal handling since we're allowing anonymous access
+  useEffect(() => {
+    if (user) {
+      const goal = localStorage.getItem('selectedGoal');
+      if (goal) {
+        assessment.setGoals([goal]);
+        assessment.setShowAssessment(true);
+        localStorage.removeItem('selectedGoal');
+      }
+    }
+  }, [user, assessment]);
+
+  // Only auto-generate summary when assessment is complete AND it's not Full Financial Health Check
+  useEffect(() => {
+    if (isComplete && !aiSummary && !isGeneratingSummary && !assessment.goals.includes('Full Financial Health Check')) {
+      generateSummary({});
+    }
+  }, [isComplete, aiSummary, isGeneratingSummary, generateSummary, assessment.goals]);
+
+  const handleStartOverWithReset = () => {
+    resetDismissedFlag();
+    handleStartOver();
+  };
+
+  const handleEditAssessment = () => {
+    assessment.setStep(0);
+  };
+
+  const hasDebtGoal = assessment.goals.some(g => DEBT_GOALS.includes(g));
+
+  const totalMonthlyGrossIncome = calculateMonthlyAmount(assessment.incomeSources);
+  const totalAnnualGrossIncome = totalMonthlyGrossIncome * 12;
+  const annualTax = calculateAustralianIncomeTax(totalAnnualGrossIncome);
+  const totalMonthlyNetIncome = totalAnnualGrossIncome > 0 ? (totalAnnualGrossIncome - annualTax) / 12 : 0;
   const totalMonthlyExpenses = calculateMonthlyAmount(assessment.expenseItems);
-  const totalMonthlySurplus = totalMonthlyNetIncome - totalMonthlyExpenses;
+  const monthlySurplus = totalMonthlyNetIncome - totalMonthlyExpenses;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-600 via-purple-700 to-emerald-800">
-      <div className="container mx-auto px-4 py-8">
-        <HeaderButtons user={user} onSignOut={signOut} />
-        
-        <div className="text-center mb-8">
-          <h1 className="text-4xl md:text-6xl font-bold text-white mb-4">
-            Your Financial Future Starts Here
-          </h1>
-          <p className="text-xl text-white/90 mb-8">
-            Get personalized financial advice powered by AI, designed for Australians
-          </p>
-          
-          <AISearchSection 
-            onGoalSuggested={(goal) => handleGoalSelect(goal, true)}
-          />
-        </div>
+    <div className="relative min-h-screen">
+      <SaveResultsModal 
+        showSavePrompt={showSavePrompt}
+        onSaveResults={handleSaveResults}
+        onContinueAnonymous={handleContinueAnonymous}
+      />
 
-        {assessment.goals.length > 0 && (
+      {!assessment.showAssessment ? (
+        <LandingSection onStartAssessment={handleStartAssessment} isLoading={isLoadingAssessment} />
+      ) : (
+        <>
           <GoalNavigationHeader 
             currentGoals={assessment.goals}
-            onBackToGoals={data.handleChangeGoal}
-            showBackButton={true}
+            onBackToGoals={handleChangeGoal}
+            showBackButton={assessment.showAssessment}
           />
-        )}
-
-        {!assessment.showAssessment && assessment.goals.length === 0 && (
-          <LandingSection onStartAssessment={handleGoalSelect} isLoading={false} />
-        )}
-
-        {assessment.showAssessment && !data.isComplete && (
-          <div className="bg-white rounded-lg shadow-xl p-6 mb-8">
-            <AssessmentStepper
-              step={assessment.step}
-              setStep={assessment.setStep}
-              showAssessment={assessment.showAssessment}
-              setShowAssessment={assessment.setShowAssessment}
-              goals={assessment.goals}
-              setGoals={assessment.setGoals}
-              otherGoal={assessment.otherGoal}
-              setOtherGoal={assessment.setOtherGoal}
-              debtTypes={assessment.debtTypes}
-              setDebtTypes={assessment.setDebtTypes}
-              debtDetails={assessment.debtDetails}
-              setDebtDetails={assessment.setDebtDetails}
-              investmentExperience={assessment.investmentExperience}
-              setInvestmentExperience={assessment.setInvestmentExperience}
-              hasRegularIncome={assessment.hasRegularIncome}
-              setHasRegularIncome={assessment.setHasRegularIncome}
-              incomeSources={assessment.incomeSources}
-              setIncomeSources={assessment.setIncomeSources}
-              expenseItems={assessment.expenseItems}
-              setExpenseItems={assessment.setExpenseItems}
-              uploadedFile={assessment.uploadedFile}
-              setUploadedFile={assessment.setUploadedFile}
-              fileInputRef={assessment.fileInputRef}
-              postcode={assessment.postcode}
-              setPostcode={assessment.setPostcode}
-              age={assessment.age}
-              setAge={assessment.setAge}
-              superBalance={assessment.superBalance}
-              setSuperBalance={assessment.setSuperBalance}
-              insurances={assessment.insurances}
-              setInsurances={assessment.setInsurances}
+          
+          {isComplete && (
+            <EditAssessmentButton onEdit={handleEditAssessment} />
+          )}
+          
+          <div id="export-content" className={`flex-grow ${isComplete ? 'pb-52' : ''}`}>
+            <AssessmentStepper 
+              {...assessment} 
+              generateSummary={() => generateSummary({})}
+              isGeneratingSummary={isGeneratingSummary}
+              aiSummary={aiSummary}
+              chartData={chartData}
             />
+            
+            {isComplete && (
+              <>
+                {assessment.goals.includes('Full Financial Health Check') && (
+                  <div className="container mx-auto px-4 py-6 sm:px-6 lg:px-8">
+                    <FullFinancialHealthCheck 
+                      age={assessment.age}
+                      postcode={assessment.postcode}
+                      superBalance={assessment.superBalance}
+                      debtTypes={assessment.debtTypes}
+                      debtDetails={assessment.debtDetails}
+                      incomeSources={assessment.incomeSources}
+                      expenseItems={assessment.expenseItems}
+                      goals={assessment.goals}
+                      insurances={assessment.insurances}
+                    />
+                    
+                    {/* AI Summary positioned after Full Financial Health Check - only show when complete */}
+                    {aiSummary && isComplete && (
+                      <div className="mt-8">
+                        <Card className="border-emerald-200 bg-gradient-to-br from-emerald-50 to-white">
+                          <CardHeader>
+                            <CardTitle className="flex items-center gap-2">
+                              <BarChart3 className="h-5 w-5 text-emerald-600" />
+                              AI-Generated Financial Summary
+                            </CardTitle>
+                          </CardHeader>
+                          <CardContent>
+                            <div className="prose prose-emerald max-w-none">
+                              <div dangerouslySetInnerHTML={{ __html: aiSummary }} />
+                            </div>
+                          </CardContent>
+                        </Card>
+                      </div>
+                    )}
+                  </div>
+                )}
+                
+                {/* Other goal-specific components */}
+                {!assessment.goals.includes('Full Financial Health Check') && (
+                  <div className="container mx-auto grid gap-6 px-4 py-6 sm:px-6 lg:grid-cols-2 lg:px-8">
+                    {assessment.goals.includes('Buy a house') && (
+                        <HouseBuyingCalculator 
+                          assessmentData={assessment}
+                          totalMonthlyNetIncome={totalMonthlyNetIncome}
+                          totalAnnualGrossIncome={totalAnnualGrossIncome}
+                        />
+                    )}
+                    {assessment.goals.includes('Buy an investment property') && (
+                        <InvestmentPropertyCalculator />
+                    )}
+                    {assessment.goals.includes('Pay off home loan sooner') && (
+                        <PayOffHomeLoanCalculator 
+                          assessmentData={assessment}
+                          totalMonthlyNetIncome={totalMonthlyNetIncome}
+                          totalAnnualGrossIncome={totalAnnualGrossIncome}
+                        />
+                    )}
+                    {assessment.goals.includes('Maximise super') && (
+                        <Card>
+                            <CardHeader>
+                                <CardTitle>Maximise Super 💰</CardTitle>
+                                <CardDescription>Use our calculator to see how extra contributions can boost your retirement savings and lower your tax.</CardDescription>
+                            </CardHeader>
+                            <CardFooter>
+                                <Button asChild className="w-2/3">
+                                    <Link to="/maximise-super">Open Calculator</Link>
+                                </Button>
+                            </CardFooter>
+                        </Card>
+                    )}
+                    {assessment.goals.includes('Set a budget') && (
+                        <BudgetPlanner expenseItems={assessment.expenseItems} totalMonthlyNetIncome={totalMonthlyNetIncome} />
+                    )}
+                    {assessment.goals.includes('Reduce debt') && assessment.debtDetails && assessment.debtDetails.length > 0 && (
+                        <DebtSnowballCalculator 
+                          debtDetails={assessment.debtDetails}
+                          totalMonthlySurplus={monthlySurplus}
+                        />
+                    )}
+                    {assessment.goals.includes('Grow investments') && (
+                        <InvestmentGrowthCalculator 
+                          defaultInvestmentAmount={Math.max(monthlySurplus * 0.7, 100)}
+                          currentAge={30}
+                        />
+                    )}
+                    {chartData?.debtReductionData && <DebtReductionChart data={chartData.debtReductionData} />}
+                    {chartData?.interestSavedData && <InterestSavedChart data={chartData.interestSavedData} />}
+                    
+                    {/* AI Summary for other goals */}
+                    {aiSummary && (
+                      <Card className="border-emerald-200 bg-gradient-to-br from-emerald-50 to-white">
+                        <CardHeader>
+                          <CardTitle>AI-Generated Financial Summary</CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                          <div className="prose prose-emerald max-w-none">
+                            <div dangerouslySetInnerHTML={{ __html: aiSummary }} />
+                          </div>
+                        </CardContent>
+                      </Card>
+                    )}
+                    
+                    <ActionItemsSection 
+                      assessmentData={assessment} 
+                      onSetBudgetGoal={handleSetBudgetGoal}
+                    />
+                  </div>
+                )}
+              </>
+            )}
           </div>
-        )}
-
-        {showFullHealthCheck && (
-          <div className="bg-white rounded-lg shadow-xl p-6 mb-8">
-            <FullFinancialHealthCheck
-              age={assessment.age}
-              postcode={assessment.postcode}
-              superBalance={assessment.superBalance}
-              debtTypes={assessment.debtTypes}
-              debtDetails={assessment.debtDetails}
-              incomeSources={assessment.incomeSources}
-              expenseItems={assessment.expenseItems}
-              goals={assessment.goals}
-              insurances={assessment.insurances}
-            />
-          </div>
-        )}
-
-        {showResults && (
-          <div className="space-y-8">
-            {assessment.goals.includes('Invest spare cash') && (
-              <InvestmentGrowthCalculator defaultInvestmentAmount={totalMonthlySurplus} />
-            )}
-            {assessment.goals.includes('Buy a house') && (
-              <HouseBuyingCalculator 
-                assessmentData={assessment}
-                totalMonthlyNetIncome={totalMonthlyNetIncome}
-                totalAnnualGrossIncome={totalAnnualGrossIncome}
-              />
-            )}
-            {assessment.goals.includes('Pay off debt') && (
-              <DebtSnowballCalculator 
-                debtDetails={assessment.debtDetails}
-                totalMonthlySurplus={totalMonthlySurplus}
-              />
-            )}
-            {assessment.goals.includes('Buy investment property') && (
-              <InvestmentPropertyCalculator />
-            )}
-            {assessment.goals.includes('Set a budget') && (
-              <BudgetPlanner 
-                expenseItems={assessment.expenseItems}
-                totalMonthlyNetIncome={totalMonthlyNetIncome}
-              />
-            )}
-            {assessment.goals.includes('Learn about finance') && (
-              <ActionItemsSection assessmentData={assessment} />
-            )}
-          </div>
-        )}
-
-        <FloatingActionButtons 
-          isComplete={data.isComplete}
-          user={user}
-          aiSummary={data.aiSummary}
-          hasDebtGoal={assessment.goals.includes('Pay off debt')}
-          isGeneratingSummary={data.isGeneratingSummary}
-          onExportToPDF={() => {}}
-          onSaveResults={() => {}}
-          onStartOver={data.handleStartOver}
-          onChangeGoal={data.handleChangeGoal}
-          onGenerateToughLove={() => data.generateSummary({ personality: 'tough' })}
-        />
-      </div>
+          
+          <SkipToSummaryButton 
+            isPreloaded={isPreloaded}
+            isComplete={isComplete}
+            questionsLength={questions.length}
+            onSkip={() => assessment.setStep(questions.length)}
+          />
+          
+          <FloatingActionButtons 
+            isComplete={isComplete}
+            user={user}
+            aiSummary={aiSummary}
+            hasDebtGoal={hasDebtGoal}
+            isGeneratingSummary={isGeneratingSummary}
+            onExportToPDF={handleExportToPDF}
+            onSaveResults={handleSaveResults}
+            onStartOver={handleStartOverWithReset}
+            onChangeGoal={handleChangeGoal}
+            onGenerateToughLove={() => generateSummary({ personality: 'dave_ramsey' })}
+          />
+        </>
+      )}
+      
+      <footer className="w-full py-2 text-center bg-background border-t">
+        <p className="text-xs text-muted-foreground italic">
+          Remember mate, this is just AI-generated guidance to get you thinking. It's not personal advice, so chat with a qualified professional before making any big money moves.
+        </p>
+      </footer>
     </div>
   );
 }

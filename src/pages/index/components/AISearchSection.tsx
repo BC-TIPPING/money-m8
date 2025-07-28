@@ -6,6 +6,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Loader2, Send, ChevronDown } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
+import GoalSuggestion from "./GoalSuggestion";
 
 interface AISearchSectionProps {
   onGoalSuggested: (goal: string) => void;
@@ -125,20 +126,10 @@ const AISearchSection: React.FC<AISearchSectionProps> = ({ onGoalSuggested }) =>
       )}
 
       {suggestedGoal && (
-        <Card className="bg-white/10 backdrop-blur-md border-white/20">
-          <CardContent className="p-4">
-            <div className="text-white text-sm mb-2">
-              Suggested Goal: <span className="font-semibold">{suggestedGoal}</span>
-            </div>
-            <Button 
-              onClick={() => handleGoalSuggestion(suggestedGoal)}
-              variant="outline"
-              className="bg-white/20 hover:bg-white/30 text-white border-white/30"
-            >
-              Add This Goal
-            </Button>
-          </CardContent>
-        </Card>
+        <GoalSuggestion 
+          goal={suggestedGoal} 
+          onSelectGoal={handleGoalSuggestion}
+        />
       )}
     </div>
   );

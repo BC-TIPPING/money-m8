@@ -1,99 +1,50 @@
 
 import React from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Target, TrendingUp, DollarSign, AlertTriangle } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Target, ArrowRight } from 'lucide-react';
 
 interface GoalSuggestionProps {
-  monthlySurplus: number;
-  age: number;
-  totalDebt: number;
-  superBalance: number;
-  currentGoals: string[];
+  goal: string;
+  onSelectGoal: (goal: string) => void;
 }
 
-const GoalSuggestion: React.FC<GoalSuggestionProps> = ({ 
-  monthlySurplus, 
-  age, 
-  totalDebt, 
-  superBalance, 
-  currentGoals 
-}) => {
-  const getSuggestedGoal = () => {
-    if (totalDebt > 0) {
-      return {
-        title: "Reduce Debt",
-        description: "Focus on paying off high-interest debt first",
-        icon: <AlertTriangle className="h-5 w-5" />,
-        priority: "High",
-        action: "Start with highest interest rate debt"
-      };
-    }
-    
-    if (monthlySurplus < 0) {
-      return {
-        title: "Set a Budget",
-        description: "Your expenses exceed your income",
-        icon: <DollarSign className="h-5 w-5" />,
-        priority: "High",
-        action: "Track expenses and reduce spending"
-      };
-    }
-    
-    if (age < 40 && superBalance < age * 10000) {
-      return {
-        title: "Maximise Super",
-        description: "Your super balance is below recommended levels",
-        icon: <TrendingUp className="h-5 w-5" />,
-        priority: "Medium",
-        action: "Consider additional super contributions"
-      };
-    }
-    
-    return {
-      title: "Grow Investments",
-      description: "Build wealth through diversified investments",
-      icon: <Target className="h-5 w-5" />,
-      priority: "Medium",
-      action: "Start with low-cost index funds"
-    };
+const GoalSuggestion: React.FC<GoalSuggestionProps> = ({ goal, onSelectGoal }) => {
+  const goalEmojis: { [key: string]: string } = {
+    "Buy a house": "🏠",
+    "Improve financial literacy": "📚",
+    "Set a budget": "📊",
+    "Reduce debt": "💳",
+    "Grow investments": "📈",
+    "Save for a purchase": "🎯",
+    "Pay off home loan sooner": "🏡",
+    "Maximise super": "💰",
   };
 
-  const suggestion = getSuggestedGoal();
-  
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          <Target className="h-5 w-5" />
-          Recommended Next Step
-        </CardTitle>
-      </CardHeader>
-      <CardContent>
-        <div className="flex items-start gap-4">
-          <div className="p-3 bg-blue-50 rounded-lg">
-            {suggestion.icon}
-          </div>
-          <div className="flex-1">
-            <div className="flex items-center gap-2 mb-2">
-              <h4 className="font-semibold">{suggestion.title}</h4>
-              <Badge variant={suggestion.priority === "High" ? "destructive" : "secondary"}>
-                {suggestion.priority}
-              </Badge>
-            </div>
-            <p className="text-sm text-gray-600 mb-3">{suggestion.description}</p>
-            <p className="text-sm font-medium text-blue-600">{suggestion.action}</p>
+    <div className="bg-emerald-600/20 border border-emerald-400/30 rounded-lg p-4 mt-4">
+      <div className="flex items-center gap-3 mb-3">
+        <Target className="h-5 w-5 text-emerald-400" />
+        <span className="text-emerald-400 font-semibold">Recommended Goal</span>
+      </div>
+      
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-3">
+          <span className="text-2xl">{goalEmojis[goal] || "🎯"}</span>
+          <div>
+            <h4 className="text-white font-semibold text-lg">{goal}</h4>
+            <p className="text-white/70">This goal matches your question perfectly</p>
           </div>
         </div>
         
-        <div className="mt-4 pt-4 border-t">
-          <p className="text-xs text-gray-500">
-            Based on your current financial situation and goals: {currentGoals.join(', ')}
-          </p>
-        </div>
-      </CardContent>
-    </Card>
+        <Button
+          onClick={() => onSelectGoal(goal)}
+          className="bg-emerald-600 hover:bg-emerald-700 text-white font-semibold px-6 py-2 flex items-center gap-2"
+        >
+          Select Goal
+          <ArrowRight className="h-4 w-4" />
+        </Button>
+      </div>
+    </div>
   );
 };
 
