@@ -233,11 +233,13 @@ const FullFinancialHealthCheck: React.FC<FullFinancialHealthCheckProps> = ({
           <Button 
             variant="outline" 
             size="sm"
-            onClick={() => {
-              console.log('Edit survey button clicked');
-              const event = new CustomEvent('editAssessment');
-              window.dispatchEvent(event);
-              console.log('Event dispatched');
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              console.log('Edit survey button clicked - FullFinancialHealthCheck');
+              // Direct approach - navigate back to step 0
+              window.location.hash = '#edit';
+              window.dispatchEvent(new CustomEvent('editSurvey'));
             }}
             className="ml-4"
           >
