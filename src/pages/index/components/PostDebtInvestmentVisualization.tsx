@@ -148,28 +148,60 @@ const PostDebtInvestmentVisualization: React.FC<PostDebtInvestmentVisualizationP
 
   const { data: investmentData, metrics } = generateInvestmentProjection();
 
+  // Always show the component in investment section
   if (highInterestDebts.length === 0) {
     return (
       <Card className="w-full">
         <CardHeader className="flex flex-row items-center gap-2">
           <TrendingUp className="h-6 w-6 text-green-600" />
-          <CardTitle>Investment Growth Projection</CardTitle>
+          <CardTitle>Investment Growth Strategy</CardTitle>
         </CardHeader>
-        <CardContent>
-          <p className="text-muted-foreground">No high-interest debt detected. You can start investing immediately!</p>
-          <div className="mt-4 p-4 bg-green-50 rounded-lg">
+        <CardContent className="space-y-6">
+          <div className="p-4 bg-green-50 rounded-lg">
             <p className="text-green-800 text-sm">
-              💡 <strong>Recommended approach:</strong> Start investing {Math.min(monthlyIncome * 0.15, 500).toLocaleString()}/month 
+              🎉 <strong>Excellent!</strong> No high-interest debt detected. You can start investing immediately!
+            </p>
+          </div>
+          
+          <div className="text-sm text-muted-foreground space-y-2">
+            <p>
+              <strong>💡 Recommended approach:</strong> Start investing <strong>${Math.min(monthlyIncome * 0.15, 500).toLocaleString()}/month</strong> 
               in a diversified portfolio right away since you have no high-interest debt holding you back.
             </p>
+            <p>
+              <strong>📈 Strategy:</strong> Consider a balanced portfolio with 7.5% average annual returns. 
+              Over 20 years, this could grow to approximately <strong>${(Math.min(monthlyIncome * 0.15, 500) * 12 * 20 * 1.5).toLocaleString()}</strong> 
+              (including compound growth).
+            </p>
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="p-4 bg-blue-50 rounded-lg">
+              <h4 className="font-semibold text-blue-900 mb-2 flex items-center gap-2">
+                <Target className="h-4 w-4" />
+                Investment Timeline
+              </h4>
+              <ul className="text-sm text-blue-800 space-y-1">
+                <li>• Start immediately: ${Math.min(monthlyIncome * 0.15, 500).toLocaleString()}/month</li>
+                <li>• 10 years: ~${(Math.min(monthlyIncome * 0.15, 500) * 12 * 10 * 1.3 / 1000).toFixed(0)}k portfolio</li>
+                <li>• 20 years: ~${(Math.min(monthlyIncome * 0.15, 500) * 12 * 20 * 1.5 / 1000).toFixed(0)}k portfolio</li>
+              </ul>
+            </div>
+            
+            <div className="p-4 bg-orange-50 rounded-lg">
+              <h4 className="font-semibold text-orange-900 mb-2 flex items-center gap-2">
+                <DollarSign className="h-4 w-4" />
+                Smart Investment Tips
+              </h4>
+              <p className="text-sm text-orange-800">
+                Start with low-cost index funds or ETFs. Automate your investments to build the habit. 
+                Consider increasing contributions as your income grows.
+              </p>
+            </div>
           </div>
         </CardContent>
       </Card>
     );
-  }
-
-  if (!metrics || investmentData.length === 0) {
-    return null;
   }
 
   const CustomTooltip = ({ active, payload, label }: any) => {
