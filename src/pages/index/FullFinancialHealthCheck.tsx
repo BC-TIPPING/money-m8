@@ -235,7 +235,13 @@ const FullFinancialHealthCheck: React.FC<FullFinancialHealthCheckProps> = ({
           <Button 
             variant="outline" 
             size="sm"
-            onClick={() => assessment.setStep(0)}
+            onClick={() => {
+              // Remove Full Financial Health Check from goals to show the stepper
+              const newGoals = assessment.goals.filter((goal: string) => goal !== 'Full Financial Health Check');
+              assessment.setGoals(newGoals);
+              // Navigate to first step
+              assessment.setStep(0);
+            }}
             className="ml-4"
           >
             Edit Survey
