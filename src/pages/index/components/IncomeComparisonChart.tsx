@@ -51,7 +51,7 @@ const IncomeComparisonChart: React.FC<IncomeComparisonChartProps> = ({ userIncom
   const postcodePercentile = calculatePercentile(userIncome, postcodeMedian);
 
   // Single column visualization data
-  const maxIncome = 300000;
+  const maxIncome = 225000;
   const userPosition = (userIncome / maxIncome) * 100;
   const nationalPosition = (nationalMedian / maxIncome) * 100;
   const postcodePosition = (postcodeMedian / maxIncome) * 100;
@@ -60,7 +60,7 @@ const IncomeComparisonChart: React.FC<IncomeComparisonChartProps> = ({ userIncom
     <div className="space-y-4">
       <Card>
         <CardHeader>
-          <CardTitle>Income Position (0 - $300k)</CardTitle>
+          <CardTitle>Income Position (0 - $225k)</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="relative h-32 bg-gradient-to-r from-red-100 via-yellow-100 via-green-100 to-emerald-200 rounded-lg border mb-6">
@@ -101,10 +101,9 @@ const IncomeComparisonChart: React.FC<IncomeComparisonChartProps> = ({ userIncom
           {/* Scale markers below the graph */}
           <div className="relative w-full mb-4">
             <div className="absolute left-0 text-xs text-gray-500">$0</div>
-            <div className="absolute left-1/4 transform -translate-x-1/2 text-xs text-gray-500">$75k</div>
-            <div className="absolute left-1/2 transform -translate-x-1/2 text-xs text-gray-500">$150k</div>
-            <div className="absolute left-3/4 transform -translate-x-1/2 text-xs text-gray-500">$225k</div>
-            <div className="absolute right-0 text-xs text-gray-500">$300k</div>
+            <div className="absolute left-1/3 transform -translate-x-1/2 text-xs text-gray-500">$75k</div>
+            <div className="absolute left-2/3 transform -translate-x-1/2 text-xs text-gray-500">$150k</div>
+            <div className="absolute right-0 text-xs text-gray-500">$225k</div>
           </div>
           
           <div className="text-sm text-muted-foreground text-center">
