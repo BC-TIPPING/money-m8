@@ -130,7 +130,14 @@ const SuperKPICards: React.FC<SuperKPICardsProps> = ({ currentAge, currentBalanc
             <span className="text-sm text-muted-foreground">+10% Impact</span>
           </div>
           <p className="text-2xl font-bold text-orange-600">
-            +${((futureValueExtra - futureValueCurrent) / 1000).toFixed(0)}k
+            {(() => {
+              const additionalAmount = futureValueExtra - futureValueCurrent;
+              if (additionalAmount >= 1000000) {
+                return `+$${(additionalAmount / 1000000).toFixed(1)}M`;
+              } else {
+                return `+$${(additionalAmount / 1000).toFixed(0)}k`;
+              }
+            })()}
           </p>
           <p className="text-xs text-muted-foreground">
             additional super (${monthlySacrificeNet.toLocaleString()}/month out of pocket)
