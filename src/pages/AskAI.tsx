@@ -8,6 +8,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Loader2 } from 'lucide-react';
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Link } from 'react-router-dom';
+import BackButton from '@/components/ui/back-button';
 
 export default function AskAI() {
   const [question, setQuestion] = useState('');
@@ -47,6 +48,10 @@ export default function AskAI() {
 
   return (
     <div className="flex flex-col justify-center items-center min-h-screen bg-gray-50 p-4">
+      <div className="w-full max-w-2xl mb-4">
+        <BackButton />
+      </div>
+      
       <Card className="w-full max-w-2xl mx-4">
         <CardHeader>
           <CardTitle>Ask a Financial Question</CardTitle>

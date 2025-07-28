@@ -1,5 +1,6 @@
 import { useLocation } from "react-router-dom";
 import { useEffect } from "react";
+import BackButton from '@/components/ui/back-button';
 
 const NotFound = () => {
   const location = useLocation();
