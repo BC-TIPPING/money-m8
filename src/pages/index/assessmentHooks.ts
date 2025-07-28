@@ -141,6 +141,14 @@ export function useAssessmentState() {
   const [superBalance, setSuperBalance] = useState<number | undefined>();
   const [insurances, setInsurances] = useState<string[]>([]);
   const [assets, setAssets] = useState<{ type: string; value: string; description: string }[]>([]);
+  
+  // Additional state for AssessmentStepper
+  const [employmentStatus, setEmploymentStatus] = useState<string>("");
+  const [financialKnowledgeLevel, setFinancialKnowledgeLevel] = useState<string>("");
+  const [debtManagementConfidence, setDebtManagementConfidence] = useState<string>("");
+  const [freeTextComments, setFreeTextComments] = useState<string>("");
+  const [superFund, setSuperFund] = useState<string>("");
+  const [mortgageRate, setMortgageRate] = useState<number | undefined>(undefined);
 
   return {
     step,
@@ -177,5 +185,18 @@ export function useAssessmentState() {
     setInsurances,
     assets,
     setAssets,
+    // Additional properties for AssessmentStepper
+    employmentStatus,
+    setEmploymentStatus,
+    financialKnowledgeLevel,
+    setFinancialKnowledgeLevel,
+    debtManagementConfidence,
+    setDebtManagementConfidence,
+    freeTextComments,
+    setFreeTextComments,
+    superFund,
+    setSuperFund,
+    mortgageRate,
+    setMortgageRate,
   };
 }

@@ -130,42 +130,11 @@ const IndexPage: React.FC = () => {
               />
               
               <AssessmentStepper 
-                step={assessment.step}
-                hasRegularIncome={assessment.hasRegularIncome}
-                setHasRegularIncome={assessment.setHasRegularIncome}
-                incomeSources={assessment.incomeSources}
-                setIncomeSources={assessment.setIncomeSources}
-                expenseItems={assessment.expenseItems}
-                setExpenseItems={assessment.setExpenseItems}
-                investmentExperience={assessment.investmentExperience}
-                setInvestmentExperience={assessment.setInvestmentExperience}
-                goals={assessment.goals}
-                setGoals={assessment.setGoals}
-                otherGoal={assessment.otherGoal}
-                setOtherGoal={assessment.setOtherGoal}
-                debtTypes={assessment.debtTypes}
-                setDebtTypes={assessment.setDebtTypes}
-                postcode={assessment.postcode}
-                setPostcode={assessment.setPostcode}
-                age={assessment.age}
-                setAge={assessment.setAge}
-                superBalance={assessment.superBalance}
-                setSuperBalance={assessment.setSuperBalance}
-                insurances={assessment.insurances}
-                setInsurances={assessment.setInsurances}
-                debtDetails={assessment.debtDetails}
-                setDebtDetails={assessment.setDebtDetails}
-                assets={assessment.assets}
-                setAssets={assessment.setAssets}
-                onNext={() => assessment.setStep(assessment.step + 1)}
-                onPrevious={() => assessment.setStep(assessment.step - 1)}
-                onFinish={() => {
-                  assessment.setStep(questions.length);
-                  toast({ 
-                    title: "Assessment Complete!", 
-                    description: "Your personalized financial recommendations are ready." 
-                  });
-                }}
+                {...assessment}
+                generateSummary={assessmentData.generateSummary}
+                aiSummary={assessmentData.aiSummary}
+                chartData={assessmentData.chartData}
+                isGeneratingSummary={assessmentData.isGeneratingSummary}
               />
             </>
           )}

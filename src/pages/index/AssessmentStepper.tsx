@@ -809,7 +809,34 @@ const AssessmentStepper: React.FC<AssessmentStepperProps> = (props) => {
           </div>
 
           <div className="max-h-[40vh] overflow-y-auto p-4 bg-white rounded-lg border border-gray-200">
-            <AssessmentSummary {...props} />
+            <AssessmentSummary 
+              goals={goals}
+              hasRegularIncome={hasRegularIncome}
+              incomeSources={incomeSources}
+              expenseItems={expenseItems}
+              investmentExperience={investmentExperience}
+              debtTypes={debtTypes}
+              debtDetails={debtDetails}
+              postcode={postcode}
+              age={age}
+              superBalance={superBalance}
+              insurances={insurances}
+              assets={assets}
+              onGenerateSummary={generateSummary}
+              aiSummary={aiSummary}
+              chartData={chartData}
+              isGeneratingSummary={isGeneratingSummary}
+              onChangeGoal={() => {}}
+              onSetBudgetGoal={() => {}}
+              updateHomeLoanExtraRepayment={() => {}}
+              isUpdatingRepayment={false}
+              employmentStatus={employmentStatus}
+              uploadedFile={uploadedFile}
+              financialKnowledgeLevel={financialKnowledgeLevel}
+              otherGoal={otherGoal}
+              debtManagementConfidence={debtManagementConfidence}
+              freeTextComments={freeTextComments}
+            />
           </div>
 
           {aiSummary ? (
