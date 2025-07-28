@@ -234,8 +234,10 @@ const FullFinancialHealthCheck: React.FC<FullFinancialHealthCheckProps> = ({
             variant="outline" 
             size="sm"
             onClick={() => {
+              console.log('Edit survey button clicked');
               const event = new CustomEvent('editAssessment');
               window.dispatchEvent(event);
+              console.log('Event dispatched');
             }}
             className="ml-4"
           >
