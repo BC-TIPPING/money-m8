@@ -206,6 +206,27 @@ export default function Index() {
                         freeTextComments={assessment.freeTextComments}
                       />
                     </div>
+
+                    {/* AI Summary positioned after Assessment Summary */}
+                    {aiSummary && (
+                      <div className="mt-8">
+                        <Card className="border-emerald-200 bg-gradient-to-br from-emerald-50 to-white">
+                          <CardHeader>
+                            <CardTitle className="flex items-center gap-2">
+                              <BarChart3 className="h-5 w-5 text-emerald-600" />
+                              AI-Generated Financial Summary
+                            </CardTitle>
+                          </CardHeader>
+                          <CardContent>
+                            <div className="prose prose-emerald max-w-none prose-headings:text-emerald-800 prose-strong:text-emerald-700">
+                              <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                                {aiSummary}
+                              </ReactMarkdown>
+                            </div>
+                          </CardContent>
+                        </Card>
+                      </div>
+                    )}
                   </div>
                 )}
                 
