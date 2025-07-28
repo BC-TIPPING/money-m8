@@ -1,4 +1,5 @@
 
+
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -12,6 +13,8 @@ import FullFinancialHealthCheck from './index/FullFinancialHealthCheck';
 import SaveResultsModal from './index/components/SaveResultsModal';
 import { questions, useAssessmentState } from './index/assessmentHooks';
 import { useAssessmentData } from './index/hooks/useAssessmentData';
+import { useSavePrompt } from './index/hooks/useSavePrompt';
+import { useAuth } from "@/contexts/AuthContext";
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { Link } from 'react-router-dom';
@@ -34,9 +37,14 @@ const EditAssessmentButton = ({ onClick, disabled }: { onClick: () => void, disa
 const IndexPage: React.FC = () => {
   const assessment = useAssessmentState();
   const { toast } = useToast();
+  const { user } = useAuth();
   const [selectedGoal, setSelectedGoal] = useState<string | null>(null);
 
   const assessmentData = useAssessmentData(assessment);
+  const savePrompt = useSavePrompt({ 
+    isComplete: assessmentData.isComplete, 
+    user 
+  });
 
   useEffect(() => {
     const handleGoalSelectEvent = (event: CustomEvent) => {
@@ -123,7 +131,7 @@ const IndexPage: React.FC = () => {
               />
               
               <AssessmentStepper 
-                currentStep={assessment.step}
+                step={assessment.step}
                 totalSteps={questions.length}
                 hasRegularIncome={assessment.hasRegularIncome}
                 setHasRegularIncome={assessment.setHasRegularIncome}
@@ -248,9 +256,14 @@ const IndexPage: React.FC = () => {
         </div>
       )}
 
-      <SaveResultsModal />
+      <SaveResultsModal 
+        showSavePrompt={savePrompt.showSavePrompt}
+        onSaveResults={savePrompt.handleSaveResults}
+        onContinueAnonymous={savePrompt.handleContinueAnonymous}
+      />
     </div>
   );
 };
 
 export default IndexPage;
+
