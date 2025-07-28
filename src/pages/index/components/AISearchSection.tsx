@@ -103,7 +103,7 @@ const AISearchSection: React.FC<AISearchSectionProps> = ({ onGoalSuggested }) =>
       </form>
       
       <p className="text-center text-xs text-white/60 italic mb-3">
-        Get expert knowledge based on ATO guidelines, Australian banking regulations, and Barefoot Investor principles
+        Get expert knowledge based on ATO guidelines and Australian banking regulations
       </p>
 
       {isLoading && (

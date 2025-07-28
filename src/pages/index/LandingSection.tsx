@@ -93,11 +93,6 @@ const LandingSection = ({ onStartAssessment, isLoading }: { onStartAssessment: (
         {!selectedGoal && <p className="text-white/70 mt-3 animate-pulse text-sm">Please select a goal to continue</p>}
       </main>
       
-      <footer className="absolute bottom-2 w-full text-center">
-        <p className="text-xs text-white/50 italic">
-          Remember mate, this is just AI-generated guidance to get you thinking. It's not personal advice, so chat with a qualified professional before making any big money moves.
-        </p>
-      </footer>
     </div>
   );
 }

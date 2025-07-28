@@ -21,7 +21,7 @@ const GoalSuggestion: React.FC<GoalSuggestionProps> = ({ goal, onSelectGoal }) =
   };
 
   return (
-    <div className="bg-emerald-600/20 border border-emerald-400/30 rounded-lg p-4 mt-4">
+    <div className="bg-emerald-600/20 border border-emerald-400/30 rounded-lg p-4 mt-4 w-full">
       <div className="flex items-center gap-3 mb-3">
         <Target className="h-5 w-5 text-emerald-400" />
         <span className="text-emerald-400 font-semibold">Recommended Goal</span>
