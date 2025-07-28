@@ -170,8 +170,17 @@ const PostDebtInvestmentVisualization: React.FC<PostDebtInvestmentVisualizationP
             </p>
             <p>
               <strong>📈 Strategy:</strong> Consider a balanced portfolio with 7.5% average annual returns. 
-              Over 20 years, this could grow to approximately <strong>${(Math.min(monthlyIncome * 0.15, 500) * 12 * 20 * 1.5).toLocaleString()}</strong> 
-              (including compound growth).
+              Over 20 years, this could grow to approximately <strong>${(() => {
+                const monthlyAmount = Math.min(monthlyIncome * 0.15, 500);
+                const monthlyRate = 0.075 / 12; // 7.5% annual return
+                const months = 20 * 12;
+                let balance = 0;
+                for (let i = 0; i < months; i++) {
+                  balance += monthlyAmount;
+                  balance *= (1 + monthlyRate);
+                }
+                return balance.toLocaleString();
+              })()}</strong> (including compound growth).
             </p>
           </div>
           
@@ -183,8 +192,28 @@ const PostDebtInvestmentVisualization: React.FC<PostDebtInvestmentVisualizationP
               </h4>
               <ul className="text-sm text-blue-800 space-y-1">
                 <li>• Start immediately: ${Math.min(monthlyIncome * 0.15, 500).toLocaleString()}/month</li>
-                <li>• 10 years: ~${(Math.min(monthlyIncome * 0.15, 500) * 12 * 10 * 1.3 / 1000).toFixed(0)}k portfolio</li>
-                <li>• 20 years: ~${(Math.min(monthlyIncome * 0.15, 500) * 12 * 20 * 1.5 / 1000).toFixed(0)}k portfolio</li>
+                <li>• 10 years: ~${(() => {
+                  const monthlyAmount = Math.min(monthlyIncome * 0.15, 500);
+                  const monthlyRate = 0.075 / 12; // 7.5% annual return
+                  const months = 10 * 12;
+                  let balance = 0;
+                  for (let i = 0; i < months; i++) {
+                    balance += monthlyAmount;
+                    balance *= (1 + monthlyRate);
+                  }
+                  return (balance / 1000).toFixed(0);
+                })()}k portfolio</li>
+                <li>• 20 years: ~${(() => {
+                  const monthlyAmount = Math.min(monthlyIncome * 0.15, 500);
+                  const monthlyRate = 0.075 / 12; // 7.5% annual return
+                  const months = 20 * 12;
+                  let balance = 0;
+                  for (let i = 0; i < months; i++) {
+                    balance += monthlyAmount;
+                    balance *= (1 + monthlyRate);
+                  }
+                  return (balance / 1000).toFixed(0);
+                })()}k portfolio</li>
               </ul>
             </div>
             
