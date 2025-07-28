@@ -48,15 +48,26 @@ export function calculateAustralianIncomeTax(income: number) {
   // $135,001 – $190,000: $31,288 plus 37c for each $1 over $135,000
   // $190,001 and over: $51,638 plus 45c for each $1 over $190,000
   
+  let tax = 0;
+  
   if (income <= 18200) {
-    return 0;
+    tax = 0;
   } else if (income <= 45000) {
-    return (income - 18200) * 0.16;
+    tax = (income - 18200) * 0.16;
   } else if (income <= 135000) {
-    return 4288 + (income - 45000) * 0.30;
+    tax = 4288 + (income - 45000) * 0.30;
   } else if (income <= 190000) {
-    return 31288 + (income - 135000) * 0.37;
+    tax = 31288 + (income - 135000) * 0.37;
   } else {
-    return 51638 + (income - 190000) * 0.45;
+    tax = 51638 + (income - 190000) * 0.45;
   }
+  
+  // Add Medicare Levy (2% for most taxpayers)
+  // Medicare Levy threshold for 2024-25 is $24,276 for individuals
+  let medicareLevy = 0;
+  if (income > 24276) {
+    medicareLevy = income * 0.02;
+  }
+  
+  return tax + medicareLevy;
 }
