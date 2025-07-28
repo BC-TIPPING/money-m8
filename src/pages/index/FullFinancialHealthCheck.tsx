@@ -236,11 +236,16 @@ const FullFinancialHealthCheck: React.FC<FullFinancialHealthCheckProps> = ({
             variant="outline" 
             size="sm"
             onClick={() => {
-              // Remove Full Financial Health Check from goals to show the stepper
-              const newGoals = assessment.goals.filter((goal: string) => goal !== 'Full Financial Health Check');
-              assessment.setGoals(newGoals);
-              // Navigate to first step
+              // Reset the assessment but keep Full Financial Health Check goal
+              // This will restart the survey from the beginning
               assessment.setStep(0);
+              assessment.setShowAssessment(true);
+              // Clear existing data to restart fresh
+              assessment.setIncomeSources([{ category: "", amount: "", frequency: "Monthly" }]);
+              assessment.setExpenseItems(assessment.expenseItems.map((item: any) => ({ ...item, amount: "" })));
+              assessment.setDebtTypes([]);
+              assessment.setDebtDetails([]);
+              assessment.setInvestmentExperience([]);
             }}
             className="ml-4"
           >

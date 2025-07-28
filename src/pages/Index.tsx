@@ -111,6 +111,11 @@ export default function Index() {
     };
   }, [assessment.goals, hasCompletedAssessment, generateSummary]);
   
+  // Clear localStorage on component mount (browser refresh)
+  useEffect(() => {
+    localStorage.removeItem('selectedGoal');
+  }, []);
+
   // Store goal selection in localStorage for persistence across navigation
   useEffect(() => {
     if (user) {
