@@ -41,23 +41,22 @@ export function calculateMonthlyAmount(items: {amount: string, frequency: string
 }
 
 export function calculateAustralianIncomeTax(income: number) {
-  let tax = 0;
-  // Note: Using 2025-26 tax brackets. These are subject to change.
-  // https://www.ato.gov.au/rates/individual-income-tax-rates/
-  if (income > 190000) {
-    tax += (income - 190000) * 0.45;
-    income = 190000;
+  // ATO Tax Rates 2024-25
+  // $0 – $18,200: Nil
+  // $18,201 – $45,000: 16c for each $1 over $18,200
+  // $45,001 – $135,000: $4,288 plus 30c for each $1 over $45,000
+  // $135,001 – $190,000: $31,288 plus 37c for each $1 over $135,000
+  // $190,001 and over: $51,638 plus 45c for each $1 over $190,000
+  
+  if (income <= 18200) {
+    return 0;
+  } else if (income <= 45000) {
+    return (income - 18200) * 0.16;
+  } else if (income <= 135000) {
+    return 4288 + (income - 45000) * 0.30;
+  } else if (income <= 190000) {
+    return 31288 + (income - 135000) * 0.37;
+  } else {
+    return 51638 + (income - 190000) * 0.45;
   }
-  if (income > 135000) {
-    tax += (income - 135000) * 0.37;
-    income = 135000;
-  }
-  if (income > 45000) {
-    tax += (income - 45000) * 0.30;
-    income = 45000;
-  }
-  if (income > 18200) {
-    tax += (income - 18200) * 0.16;
-  }
-  return tax;
 }
