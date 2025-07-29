@@ -149,92 +149,90 @@ export default function Index() {
           )}
           
           <div id="export-content" className={`flex-grow ${isComplete ? 'pb-52' : ''}`}>
-            {!assessment.goals.includes('Full Financial Health Check') && (
-              <AssessmentStepper 
-                {...assessment} 
-                generateSummary={() => generateSummary({})}
-                isGeneratingSummary={isGeneratingSummary}
-                aiSummary={aiSummary}
-                chartData={chartData}
-                employmentStatus={assessment.employmentStatus || ""}
-                setEmploymentStatus={assessment.setEmploymentStatus || (() => {})}
-                financialKnowledgeLevel={assessment.financialKnowledgeLevel || ""}
-                setFinancialKnowledgeLevel={assessment.setFinancialKnowledgeLevel || (() => {})}
-                debtManagementConfidence={assessment.debtManagementConfidence || ""}
-                setDebtManagementConfidence={assessment.setDebtManagementConfidence || (() => {})}
-                freeTextComments={assessment.freeTextComments || ""}
-                setFreeTextComments={assessment.setFreeTextComments || (() => {})}
-                superFund={assessment.superFund || ""}
-                setSuperFund={assessment.setSuperFund || (() => {})}
-                mortgageRate={assessment.mortgageRate}
-                setMortgageRate={assessment.setMortgageRate || (() => {})}
-                assets={assessment.assets || []}
-                setAssets={assessment.setAssets || (() => {})}
-              />
-            )}
+            <AssessmentStepper 
+              {...assessment} 
+              generateSummary={() => generateSummary({})}
+              isGeneratingSummary={isGeneratingSummary}
+              aiSummary={aiSummary}
+              chartData={chartData}
+              employmentStatus={assessment.employmentStatus || ""}
+              setEmploymentStatus={assessment.setEmploymentStatus || (() => {})}
+              financialKnowledgeLevel={assessment.financialKnowledgeLevel || ""}
+              setFinancialKnowledgeLevel={assessment.setFinancialKnowledgeLevel || (() => {})}
+              debtManagementConfidence={assessment.debtManagementConfidence || ""}
+              setDebtManagementConfidence={assessment.setDebtManagementConfidence || (() => {})}
+              freeTextComments={assessment.freeTextComments || ""}
+              setFreeTextComments={assessment.setFreeTextComments || (() => {})}
+              superFund={assessment.superFund || ""}
+              setSuperFund={assessment.setSuperFund || (() => {})}
+              mortgageRate={assessment.mortgageRate}
+              setMortgageRate={assessment.setMortgageRate || (() => {})}
+              assets={assessment.assets || []}
+              setAssets={assessment.setAssets || (() => {})}
+            />
             
-            {/* Full Financial Health Check - show directly without assessment stepper */}
-            {assessment.goals.includes('Full Financial Health Check') && (
-              <div className="container mx-auto px-4 py-6 sm:px-6 lg:px-8">
-                <FullFinancialHealthCheck 
-                  age={assessment.age}
-                  postcode={assessment.postcode}
-                  superBalance={assessment.superBalance}
-                  debtTypes={assessment.debtTypes}
-                  debtDetails={assessment.debtDetails}
-                  incomeSources={assessment.incomeSources}
-                  expenseItems={assessment.expenseItems}
-                  goals={assessment.goals}
-                  insurances={assessment.insurances}
-                  assets={assessment.assets || []}
-                />
-                
-                {/* Thank You Assessment Summary after Full Financial Health Check */}
-                <div className="mt-8">
-                  <AssessmentSummary 
-                    employmentStatus={assessment.employmentStatus}
-                    hasRegularIncome={assessment.hasRegularIncome}
-                    incomeSources={assessment.incomeSources}
-                    expenseItems={assessment.expenseItems}
-                    uploadedFile={assessment.uploadedFile}
-                    financialKnowledgeLevel={assessment.financialKnowledgeLevel}
-                    investmentExperience={assessment.investmentExperience}
-                    goals={assessment.goals}
-                    otherGoal={assessment.otherGoal}
-                    debtTypes={assessment.debtTypes}
-                    debtDetails={assessment.debtDetails}
-                    debtManagementConfidence={assessment.debtManagementConfidence}
-                    freeTextComments={assessment.freeTextComments}
-                  />
-                </div>
+            {isComplete && (
+              <>
+                {assessment.goals.includes('Full Financial Health Check') && (
+                  <div className="container mx-auto px-4 py-6 sm:px-6 lg:px-8">
+                    <FullFinancialHealthCheck 
+                      age={assessment.age}
+                      postcode={assessment.postcode}
+                      superBalance={assessment.superBalance}
+                      debtTypes={assessment.debtTypes}
+                      debtDetails={assessment.debtDetails}
+                      incomeSources={assessment.incomeSources}
+                      expenseItems={assessment.expenseItems}
+                      goals={assessment.goals}
+                      insurances={assessment.insurances}
+                      assets={assessment.assets || []}
+                    />
+                    
+                    {/* Thank You Assessment Summary after Full Financial Health Check */}
+                    <div className="mt-8">
+                      <AssessmentSummary 
+                        employmentStatus={assessment.employmentStatus}
+                        hasRegularIncome={assessment.hasRegularIncome}
+                        incomeSources={assessment.incomeSources}
+                        expenseItems={assessment.expenseItems}
+                        uploadedFile={assessment.uploadedFile}
+                        financialKnowledgeLevel={assessment.financialKnowledgeLevel}
+                        investmentExperience={assessment.investmentExperience}
+                        goals={assessment.goals}
+                        otherGoal={assessment.otherGoal}
+                        debtTypes={assessment.debtTypes}
+                        debtDetails={assessment.debtDetails}
+                        debtManagementConfidence={assessment.debtManagementConfidence}
+                        freeTextComments={assessment.freeTextComments}
+                      />
+                    </div>
 
-                {/* AI Summary positioned after Assessment Summary */}
-                {aiSummary && (
-                  <div className="mt-8">
-                    <Card className="border-emerald-200 bg-gradient-to-br from-emerald-50 to-white">
-                      <CardHeader>
-                        <CardTitle className="flex items-center gap-2">
-                          <BarChart3 className="h-5 w-5 text-emerald-600" />
-                          AI-Generated Financial Summary
-                        </CardTitle>
-                      </CardHeader>
-                      <CardContent>
-                        <div className="prose prose-emerald max-w-none prose-headings:text-emerald-800 prose-strong:text-emerald-700">
-                          <ReactMarkdown remarkPlugins={[remarkGfm]}>
-                            {aiSummary}
-                          </ReactMarkdown>
-                        </div>
-                      </CardContent>
-                    </Card>
+                    {/* AI Summary positioned after Assessment Summary */}
+                    {aiSummary && (
+                      <div className="mt-8">
+                        <Card className="border-emerald-200 bg-gradient-to-br from-emerald-50 to-white">
+                          <CardHeader>
+                            <CardTitle className="flex items-center gap-2">
+                              <BarChart3 className="h-5 w-5 text-emerald-600" />
+                              AI-Generated Financial Summary
+                            </CardTitle>
+                          </CardHeader>
+                          <CardContent>
+                            <div className="prose prose-emerald max-w-none prose-headings:text-emerald-800 prose-strong:text-emerald-700">
+                              <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                                {aiSummary}
+                              </ReactMarkdown>
+                            </div>
+                          </CardContent>
+                        </Card>
+                      </div>
+                    )}
                   </div>
                 )}
-              </div>
-            )}
-            
-            {isComplete && !assessment.goals.includes('Full Financial Health Check') && (
-              <>
+                
                 {/* Other goal-specific components */}
-                <div className="container mx-auto grid gap-6 px-4 py-6 sm:px-6 lg:grid-cols-2 lg:px-8">
+                {!assessment.goals.includes('Full Financial Health Check') && (
+                  <div className="container mx-auto grid gap-6 px-4 py-6 sm:px-6 lg:grid-cols-2 lg:px-8">
                     {assessment.goals.includes('Buy a house') && (
                         <HouseBuyingCalculator 
                           assessmentData={assessment}
@@ -295,6 +293,7 @@ export default function Index() {
                       onSetBudgetGoal={handleSetBudgetGoal}
                     />
                   </div>
+                )}
               </>
             )}
           </div>
