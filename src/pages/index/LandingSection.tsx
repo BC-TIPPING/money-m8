@@ -49,7 +49,7 @@ const LandingSection = ({ onStartAssessment, isLoading }: { onStartAssessment: (
           <TrendingUp className="h-6 w-6 md:h-7 md:w-7 text-emerald-400" />
         </div>
 
-        <div className="mb-6">
+        <div className="mb-8">
           <AISearchSection onGoalSuggested={handleGoalSuggestion} />
         </div>
 
