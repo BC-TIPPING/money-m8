@@ -66,20 +66,20 @@ const AISearchSection: React.FC<AISearchSectionProps> = ({ onGoalSuggested }) =>
   };
 
   return (
-    <div className="w-full max-w-2xl mb-4">
-      <form onSubmit={handleSubmit} className="space-y-3">
+    <div className="w-full max-w-xl mb-4">
+      <form onSubmit={handleSubmit} className="space-y-2">
         <div className="flex gap-2">
           <Input
-            placeholder="Ask me anything about Australian finances..."
+            placeholder="Ask me anything"
             value={question}
             onChange={(e) => setQuestion(e.target.value)}
-            className="bg-white/10 border-white/20 text-white placeholder:text-white/50 backdrop-blur-md flex-1 h-10"
+            className="bg-white/10 border-white/20 text-white placeholder:text-white/50 backdrop-blur-md flex-1 h-9 text-sm"
             disabled={isLoading}
           />
           <Button 
             type="submit" 
             disabled={isLoading || !question.trim()}
-            className="bg-emerald-600 hover:bg-emerald-700 min-w-[120px] h-10"
+            className="bg-emerald-600 hover:bg-emerald-700 min-w-[100px] h-9 text-sm"
           >
             {isLoading ? (
               <Loader2 className="h-4 w-4 animate-spin" />
@@ -90,19 +90,19 @@ const AISearchSection: React.FC<AISearchSectionProps> = ({ onGoalSuggested }) =>
         </div>
         
         <Select onValueChange={(value) => setQuestion(value)}>
-          <SelectTrigger className="bg-white/10 border-white/20 text-white backdrop-blur-md w-full h-10">
-            <SelectValue placeholder="Or choose from common Australian financial questions..." />
+          <SelectTrigger className="bg-white/10 border-white/20 text-white backdrop-blur-md w-full h-9 text-sm">
+            <SelectValue placeholder="Common financial questions..." />
           </SelectTrigger>
           <SelectContent className="bg-white z-50">
             {australianQuestions.map((q, index) => (
-              <SelectItem key={index} value={q}>{q}</SelectItem>
+              <SelectItem key={index} value={q} className="text-xs sm:text-sm">{q}</SelectItem>
             ))}
           </SelectContent>
         </Select>
       </form>
       
-      <p className="text-center text-xs text-white/60 italic mb-3">
-        Get expert knowledge based on ATO guidelines and Australian banking regulations
+      <p className="text-center text-xs text-white/60 italic mb-2 px-2">
+        Expert knowledge based on ATO guidelines and Australian banking regulations
       </p>
 
       {isLoading && (

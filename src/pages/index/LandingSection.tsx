@@ -2,7 +2,7 @@
 import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
-import { Loader2 } from "lucide-react";
+import { Loader2, DollarSign, TrendingUp } from "lucide-react";
 import AISearchSection from "./components/AISearchSection";
 
 const goalPanels = [
@@ -41,11 +41,17 @@ const LandingSection = ({ onStartAssessment, isLoading }: { onStartAssessment: (
       <div className="absolute inset-0 z-1 bg-gradient-to-br from-emerald-900/20 via-blue-900/30 to-purple-900/20" />
       
       <main className="relative z-10 w-full flex flex-col items-center mt-4 md:mt-6 px-2">
-        <h1 className="text-3xl md:text-4xl font-extrabold mb-4 text-center tracking-tight text-white drop-shadow-2xl">
-          Money M8
-        </h1>
+        <div className="flex items-center justify-center gap-2 mb-4">
+          <DollarSign className="h-6 w-6 md:h-7 md:w-7 text-emerald-400" />
+          <h1 className="text-3xl md:text-4xl font-extrabold text-center tracking-tight text-white drop-shadow-2xl">
+            Money M8
+          </h1>
+          <TrendingUp className="h-6 w-6 md:h-7 md:w-7 text-emerald-400" />
+        </div>
 
-        <AISearchSection onGoalSuggested={handleGoalSuggestion} />
+        <div className="mb-6">
+          <AISearchSection onGoalSuggested={handleGoalSuggestion} />
+        </div>
 
         <section id="goals-section" className="w-full max-w-3xl mb-4 sm:mb-6 px-4 sm:px-8 md:px-14">
           <div className="text-center mb-3 sm:mb-4">
