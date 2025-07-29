@@ -47,33 +47,33 @@ const LandingSection = ({ onStartAssessment, isLoading }: { onStartAssessment: (
 
         <AISearchSection onGoalSuggested={handleGoalSuggestion} />
 
-        <section id="goals-section" className="w-full max-w-3xl mb-6 px-14">
-          <div className="text-center mb-4">
-            <h2 className="text-xl font-bold text-white mb-2">Choose Your Goal</h2>
+        <section id="goals-section" className="w-full max-w-3xl mb-4 sm:mb-6 px-4 sm:px-8 md:px-14">
+          <div className="text-center mb-3 sm:mb-4">
+            <h2 className="text-lg sm:text-xl font-bold text-white mb-2">Choose Your Goal</h2>
           </div>
           
           <Carousel opts={{ align: "center", loop: false }} className="w-full">
             <CarouselContent>
               {goalPanels.map((panel, i) => (
-                <CarouselItem key={i} className="py-3 cursor-pointer md:basis-1/2 lg:basis-1/3 self-stretch" onClick={() => setSelectedGoal(panel.title)}>
+                <CarouselItem key={i} className="py-2 sm:py-3 cursor-pointer basis-full xs:basis-1/2 md:basis-1/2 lg:basis-1/3 self-stretch" onClick={() => setSelectedGoal(panel.title)}>
                   <div className="p-1 h-full">
-                    <div className={`bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl shadow-xl p-4 h-full flex flex-col items-center gap-2 transition-all hover:scale-105 hover:bg-white/15 ${selectedGoal === panel.title ? 'ring-4 ring-emerald-500 bg-white/20' : 'ring-transparent'}`}>
-                      <span className="text-3xl">{panel.emoji}</span>
-                      <span className="font-bold text-lg text-white text-center">{panel.title}</span>
-                      <span className="text-sm text-white/80 text-center">{panel.description}</span>
+                    <div className={`bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl shadow-xl p-3 sm:p-4 h-full flex flex-col items-center gap-1 sm:gap-2 transition-all hover:scale-105 hover:bg-white/15 ${selectedGoal === panel.title ? 'ring-4 ring-emerald-500 bg-white/20' : 'ring-transparent'}`}>
+                      <span className="text-2xl sm:text-3xl">{panel.emoji}</span>
+                      <span className="font-bold text-sm sm:text-lg text-white text-center leading-tight">{panel.title}</span>
+                      <span className="text-xs sm:text-sm text-white/80 text-center leading-tight">{panel.description}</span>
                     </div>
                   </div>
                 </CarouselItem>
               ))}
             </CarouselContent>
-            <CarouselPrevious className="bg-white/20 border-white/30 text-white hover:bg-white/30" />
-            <CarouselNext className="bg-white/20 border-white/30 text-white hover:bg-white/30" />
+            <CarouselPrevious className="bg-white/20 border-white/30 text-white hover:bg-white/30 left-0 sm:left-2" />
+            <CarouselNext className="bg-white/20 border-white/30 text-white hover:bg-white/30 right-0 sm:right-2" />
           </Carousel>
         </section>
         
         <Button 
           size="lg" 
-          className="text-lg px-6 py-4 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-semibold shadow-2xl transform hover:scale-105 transition-all disabled:bg-gray-400 disabled:cursor-not-allowed disabled:transform-none w-2/3 max-w-md"
+          className="text-sm sm:text-lg px-4 sm:px-6 py-3 sm:py-4 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-semibold shadow-2xl transform hover:scale-105 transition-all disabled:bg-gray-400 disabled:cursor-not-allowed disabled:transform-none w-4/5 sm:w-2/3 max-w-md"
           onClick={() => {
             if (selectedGoal) {
               onStartAssessment(selectedGoal);
@@ -83,14 +83,14 @@ const LandingSection = ({ onStartAssessment, isLoading }: { onStartAssessment: (
         >
           {isLoading ? (
             <>
-              <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+              <Loader2 className="mr-2 h-4 w-4 sm:h-5 sm:w-5 animate-spin" />
               Loading...
             </>
           ) : (
             "Start Assessment"
           )}
         </Button>
-        {!selectedGoal && <p className="text-white/70 mt-3 animate-pulse text-sm">Please select a goal to continue</p>}
+        {!selectedGoal && <p className="text-white/70 mt-2 sm:mt-3 animate-pulse text-xs sm:text-sm">Please select a goal to continue</p>}
       </main>
       
     </div>

@@ -32,8 +32,8 @@ import FileAnalysisReport from "./FileAnalysisReport";
 import { calculateMonthlyAmount, calculateAustralianIncomeTax } from "@/lib/financialCalculations";
 
 const CenteredCard = ({ children }: { children: React.ReactNode }) => (
-  <section className="w-full flex flex-col items-center min-h-[100dvh] justify-center px-4 pt-8 pb-10">
-    <div className="relative w-full max-w-2xl rounded-2xl shadow-2xl p-8 md:p-12 bg-white border border-gray-200">
+  <section className="w-full flex flex-col items-center min-h-[100dvh] justify-center px-2 sm:px-4 pt-6 sm:pt-8 pb-8 sm:pb-10">
+    <div className="relative w-full max-w-2xl rounded-2xl shadow-2xl p-4 sm:p-8 md:p-12 bg-white border border-gray-200">
       {children}
     </div>
   </section>
@@ -338,27 +338,30 @@ const AssessmentStepper: React.FC<AssessmentStepperProps> = (props) => {
           </div>
             <div className="space-y-4">
             {expenseItems.map((exp, idx) => (
-                <div className="grid grid-cols-[1fr_auto_auto] md:grid-cols-[1fr_120px_150px] gap-3 items-center" key={idx}>
-                <span className="flex-1 text-gray-900">{exp.category}</span>
-                <Input
-                    placeholder="Amount ($)"
-                    type="number"
-                    min={0}
-                    value={exp.amount}
-                    onChange={e => handleExpenseChange(idx, "amount", e.target.value)}
-                />
-                <Select value={exp.frequency} onValueChange={val => handleExpenseChange(idx, "frequency", val)}>
-                    <SelectTrigger>
-                    <SelectValue placeholder="Frequency" />
-                    </SelectTrigger>
-                    <SelectContent>
-                    {INCOME_FREQUENCIES.map((freq) => (
-                        <SelectItem key={freq} value={freq}>
-                        {freq}
-                        </SelectItem>
-                    ))}
-                    </SelectContent>
-                </Select>
+                <div className="grid grid-cols-1 sm:grid-cols-[1fr_auto_auto] md:grid-cols-[1fr_120px_150px] gap-2 sm:gap-3 items-center" key={idx}>
+                <span className="flex-1 text-gray-900 font-medium text-sm sm:text-base mb-1 sm:mb-0">{exp.category}</span>
+                <div className="flex gap-2 sm:contents">
+                  <Input
+                      placeholder="Amount ($)"
+                      type="number"
+                      min={0}
+                      value={exp.amount}
+                      onChange={e => handleExpenseChange(idx, "amount", e.target.value)}
+                      className="flex-1 sm:w-auto"
+                  />
+                  <Select value={exp.frequency} onValueChange={val => handleExpenseChange(idx, "frequency", val)}>
+                      <SelectTrigger className="w-24 sm:w-auto">
+                      <SelectValue placeholder="Freq" />
+                      </SelectTrigger>
+                      <SelectContent>
+                      {INCOME_FREQUENCIES.map((freq) => (
+                          <SelectItem key={freq} value={freq}>
+                          {freq}
+                          </SelectItem>
+                      ))}
+                      </SelectContent>
+                  </Select>
+                </div>
                 </div>
             ))}
             </div>

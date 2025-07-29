@@ -232,7 +232,9 @@ export default function Index() {
                 
                 {/* Other goal-specific components */}
                 {!assessment.goals.includes('Full Financial Health Check') && (
-                  <div className="container mx-auto grid gap-6 px-4 py-6 sm:px-6 lg:grid-cols-2 lg:px-8">
+          <div className="container mx-auto grid gap-6 px-4 py-6 sm:px-6 lg:grid-cols-2 lg:px-8"
+             style={{ paddingBottom: "120px" }} // Extra space for floating buttons
+          >
                     {assessment.goals.includes('Buy a house') && (
                         <HouseBuyingCalculator 
                           assessmentData={assessment}
@@ -319,8 +321,8 @@ export default function Index() {
         </>
       )}
       
-      <footer className="w-full py-2 text-center bg-background border-t">
-        <p className="text-xs text-muted-foreground italic">
+      <footer className="w-full py-3 sm:py-2 px-2 sm:px-4 text-center bg-background border-t safe-area-padding">
+        <p className="text-xs sm:text-xs text-muted-foreground italic leading-relaxed">
           Remember mate, this is just AI-generated guidance to get you thinking. It's not personal advice, so chat with a qualified professional before making any big money moves.
         </p>
       </footer>
