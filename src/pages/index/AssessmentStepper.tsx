@@ -801,6 +801,11 @@ const AssessmentStepper: React.FC<AssessmentStepperProps> = (props) => {
   };
 
   if (step >= questionsWithUpload.length) {
+    // For Full Financial Health Check, don't show the summary here - it will be shown in Index.tsx
+    if (goals.includes('Full Financial Health Check')) {
+      return null; // The full health check will be rendered in Index.tsx
+    }
+    
     return (
       <div className="w-full min-h-screen bg-gray-50 flex items-center justify-center py-12">
         <CenteredCard>

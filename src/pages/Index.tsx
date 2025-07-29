@@ -95,6 +95,18 @@ export default function Index() {
     return () => window.removeEventListener('selectGoal', handleGoalEvent as EventListener);
   }, [assessment.goals, hasCompletedAssessment, generateSummary]);
   
+  // Clear cached results on browser refresh
+  useEffect(() => {
+    const handleBeforeUnload = () => {
+      // Clear any cached assessment data
+      localStorage.removeItem('selectedGoal');
+      localStorage.removeItem('assessmentData');
+    };
+
+    window.addEventListener('beforeunload', handleBeforeUnload);
+    return () => window.removeEventListener('beforeunload', handleBeforeUnload);
+  }, []);
+
   // Remove the localStorage goal handling since we're allowing anonymous access
   useEffect(() => {
     if (user) {
@@ -173,7 +185,7 @@ export default function Index() {
             
             {isComplete && (
               <>
-                {assessment.goals.includes('Full Financial Health Check') && (
+                {assessment.goals.includes('Full Financial Health Check') && isComplete && assessment.step >= questions.length && (
                   <div className="container mx-auto px-4 py-6 sm:px-6 lg:px-8">
                     <FullFinancialHealthCheck 
                       age={assessment.age}
@@ -190,21 +202,29 @@ export default function Index() {
                     
                     {/* Thank You Assessment Summary after Full Financial Health Check */}
                     <div className="mt-8">
-                      <AssessmentSummary 
-                        employmentStatus={assessment.employmentStatus}
-                        hasRegularIncome={assessment.hasRegularIncome}
-                        incomeSources={assessment.incomeSources}
-                        expenseItems={assessment.expenseItems}
-                        uploadedFile={assessment.uploadedFile}
-                        financialKnowledgeLevel={assessment.financialKnowledgeLevel}
-                        investmentExperience={assessment.investmentExperience}
-                        goals={assessment.goals}
-                        otherGoal={assessment.otherGoal}
-                        debtTypes={assessment.debtTypes}
-                        debtDetails={assessment.debtDetails}
-                        debtManagementConfidence={assessment.debtManagementConfidence}
-                        freeTextComments={assessment.freeTextComments}
-                      />
+                      <Card className="border-gray-200 bg-gradient-to-br from-gray-50 to-white">
+                        <CardHeader className="text-center">
+                          <CardTitle className="text-2xl font-bold text-gray-900">Thank You!</CardTitle>
+                          <p className="text-gray-600">Your financial assessment is complete. Here is a summary of your responses.</p>
+                        </CardHeader>
+                        <CardContent>
+                          <AssessmentSummary 
+                            employmentStatus={assessment.employmentStatus}
+                            hasRegularIncome={assessment.hasRegularIncome}
+                            incomeSources={assessment.incomeSources}
+                            expenseItems={assessment.expenseItems}
+                            uploadedFile={assessment.uploadedFile}
+                            financialKnowledgeLevel={assessment.financialKnowledgeLevel}
+                            investmentExperience={assessment.investmentExperience}
+                            goals={assessment.goals}
+                            otherGoal={assessment.otherGoal}
+                            debtTypes={assessment.debtTypes}
+                            debtDetails={assessment.debtDetails}
+                            debtManagementConfidence={assessment.debtManagementConfidence}
+                            freeTextComments={assessment.freeTextComments}
+                          />
+                        </CardContent>
+                      </Card>
                     </div>
 
                     {/* AI Summary positioned after Assessment Summary */}
