@@ -29,14 +29,16 @@ import InvestmentGrowthCalculator from "./index/InvestmentGrowthCalculator";
 import PostDebtInvestmentVisualization from "./index/components/PostDebtInvestmentVisualization";
 import PayOffHomeLoanCalculator from "./index/components/PayOffHomeLoanCalculator";
 import EditAssessmentButton from "./index/components/EditAssessmentButton";
-import { usePDFExport } from "./index/hooks/usePDFExport";
+import { useProfessionalPDFExport } from "./index/hooks/useProfessionalPDFExport";
+import { PDFTemplate } from "./index/components/PDFTemplate";
+import { PDFSection } from "./index/components/PDFSection";
 
 const DEBT_GOALS = ['Pay off home loan sooner', 'Reduce debt'];
 
 export default function Index() {
   const assessment = useAssessmentState();
   const { user, signOut } = useAuth();
-  const { handleExportToPDF } = usePDFExport();
+  const { handleExportToPDF } = useProfessionalPDFExport();
 
   const {
     aiSummary,
@@ -341,6 +343,163 @@ export default function Index() {
         </>
       )}
       
+      {/* PDF Template for Export - Hidden by default */}
+      {isComplete && (
+        <PDFTemplate>
+          {/* Cover Page */}
+          <PDFSection title="Executive Summary">
+            <div className="space-y-6">
+              <div className="text-center mb-8">
+                <h2 className="text-xl font-bold mb-4">Personal Financial Assessment Report</h2>
+                <div className="grid grid-cols-2 gap-4 text-sm">
+                  <div>
+                    <strong>Assessment Date:</strong> {new Date().toLocaleDateString('en-AU')}
+                  </div>
+                  <div>
+                    <strong>Financial Goals:</strong> {assessment.goals.join(', ')}
+                  </div>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-6">
+                <div className="space-y-4">
+                  <h3 className="font-semibold text-lg border-b pb-2">Income Summary</h3>
+                  <div className="space-y-2 text-sm">
+                    <div className="flex justify-between">
+                      <span>Monthly Gross Income:</span>
+                      <span className="font-medium">${totalMonthlyGrossIncome.toLocaleString()}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span>Annual Gross Income:</span>
+                      <span className="font-medium">${totalAnnualGrossIncome.toLocaleString()}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span>Annual Tax:</span>
+                      <span className="font-medium">${annualTax.toLocaleString()}</span>
+                    </div>
+                    <div className="flex justify-between border-t pt-2">
+                      <span>Monthly Net Income:</span>
+                      <span className="font-medium">${totalMonthlyNetIncome.toLocaleString()}</span>
+                    </div>
+                  </div>
+                </div>
+                
+                <div className="space-y-4">
+                  <h3 className="font-semibold text-lg border-b pb-2">Expense Summary</h3>
+                  <div className="space-y-2 text-sm">
+                    <div className="flex justify-between">
+                      <span>Monthly Expenses:</span>
+                      <span className="font-medium">${totalMonthlyExpenses.toLocaleString()}</span>
+                    </div>
+                    <div className="flex justify-between border-t pt-2">
+                      <span>Monthly Surplus:</span>
+                      <span className={`font-medium ${monthlySurplus >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                        ${monthlySurplus.toLocaleString()}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {aiSummary && (
+                <div className="mt-8">
+                  <h3 className="font-semibold text-lg border-b pb-2 mb-4">AI Analysis Summary</h3>
+                  <div className="text-sm prose prose-sm max-w-none">
+                    <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                      {aiSummary.split('\n').slice(0, 10).join('\n') + '...'}
+                    </ReactMarkdown>
+                  </div>
+                </div>
+              )}
+            </div>
+          </PDFSection>
+
+          {/* Assessment Summary Page */}
+          <PDFSection title="Assessment Details">
+            <div className="assessment-summary-pdf">
+              <AssessmentSummary 
+                employmentStatus={assessment.employmentStatus}
+                hasRegularIncome={assessment.hasRegularIncome}
+                incomeSources={assessment.incomeSources}
+                expenseItems={assessment.expenseItems}
+                uploadedFile={assessment.uploadedFile}
+                financialKnowledgeLevel={assessment.financialKnowledgeLevel}
+                investmentExperience={assessment.investmentExperience}
+                goals={assessment.goals}
+                otherGoal={assessment.otherGoal}
+                debtTypes={assessment.debtTypes}
+                debtDetails={assessment.debtDetails}
+                debtManagementConfidence={assessment.debtManagementConfidence}
+                freeTextComments={assessment.freeTextComments}
+              />
+            </div>
+          </PDFSection>
+
+          {/* Goal-Specific Analysis Pages */}
+          {assessment.goals.includes('Full Financial Health Check') && (
+            <PDFSection title="Full Financial Health Check">
+              <div className="space-y-6">
+                <FullFinancialHealthCheck 
+                  age={assessment.age}
+                  postcode={assessment.postcode}
+                  superBalance={assessment.superBalance}
+                  debtTypes={assessment.debtTypes}
+                  debtDetails={assessment.debtDetails}
+                  incomeSources={assessment.incomeSources}
+                  expenseItems={assessment.expenseItems}
+                  goals={assessment.goals}
+                  insurances={assessment.insurances}
+                  assets={assessment.assets || []}
+                />
+              </div>
+            </PDFSection>
+          )}
+
+          {/* Charts and Visualizations Page */}
+          {(chartData?.debtReductionData || chartData?.interestSavedData) && (
+            <PDFSection title="Financial Projections">
+              <div className="space-y-8">
+                {chartData?.debtReductionData && (
+                  <div>
+                    <h3 className="font-semibold text-lg mb-4">Debt Reduction Analysis</h3>
+                    <DebtReductionChart data={chartData.debtReductionData} />
+                  </div>
+                )}
+                {chartData?.interestSavedData && (
+                  <div>
+                    <h3 className="font-semibold text-lg mb-4">Interest Savings Analysis</h3>
+                    <InterestSavedChart data={chartData.interestSavedData} />
+                  </div>
+                )}
+              </div>
+            </PDFSection>
+          )}
+
+          {/* Action Items Page */}
+          <PDFSection title="Recommended Actions">
+            <div className="action-items-pdf">
+              <ActionItemsSection 
+                assessmentData={assessment} 
+                onSetBudgetGoal={handleSetBudgetGoal}
+              />
+            </div>
+          </PDFSection>
+
+          {/* Full AI Summary Page (if exists) */}
+          {aiSummary && (
+            <PDFSection title="Detailed AI Analysis">
+              <div className="ai-summary-pdf">
+                <div className="prose prose-sm max-w-none">
+                  <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                    {aiSummary}
+                  </ReactMarkdown>
+                </div>
+              </div>
+            </PDFSection>
+          )}
+        </PDFTemplate>
+      )}
+
       <footer className="w-full py-3 sm:py-2 px-2 sm:px-4 text-center bg-background border-t safe-area-padding">
         <p className="text-xs sm:text-xs text-muted-foreground italic leading-relaxed">
           Remember mate, this is just AI-generated guidance to get you thinking. It's not personal advice, so chat with a qualified professional before making any big money moves.
