@@ -7,11 +7,10 @@ export const useSectionPDFExport = () => {
     const pdfWidth = pdf.internal.pageSize.getWidth();
     const pdfHeight = pdf.internal.pageSize.getHeight();
 
-    // Define section selectors in order - each will be on its own page
+    // Define section selectors in order
     const sectionSelectors = [
       '.stepper-container', // Assessment stepper/summary
       '.health-check-section', // Full Financial Health Check
-      '.budget-analysis-section', // Budget Analysis
       '.ai-summary-section', // AI Generated summary
       '.goal-specific-section', // Goal-specific calculators
       '.chart-section', // Charts
@@ -45,36 +44,46 @@ export const useSectionPDFExport = () => {
         const imgWidth = pdfWidth;
         const imgHeight = pdfWidth / ratio;
 
-        // Add new page for each section - every section starts on its own page
+        // Add new page for each section (except the very first one)
         if (sectionSelectors.indexOf(selector) > 0) {
           pdf.addPage();
         }
 
-        // Check if section needs to be split across pages
+        // Try to fit section on current page, otherwise start new page
         if (imgHeight > pdfHeight) {
-          let remainingHeight = imgHeight;
-          let sourceY = 0;
+          // Section is too tall for one page, but try to keep it together by scaling
+          const maxScale = 0.95; // 95% of page height to leave some margin
+          const scaledHeight = pdfHeight * maxScale;
+          const scaledWidth = (scaledHeight / imgHeight) * imgWidth;
           
-          while (remainingHeight > 0) {
-            const heightToAdd = Math.min(pdfHeight, remainingHeight);
-            const sourceHeight = (heightToAdd / imgHeight) * canvasHeight;
+          // If scaled version still fits reasonably, use it
+          if (scaledWidth <= pdfWidth * 0.9) {
+            pdf.addImage(imgData, 'PNG', 0, 0, scaledWidth, scaledHeight);
+          } else {
+            // Split into multiple pages as last resort
+            let remainingHeight = imgHeight;
+            let sourceY = 0;
             
-            // Create a new canvas for this portion
-            const tempCanvas = document.createElement('canvas');
-            tempCanvas.width = canvasWidth;
-            tempCanvas.height = sourceHeight;
-            const tempCtx = tempCanvas.getContext('2d');
-            
-            if (tempCtx) {
-              tempCtx.drawImage(canvas, 0, sourceY, canvasWidth, sourceHeight, 0, 0, canvasWidth, sourceHeight);
-              const tempImgData = tempCanvas.toDataURL('image/png');
+            while (remainingHeight > 0) {
+              const heightToAdd = Math.min(pdfHeight * 0.9, remainingHeight);
+              const sourceHeight = (heightToAdd / imgHeight) * canvasHeight;
               
-              if (sourceY > 0) pdf.addPage();
-              pdf.addImage(tempImgData, 'PNG', 0, 0, imgWidth, heightToAdd);
+              const tempCanvas = document.createElement('canvas');
+              tempCanvas.width = canvasWidth;
+              tempCanvas.height = sourceHeight;
+              const tempCtx = tempCanvas.getContext('2d');
+              
+              if (tempCtx) {
+                tempCtx.drawImage(canvas, 0, sourceY, canvasWidth, sourceHeight, 0, 0, canvasWidth, sourceHeight);
+                const tempImgData = tempCanvas.toDataURL('image/png');
+                
+                if (sourceY > 0) pdf.addPage();
+                pdf.addImage(tempImgData, 'PNG', 0, 0, imgWidth, heightToAdd);
+              }
+              
+              sourceY += sourceHeight;
+              remainingHeight -= heightToAdd;
             }
-            
-            sourceY += sourceHeight;
-            remainingHeight -= heightToAdd;
           }
         } else {
           // Section fits on one page
