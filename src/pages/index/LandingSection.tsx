@@ -41,9 +41,9 @@ const LandingSection = ({ onStartAssessment, isLoading }: { onStartAssessment: (
       <div className="absolute inset-0 z-1 bg-gradient-to-br from-emerald-900/20 via-blue-900/30 to-purple-900/20" />
       
       <main className="relative z-10 w-full flex flex-col items-center mt-4 md:mt-6 px-2">
-        <div className="flex items-center justify-center gap-2 mb-8">
+        <div className="flex items-center justify-center gap-2 mb-12">
           <DollarSign className="h-6 w-6 md:h-7 md:w-7 text-emerald-400" />
-          <h1 className="text-3xl md:text-4xl font-extrabold text-center tracking-tight text-white drop-shadow-2xl">
+          <h1 className="text-4xl md:text-5xl font-extrabold text-center tracking-tight text-white drop-shadow-2xl">
             Money M8
           </h1>
           <TrendingUp className="h-6 w-6 md:h-7 md:w-7 text-emerald-400" />

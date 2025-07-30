@@ -101,7 +101,7 @@ const AISearchSection: React.FC<AISearchSectionProps> = ({ onGoalSuggested }) =>
         </Select>
       </form>
       
-      <p className="text-center text-xs text-white/60 italic mb-2 px-2">
+      <p className="text-center text-xs text-white/60 italic mb-1 px-2">
         Expert knowledge based on ATO guidelines and Australian banking regulations
       </p>
 
