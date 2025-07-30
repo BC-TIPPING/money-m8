@@ -149,6 +149,7 @@ export function useAssessmentState() {
   const [superFund, setSuperFund] = useState("");
   const [mortgageRate, setMortgageRate] = useState<number | undefined>();
   const [assets, setAssets] = useState<{ type: string; value: string; description: string }[]>([]);
+  const [isFinished, setIsFinished] = useState(false);
 
   return {
     step,
@@ -198,5 +199,7 @@ export function useAssessmentState() {
     setMortgageRate,
     assets,
     setAssets,
+    isFinished,
+    setIsFinished,
   };
 }

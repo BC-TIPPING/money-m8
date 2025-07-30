@@ -182,12 +182,14 @@ export default function Index() {
               setMortgageRate={assessment.setMortgageRate || (() => {})}
               assets={assessment.assets || []}
               setAssets={assessment.setAssets || (() => {})}
+              isFinished={assessment.isFinished}
+              setIsFinished={assessment.setIsFinished}
             />
             </div>
             
             {isComplete && (
               <>
-                {assessment.goals.includes('Full Financial Health Check') && isComplete && assessment.step >= questions.length && (
+                {assessment.goals.includes('Full Financial Health Check') && isComplete && assessment.step >= questions.length && assessment.isFinished && (
                   <div className="container mx-auto px-4 py-6 sm:px-6 lg:px-8 health-check-section">
                     <FullFinancialHealthCheck 
                       age={assessment.age}

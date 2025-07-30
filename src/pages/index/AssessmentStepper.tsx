@@ -92,6 +92,8 @@ interface AssessmentStepperProps {
   setInsurances: (val: string[]) => void;
   assets: { type: string; value: string; description: string }[];
   setAssets: (val: { type: string; value: string; description: string }[]) => void;
+  isFinished: boolean;
+  setIsFinished: (val: boolean) => void;
 }
 
 const AssessmentStepper: React.FC<AssessmentStepperProps> = (props) => {
@@ -107,6 +109,7 @@ const AssessmentStepper: React.FC<AssessmentStepperProps> = (props) => {
     // Health check fields
     postcode, setPostcode, age, setAge, superBalance, setSuperBalance, superFund, setSuperFund,
     mortgageRate, setMortgageRate, insurances, setInsurances, assets, setAssets,
+    isFinished, setIsFinished,
     generateSummary, isGeneratingSummary, aiSummary, chartData
   } = props;
 
@@ -793,6 +796,8 @@ const AssessmentStepper: React.FC<AssessmentStepperProps> = (props) => {
       setStep(nextStep);
     } else {
       setStep(questionsWithUpload.length);
+      // Mark assessment as finished when user clicks "Finish" button
+      setIsFinished(true);
     }
   };
 
