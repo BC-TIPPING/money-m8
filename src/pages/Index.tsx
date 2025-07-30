@@ -29,14 +29,14 @@ import InvestmentGrowthCalculator from "./index/InvestmentGrowthCalculator";
 import PostDebtInvestmentVisualization from "./index/components/PostDebtInvestmentVisualization";
 import PayOffHomeLoanCalculator from "./index/components/PayOffHomeLoanCalculator";
 import EditAssessmentButton from "./index/components/EditAssessmentButton";
-import { usePDFExport } from "./index/hooks/usePDFExport";
+import { useSectionPDFExport } from "./index/hooks/useSectionPDFExport";
 
 const DEBT_GOALS = ['Pay off home loan sooner', 'Reduce debt'];
 
 export default function Index() {
   const assessment = useAssessmentState();
   const { user, signOut } = useAuth();
-  const { handleExportToPDF } = usePDFExport();
+  const { handleExportToPDF } = useSectionPDFExport();
 
   const {
     aiSummary,
@@ -161,7 +161,8 @@ export default function Index() {
           )}
           
           <div id="export-content" className={`flex-grow ${isComplete ? 'pb-52' : ''}`}>
-            <AssessmentStepper 
+            <div className="stepper-container">
+              <AssessmentStepper
               {...assessment} 
               generateSummary={() => generateSummary({})}
               isGeneratingSummary={isGeneratingSummary}
@@ -182,11 +183,12 @@ export default function Index() {
               assets={assessment.assets || []}
               setAssets={assessment.setAssets || (() => {})}
             />
+            </div>
             
             {isComplete && (
               <>
                 {assessment.goals.includes('Full Financial Health Check') && isComplete && assessment.step >= questions.length && (
-                  <div className="container mx-auto px-4 py-6 sm:px-6 lg:px-8">
+                  <div className="container mx-auto px-4 py-6 sm:px-6 lg:px-8 health-check-section">
                     <FullFinancialHealthCheck 
                       age={assessment.age}
                       postcode={assessment.postcode}
@@ -229,7 +231,7 @@ export default function Index() {
 
                     {/* AI Summary positioned after Assessment Summary */}
                     {aiSummary && (
-                      <div className="mt-8">
+                      <div className="mt-8 ai-summary-section">
                         <Card className="border-emerald-200 bg-gradient-to-br from-emerald-50 to-white">
                           <CardHeader>
                             <CardTitle className="flex items-center gap-2">
@@ -252,7 +254,7 @@ export default function Index() {
                 
                 {/* Other goal-specific components */}
                 {!assessment.goals.includes('Full Financial Health Check') && (
-          <div className="container mx-auto grid gap-6 px-4 py-6 sm:px-6 lg:grid-cols-2 lg:px-8"
+          <div className="container mx-auto grid gap-6 px-4 py-6 sm:px-6 lg:grid-cols-2 lg:px-8 goal-specific-section"
              style={{ paddingBottom: "120px" }} // Extra space for floating buttons
           >
                     {assessment.goals.includes('Buy a house') && (
@@ -306,14 +308,18 @@ export default function Index() {
                           />
                         </>
                     )}
-                    {chartData?.debtReductionData && <DebtReductionChart data={chartData.debtReductionData} />}
-                    {chartData?.interestSavedData && <InterestSavedChart data={chartData.interestSavedData} />}
+                    <div className="chart-section">
+                      {chartData?.debtReductionData && <DebtReductionChart data={chartData.debtReductionData} />}
+                      {chartData?.interestSavedData && <InterestSavedChart data={chartData.interestSavedData} />}
+                    </div>
                     
                     
-                    <ActionItemsSection 
-                      assessmentData={assessment} 
-                      onSetBudgetGoal={handleSetBudgetGoal}
-                    />
+                    <div className="action-items-section">
+                      <ActionItemsSection 
+                        assessmentData={assessment} 
+                        onSetBudgetGoal={handleSetBudgetGoal}
+                      />
+                    </div>
                   </div>
                 )}
               </>

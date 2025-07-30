@@ -120,12 +120,23 @@ const PostDebtInvestmentVisualization: React.FC<PostDebtInvestmentVisualizationP
       }
     }
 
-    // Calculate metrics at 10 and 20 years after debt payoff
-    const tenYearIndex = debtPayoffMonth + 120; // 10 years
-    const twentyYearIndex = debtPayoffMonth + 240; // 20 years
+    // Calculate investment values at specific time points
+    let tenYearInvestmentBalance = 0;
+    let twentyYearInvestmentBalance = 0;
     
-    const tenYearValue = data[Math.min(tenYearIndex, data.length - 1)]?.moderate || 0;
-    const twentyYearValue = data[Math.min(twentyYearIndex, data.length - 1)]?.moderate || 0;
+    // Calculate future values properly using compound interest formula
+    const tenYearsOfInvestment = 120; // 10 years in months
+    const twentyYearsOfInvestment = 240; // 20 years in months
+    const monthlyRate = 0.075 / 12; // 7.5% annual rate
+    
+    // Future value of monthly investments compounded
+    if (tenYearsOfInvestment > 0) {
+      tenYearInvestmentBalance = monthlyInvestmentAmount * ((Math.pow(1 + monthlyRate, tenYearsOfInvestment) - 1) / monthlyRate);
+    }
+    
+    if (twentyYearsOfInvestment > 0) {
+      twentyYearInvestmentBalance = monthlyInvestmentAmount * ((Math.pow(1 + monthlyRate, twentyYearsOfInvestment) - 1) / monthlyRate);
+    }
     
     const totalInvested = (data.length - debtPayoffMonth) * monthlyInvestmentAmount;
     const finalValue = moderateBalance;
@@ -136,11 +147,11 @@ const PostDebtInvestmentVisualization: React.FC<PostDebtInvestmentVisualizationP
       metrics: {
         debtPayoffMonth,
         monthlyInvestmentAmount,
-        tenYearValue,
-        twentyYearValue,
-        totalInvested: Math.max(0, totalInvested),
-        totalGains: Math.max(0, totalGains),
-        finalValue: Math.max(0, finalValue),
+        tenYearValue: tenYearInvestmentBalance,
+        twentyYearValue: twentyYearInvestmentBalance,
+        totalInvested: Math.max(0, monthlyInvestmentAmount * twentyYearsOfInvestment),
+        totalGains: Math.max(0, twentyYearInvestmentBalance - (monthlyInvestmentAmount * twentyYearsOfInvestment)),
+        finalValue: Math.max(0, twentyYearInvestmentBalance),
         yearsTilDebtFree: Math.ceil(debtPayoffMonth / 12)
       }
     };
