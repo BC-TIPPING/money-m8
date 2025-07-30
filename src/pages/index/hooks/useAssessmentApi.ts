@@ -45,7 +45,6 @@ export function useSaveAssessment(onSuccessCallback: (data: any) => void) {
     },
     onSuccess: (data) => {
         onSuccessCallback(data);
-        toast({ title: "Success", description: "Your assessment has been saved successfully!" });
     },
     onError: (error) => {
         toast({ title: "Error saving assessment", description: error.message, variant: 'destructive' });
