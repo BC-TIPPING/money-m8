@@ -53,23 +53,33 @@ export function calculateInvestmentGrowth(
 }
 
 export function calculateAustralianIncomeTax(income: number) {
+  // ATO Tax Rates 2024-25
+  // $0 – $18,200: Nil
+  // $18,201 – $45,000: 16c for each $1 over $18,200
+  // $45,001 – $135,000: $4,288 plus 30c for each $1 over $45,000
+  // $135,001 – $190,000: $31,288 plus 37c for each $1 over $135,000
+  // $190,001 and over: $51,638 plus 45c for each $1 over $190,000
+  
   let tax = 0;
-  // Note: Using 2024-25 tax brackets. These are subject to change.
-  // https://www.ato.gov.au/rates/individual-income-tax-rates/
-  if (income > 190000) {
-    tax += (income - 190000) * 0.45;
-    income = 190000;
+  
+  if (income <= 18200) {
+    tax = 0;
+  } else if (income <= 45000) {
+    tax = (income - 18200) * 0.16;
+  } else if (income <= 135000) {
+    tax = 4288 + (income - 45000) * 0.30;
+  } else if (income <= 190000) {
+    tax = 31288 + (income - 135000) * 0.37;
+  } else {
+    tax = 51638 + (income - 190000) * 0.45;
   }
-  if (income > 135000) {
-    tax += (income - 135000) * 0.37;
-    income = 135000;
+  
+  // Add Medicare Levy (2% for most taxpayers)
+  // Medicare Levy threshold for 2024-25 is $24,276 for individuals
+  let medicareLevy = 0;
+  if (income > 24276) {
+    medicareLevy = income * 0.02;
   }
-  if (income > 45000) {
-    tax += (income - 45000) * 0.30;
-    income = 45000;
-  }
-  if (income > 18200) {
-    tax += (income - 18200) * 0.19;
-  }
-  return tax;
+  
+  return tax + medicareLevy;
 }
