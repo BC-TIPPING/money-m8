@@ -98,10 +98,13 @@ export function useAssessmentData(assessment: AssessmentState) {
     }
   }, [isComplete]);
 
-  // Only auto-save for logged-in users
+  // Auto-save assessments when complete
   useEffect(() => {
-    if (isComplete && !isSubmitted && !isSaving && assessmentData && user) {
-      saveAssessment(assessmentData);
+    if (isComplete && !isSubmitted && !isSaving && user) {
+      // Only save to database if user is logged in
+      if (assessmentData) {
+        saveAssessment(assessmentData);
+      }
     }
   }, [isComplete, isSubmitted, isSaving, saveAssessment, assessmentData, user]);
 
