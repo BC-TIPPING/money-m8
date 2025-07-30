@@ -23,11 +23,8 @@ export function useAssessmentData(assessment: AssessmentState) {
   const { data: existingAssessment, isLoading: isLoadingAssessment, isSuccess: isFetchSuccess } = useFetchAssessment(user?.id ?? null);
 
   const assessmentData: AssessmentInsert | null = useMemo(() => {
-    if (!user) {
-      return null;
-    }
     return {
-      user_id: user.id,
+      user_id: user?.id || null, // Allow null for anonymous users
       has_regular_income: assessment.hasRegularIncome,
       income_sources: assessment.incomeSources,
       expense_items: assessment.expenseItems,
@@ -98,15 +95,12 @@ export function useAssessmentData(assessment: AssessmentState) {
     }
   }, [isComplete]);
 
-  // Auto-save assessments when complete
+  // Auto-save assessments when complete (for all users including anonymous)
   useEffect(() => {
-    if (isComplete && !isSubmitted && !isSaving && user) {
-      // Only save to database if user is logged in
-      if (assessmentData) {
-        saveAssessment(assessmentData);
-      }
+    if (isComplete && !isSubmitted && !isSaving && assessmentData) {
+      saveAssessment(assessmentData);
     }
-  }, [isComplete, isSubmitted, isSaving, saveAssessment, assessmentData, user]);
+  }, [isComplete, isSubmitted, isSaving, saveAssessment, assessmentData]);
 
   // Only load existing assessment for logged-in users
   useEffect(() => {
@@ -231,10 +225,10 @@ export function useAssessmentData(assessment: AssessmentState) {
     }
   };
 
-  // For anonymous users, create a temporary assessment data object for AI generation
+  // Create assessment data for AI generation (works for both logged-in and anonymous users)
   const generateSummary = ({ personality = 'default' }: { personality?: string } = {}) => {
     const dataForSummary = assessmentData || {
-      user_id: 'anonymous',
+      user_id: user?.id || null, // Allow null for anonymous users
       has_regular_income: assessment.hasRegularIncome,
       income_sources: assessment.incomeSources,
       expense_items: assessment.expenseItems,
