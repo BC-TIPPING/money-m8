@@ -7,10 +7,11 @@ export const useSectionPDFExport = () => {
     const pdfWidth = pdf.internal.pageSize.getWidth();
     const pdfHeight = pdf.internal.pageSize.getHeight();
 
-    // Define section selectors in order
+    // Define section selectors in order - each will be on its own page
     const sectionSelectors = [
       '.stepper-container', // Assessment stepper/summary
       '.health-check-section', // Full Financial Health Check
+      '.budget-analysis-section', // Budget Analysis
       '.ai-summary-section', // AI Generated summary
       '.goal-specific-section', // Goal-specific calculators
       '.chart-section', // Charts
@@ -44,12 +45,12 @@ export const useSectionPDFExport = () => {
         const imgWidth = pdfWidth;
         const imgHeight = pdfWidth / ratio;
 
-        // Add new page for each section (except the very first one)
+        // Add new page for each section - every section starts on its own page
         if (sectionSelectors.indexOf(selector) > 0) {
           pdf.addPage();
         }
 
-        // If section is too tall for one page, split it
+        // Check if section needs to be split across pages
         if (imgHeight > pdfHeight) {
           let remainingHeight = imgHeight;
           let sourceY = 0;

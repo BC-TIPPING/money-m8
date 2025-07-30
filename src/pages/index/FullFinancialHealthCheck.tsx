@@ -354,12 +354,6 @@ const FullFinancialHealthCheck: React.FC<FullFinancialHealthCheckProps> = ({
 
             <IncomeComparisonChart userIncome={annualIncome} postcode={postcode} />
             
-            <BudgetRecap 
-              totalMonthlyNetIncome={monthlyNetIncome}
-              totalMonthlyExpenses={monthlyExpenses}
-              expenseItems={expenseItems}
-            />
-            
             <div className="bg-blue-50 p-4 rounded-lg">
               <h4 className="font-semibold text-blue-900 mb-2">Understanding Your Income Position</h4>
               <p className="text-sm text-blue-800">
@@ -371,6 +365,15 @@ const FullFinancialHealthCheck: React.FC<FullFinancialHealthCheckProps> = ({
           </div>
         </CardContent>
       </Card>
+
+      {/* Budget Analysis Section */}
+      <div className="budget-analysis-section">
+        <BudgetRecap 
+          totalMonthlyNetIncome={monthlyNetIncome}
+          totalMonthlyExpenses={monthlyExpenses}
+          expenseItems={expenseItems}
+        />
+      </div>
 
       {/* Section 2: Superannuation Health */}
       <Card className="border-blue-200 bg-gradient-to-br from-blue-50 to-white">
