@@ -49,41 +49,31 @@ export const useSectionPDFExport = () => {
           pdf.addPage();
         }
 
-        // Try to fit section on current page, otherwise start new page
+        // If section is too tall for one page, split it
         if (imgHeight > pdfHeight) {
-          // Section is too tall for one page, but try to keep it together by scaling
-          const maxScale = 0.95; // 95% of page height to leave some margin
-          const scaledHeight = pdfHeight * maxScale;
-          const scaledWidth = (scaledHeight / imgHeight) * imgWidth;
+          let remainingHeight = imgHeight;
+          let sourceY = 0;
           
-          // If scaled version still fits reasonably, use it
-          if (scaledWidth <= pdfWidth * 0.9) {
-            pdf.addImage(imgData, 'PNG', 0, 0, scaledWidth, scaledHeight);
-          } else {
-            // Split into multiple pages as last resort
-            let remainingHeight = imgHeight;
-            let sourceY = 0;
+          while (remainingHeight > 0) {
+            const heightToAdd = Math.min(pdfHeight, remainingHeight);
+            const sourceHeight = (heightToAdd / imgHeight) * canvasHeight;
             
-            while (remainingHeight > 0) {
-              const heightToAdd = Math.min(pdfHeight * 0.9, remainingHeight);
-              const sourceHeight = (heightToAdd / imgHeight) * canvasHeight;
+            // Create a new canvas for this portion
+            const tempCanvas = document.createElement('canvas');
+            tempCanvas.width = canvasWidth;
+            tempCanvas.height = sourceHeight;
+            const tempCtx = tempCanvas.getContext('2d');
+            
+            if (tempCtx) {
+              tempCtx.drawImage(canvas, 0, sourceY, canvasWidth, sourceHeight, 0, 0, canvasWidth, sourceHeight);
+              const tempImgData = tempCanvas.toDataURL('image/png');
               
-              const tempCanvas = document.createElement('canvas');
-              tempCanvas.width = canvasWidth;
-              tempCanvas.height = sourceHeight;
-              const tempCtx = tempCanvas.getContext('2d');
-              
-              if (tempCtx) {
-                tempCtx.drawImage(canvas, 0, sourceY, canvasWidth, sourceHeight, 0, 0, canvasWidth, sourceHeight);
-                const tempImgData = tempCanvas.toDataURL('image/png');
-                
-                if (sourceY > 0) pdf.addPage();
-                pdf.addImage(tempImgData, 'PNG', 0, 0, imgWidth, heightToAdd);
-              }
-              
-              sourceY += sourceHeight;
-              remainingHeight -= heightToAdd;
+              if (sourceY > 0) pdf.addPage();
+              pdf.addImage(tempImgData, 'PNG', 0, 0, imgWidth, heightToAdd);
             }
+            
+            sourceY += sourceHeight;
+            remainingHeight -= heightToAdd;
           }
         } else {
           // Section fits on one page
