@@ -318,21 +318,20 @@ const FullFinancialHealthCheck: React.FC<FullFinancialHealthCheckProps> = ({
         </Card>
       </div>
 
-      {/* Section 1: Income Analysis & Budget */}
+      {/* Section 1: Income Analysis */}
       <Card className="border-emerald-200 bg-gradient-to-br from-emerald-50 to-white">
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <span className="w-8 h-8 bg-emerald-600 text-white rounded-full flex items-center justify-center text-sm font-bold">1</span>
             <TrendingUp className="h-5 w-5 text-emerald-600" />
-            Income Analysis & Budget Health
+            Income Analysis
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="bg-emerald-50 p-3 rounded-lg mb-4">
             <p className="text-sm text-emerald-800">
               <strong>Your income is the foundation of your financial health.</strong> 
-              Understanding where you stand compared to national benchmarks helps identify opportunities for growth. 
-              A healthy budget with 10-20% savings rate creates the foundation for wealth building and financial security.
+              Understanding where you stand compared to national benchmarks helps identify opportunities for growth.
             </p>
           </div>
           
@@ -354,12 +353,6 @@ const FullFinancialHealthCheck: React.FC<FullFinancialHealthCheckProps> = ({
 
             <IncomeComparisonChart userIncome={annualIncome} postcode={postcode} />
             
-            <BudgetRecap 
-              totalMonthlyNetIncome={monthlyNetIncome}
-              totalMonthlyExpenses={monthlyExpenses}
-              expenseItems={expenseItems}
-            />
-            
             <div className="bg-blue-50 p-4 rounded-lg">
               <h4 className="font-semibold text-blue-900 mb-2">Understanding Your Income Position</h4>
               <p className="text-sm text-blue-800">
@@ -372,11 +365,66 @@ const FullFinancialHealthCheck: React.FC<FullFinancialHealthCheckProps> = ({
         </CardContent>
       </Card>
 
-      {/* Section 2: Superannuation Health */}
+      {/* Section 2: Budget Analysis */}
+      <Card className="border-purple-200 bg-gradient-to-br from-purple-50 to-white">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <span className="w-8 h-8 bg-purple-600 text-white rounded-full flex items-center justify-center text-sm font-bold">2</span>
+            <BarChart3 className="h-5 w-5 text-purple-600" />
+            Budget Analysis
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="bg-purple-50 p-3 rounded-lg mb-4">
+            <p className="text-sm text-purple-800">
+              <strong>A healthy budget with 10-20% savings rate creates the foundation for wealth building and financial security.</strong> 
+              Current Savings Rate: {monthlyNetIncome > 0 ? ((monthlySurplus / monthlyNetIncome) * 100).toFixed(1) : 0}%
+              • Target: 10-20% • Australian Average: 8.6%
+            </p>
+          </div>
+          
+          <BudgetRecap 
+            totalMonthlyNetIncome={monthlyNetIncome}
+            totalMonthlyExpenses={monthlyExpenses}
+            expenseItems={expenseItems}
+          />
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
+            <div className="text-center p-4 bg-green-50 rounded-lg">
+              <p className="text-sm text-muted-foreground">Monthly Net Income</p>
+              <p className="text-xl font-bold text-green-600">${monthlyNetIncome.toLocaleString()}</p>
+            </div>
+            <div className="text-center p-4 bg-red-50 rounded-lg">
+              <p className="text-sm text-muted-foreground">Monthly Expenses</p>
+              <p className="text-xl font-bold text-red-600">${monthlyExpenses.toLocaleString()}</p>
+            </div>
+            <div className="text-center p-4 bg-blue-50 rounded-lg">
+              <p className="text-sm text-muted-foreground">Monthly Surplus</p>
+              <p className={`text-xl font-bold ${monthlySurplus >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                ${monthlySurplus.toLocaleString()}
+              </p>
+            </div>
+          </div>
+
+          <div className="bg-blue-50 p-4 rounded-lg">
+            <h4 className="font-semibold text-blue-900 mb-2">Savings Rate Analysis</h4>
+            <div className="text-sm text-blue-800 space-y-1">
+              <p>• <strong>Current Rate:</strong> {monthlyNetIncome > 0 ? ((monthlySurplus / monthlyNetIncome) * 100).toFixed(1) : 0}%</p>
+              <p>• <strong>Target Rate:</strong> 10-20% (Financial experts recommend)</p>
+              <p>• <strong>Australian Average:</strong> 8.6% (ABS data)</p>
+              {monthlySurplus < 0 && (
+                <p className="text-red-600 font-medium">⚠️ You're spending more than you earn. Consider reviewing expenses.</p>
+              )}
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Section 3: Superannuation Health */}
       <Card className="border-blue-200 bg-gradient-to-br from-blue-50 to-white">
         <CardHeader className="flex flex-row items-center justify-between">
           <CardTitle className="flex items-center gap-2">
-            <span className="w-8 h-8 bg-blue-600 text-white rounded-full flex items-center justify-center text-sm font-bold">2</span>
+            <span className="w-8 h-8 bg-blue-600 text-white rounded-full flex items-center justify-center text-sm font-bold">3</span>
             <PiggyBank className="h-5 w-5 text-blue-600" />
             Superannuation Health
           </CardTitle>
@@ -417,11 +465,11 @@ const FullFinancialHealthCheck: React.FC<FullFinancialHealthCheckProps> = ({
         </CardContent>
       </Card>
 
-      {/* Section 3: Insurance Protection */}
+      {/* Section 4: Insurance Protection */}
       <Card className="border-purple-200 bg-gradient-to-br from-purple-50 to-white">
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            <span className="w-8 h-8 bg-purple-600 text-white rounded-full flex items-center justify-center text-sm font-bold">3</span>
+            <span className="w-8 h-8 bg-purple-600 text-white rounded-full flex items-center justify-center text-sm font-bold">4</span>
             <Shield className="h-5 w-5 text-purple-600" />
             Insurance Protection
           </CardTitle>
@@ -489,11 +537,11 @@ const FullFinancialHealthCheck: React.FC<FullFinancialHealthCheckProps> = ({
         </CardContent>
       </Card>
 
-      {/* Section 4: Debt Strategy */}
+      {/* Section 5: Debt Strategy */}
       <Card className="border-red-200 bg-gradient-to-br from-red-50 to-white">
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            <span className="w-8 h-8 bg-red-600 text-white rounded-full flex items-center justify-center text-sm font-bold">4</span>
+            <span className="w-8 h-8 bg-red-600 text-white rounded-full flex items-center justify-center text-sm font-bold">5</span>
             <TrendingDown className="h-5 w-5 text-red-600" />
             Debt Strategy
           </CardTitle>
@@ -537,11 +585,11 @@ const FullFinancialHealthCheck: React.FC<FullFinancialHealthCheckProps> = ({
         </CardContent>
       </Card>
 
-      {/* Section 5: Investment Strategy */}
+      {/* Section 6: Investment Strategy */}
       <Card className="border-indigo-200 bg-gradient-to-br from-indigo-50 to-white">
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            <span className="w-8 h-8 bg-indigo-600 text-white rounded-full flex items-center justify-center text-sm font-bold">5</span>
+            <span className="w-8 h-8 bg-indigo-600 text-white rounded-full flex items-center justify-center text-sm font-bold">6</span>
             <Target className="h-5 w-5 text-indigo-600" />
             Investment Strategy
           </CardTitle>
@@ -618,11 +666,11 @@ const FullFinancialHealthCheck: React.FC<FullFinancialHealthCheckProps> = ({
         </CardContent>
       </Card>
 
-      {/* Section 6: Financial Action Plan */}
+      {/* Section 7: Financial Action Plan */}
       <Card className="border-emerald-200 bg-gradient-to-br from-emerald-50 to-white">
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            <span className="w-8 h-8 bg-emerald-600 text-white rounded-full flex items-center justify-center text-sm font-bold">6</span>
+            <span className="w-8 h-8 bg-emerald-600 text-white rounded-full flex items-center justify-center text-sm font-bold">7</span>
             Your Financial Action Plan
           </CardTitle>
         </CardHeader>
