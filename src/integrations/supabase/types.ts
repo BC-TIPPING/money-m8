@@ -14,6 +14,33 @@ export type Database = {
   }
   public: {
     Tables: {
+      ai_questions: {
+        Row: {
+          answer: string | null
+          created_at: string
+          id: string
+          question: string
+          suggested_goal: string | null
+          user_id: string | null
+        }
+        Insert: {
+          answer?: string | null
+          created_at?: string
+          id?: string
+          question: string
+          suggested_goal?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          answer?: string | null
+          created_at?: string
+          id?: string
+          question?: string
+          suggested_goal?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       assessments: {
         Row: {
           age: number | null

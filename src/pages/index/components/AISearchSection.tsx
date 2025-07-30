@@ -6,6 +6,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Loader2, Send } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/contexts/AuthContext";
 import GoalSuggestion from "./GoalSuggestion";
 
 interface AISearchSectionProps {
@@ -13,6 +14,7 @@ interface AISearchSectionProps {
 }
 
 const AISearchSection: React.FC<AISearchSectionProps> = ({ onGoalSuggested }) => {
+  const { user } = useAuth();
   const [question, setQuestion] = useState('');
   const [answer, setAnswer] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -46,9 +48,26 @@ const AISearchSection: React.FC<AISearchSectionProps> = ({ onGoalSuggested }) =>
 
       if (error) throw error;
 
-      setAnswer(data.answer || 'Sorry, I couldn\'t process your question.');
+      const answerText = data.answer || 'Sorry, I couldn\'t process your question.';
+      setAnswer(answerText);
+      
       if (data.suggestedGoal) {
         setSuggestedGoal(data.suggestedGoal);
+      }
+
+      // Save the question and answer to the database
+      try {
+        await supabase
+          .from('ai_questions')
+          .insert({
+            user_id: user?.id || null,
+            question: question.trim(),
+            answer: answerText,
+            suggested_goal: data.suggestedGoal || null
+          });
+      } catch (dbError) {
+        console.error('Error saving question to database:', dbError);
+        // Don't show error to user as this is background functionality
       }
     } catch (error) {
       console.error('Error calling AI function:', error);
