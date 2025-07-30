@@ -36,7 +36,7 @@ const PayOffHomeLoanCalculator: React.FC<PayOffHomeLoanCalculatorProps> = ({
   const [loanAmount, setLoanAmount] = useState(500000);
   const [loanTerm, setLoanTerm] = useState(30);
   const [interestRate, setInterestRate] = useState(6.5);
-  const [extraRepayment, setExtraRepayment] = useState(0);
+  const [extraRepayment, setExtraRepayment] = useState(500); // Set default extra payment
   const [results, setResults] = useState<any>(null);
 
   // Extract mortgage details from assessment if available
@@ -79,11 +79,13 @@ const PayOffHomeLoanCalculator: React.FC<PayOffHomeLoanCalculatorProps> = ({
         return { months: Infinity, totalInterest: Infinity, data: [] };
       }
 
-      while (balance > 0) {
+      while (balance > 0.01) { // Use small threshold instead of exactly 0
         const interestForMonth = balance * mr;
         totalInterest += interestForMonth;
         balance += interestForMonth;
-        balance -= totalMonthlyPayment;
+        
+        const paymentAmount = Math.min(totalMonthlyPayment, balance);
+        balance -= paymentAmount;
         months++;
 
         if (months % 12 === 0) {
@@ -109,8 +111,9 @@ const PayOffHomeLoanCalculator: React.FC<PayOffHomeLoanCalculatorProps> = ({
       return null;
     }
 
-    const yearsSaved = Math.floor((baseline.months - withExtra.months) / 12);
-    const monthsSaved = Math.round((baseline.months - withExtra.months) % 12);
+    const totalTimeSavedMonths = baseline.months - withExtra.months;
+    const yearsSaved = Math.floor(totalTimeSavedMonths / 12);
+    const monthsSaved = Math.round(totalTimeSavedMonths % 12);
     const interestSaved = baseline.totalInterest - withExtra.totalInterest;
     const originalTermYears = Math.floor(baseline.months / 12);
     const originalTermMonths = Math.round(baseline.months % 12);
