@@ -41,6 +41,14 @@ export function useAssessmentData(assessment: AssessmentState) {
       age: assessment.age || null,
       super_balance: assessment.superBalance || null,
       insurances: assessment.insurances || null,
+      // Additional assessment fields
+      employment_status: assessment.employmentStatus || null,
+      financial_knowledge_level: assessment.financialKnowledgeLevel || null,
+      debt_management_confidence: assessment.debtManagementConfidence || null,
+      free_text_comments: assessment.freeTextComments || null,
+      super_fund: assessment.superFund || null,
+      mortgage_rate: assessment.mortgageRate || null,
+      assets: assessment.assets || null,
     };
   }, [
     user,
@@ -56,6 +64,13 @@ export function useAssessmentData(assessment: AssessmentState) {
     assessment.age,
     assessment.superBalance,
     assessment.insurances,
+    assessment.employmentStatus,
+    assessment.financialKnowledgeLevel,
+    assessment.debtManagementConfidence,
+    assessment.freeTextComments,
+    assessment.superFund,
+    assessment.mortgageRate,
+    assessment.assets,
   ]);
 
   const { mutate: saveAssessment, isPending: isSaving } = useSaveAssessment((data) => {
@@ -117,6 +132,14 @@ export function useAssessmentData(assessment: AssessmentState) {
         assessment.setAge(typedAssessment.age ?? undefined);
         assessment.setInsurances((typedAssessment.insurances as string[]) ?? []);
         assessment.setDebtDetails((typedAssessment.debt_details as any) || []);
+        // Additional assessment fields
+        assessment.setEmploymentStatus(typedAssessment.employment_status ?? undefined);
+        assessment.setFinancialKnowledgeLevel(typedAssessment.financial_knowledge_level ?? undefined);
+        assessment.setDebtManagementConfidence(typedAssessment.debt_management_confidence ?? undefined);
+        assessment.setFreeTextComments(typedAssessment.free_text_comments ?? "");
+        assessment.setSuperFund(typedAssessment.super_fund ?? "");
+        assessment.setMortgageRate(typedAssessment.mortgage_rate ? Number(typedAssessment.mortgage_rate) : undefined);
+        assessment.setAssets((typedAssessment.assets as any) || []);
 
         toast({ title: "Welcome back!", description: "We've pre-filled your previous assessment data." });
         setIsPreloaded(true);
@@ -151,6 +174,14 @@ export function useAssessmentData(assessment: AssessmentState) {
     assessment.setAge(undefined);
     assessment.setInsurances([]);
     assessment.setDebtDetails([]);
+    // Reset additional assessment fields
+    assessment.setEmploymentStatus(undefined);
+    assessment.setFinancialKnowledgeLevel(undefined);
+    assessment.setDebtManagementConfidence(undefined);
+    assessment.setFreeTextComments("");
+    assessment.setSuperFund("");
+    assessment.setMortgageRate(undefined);
+    assessment.setAssets([]);
     assessment.setShowAssessment(false);
 
     setIsSubmitted(false);
@@ -210,6 +241,14 @@ export function useAssessmentData(assessment: AssessmentState) {
       super_balance: assessment.superBalance || null,
       insurances: assessment.insurances || null,
       debt_details: assessment.debtDetails,
+      // Additional assessment fields
+      employment_status: assessment.employmentStatus || null,
+      financial_knowledge_level: assessment.financialKnowledgeLevel || null,
+      debt_management_confidence: assessment.debtManagementConfidence || null,
+      free_text_comments: assessment.freeTextComments || null,
+      super_fund: assessment.superFund || null,
+      mortgage_rate: assessment.mortgageRate || null,
+      assets: assessment.assets || null,
     };
     
     generateSummaryMutation({ assessmentData: dataForSummary, personality });
