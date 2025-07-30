@@ -34,6 +34,7 @@ export function useAssessmentData(assessment: AssessmentState) {
       investment_experience: assessment.investmentExperience,
       goals: assessment.goals,
       other_goal: assessment.otherGoal,
+      goal_timeframe: assessment.goalTimeframe,
       debt_types: assessment.debtTypes,
       debt_details: assessment.debtDetails,
       // Health check fields
@@ -58,6 +59,7 @@ export function useAssessmentData(assessment: AssessmentState) {
     assessment.investmentExperience,
     assessment.goals,
     assessment.otherGoal,
+    assessment.goalTimeframe,
     assessment.debtTypes,
     assessment.debtDetails,
     assessment.postcode,
@@ -126,6 +128,7 @@ export function useAssessmentData(assessment: AssessmentState) {
         
         assessment.setInvestmentExperience(typedAssessment.investment_experience ?? []);
         assessment.setOtherGoal(typedAssessment.other_goal ?? "");
+        assessment.setGoalTimeframe(typedAssessment.goal_timeframe ?? "");
         assessment.setDebtTypes(typedAssessment.debt_types ?? []);
         // Health check fields
         assessment.setPostcode(typedAssessment.postcode ?? "");
@@ -168,6 +171,7 @@ export function useAssessmentData(assessment: AssessmentState) {
     assessment.setInvestmentExperience([]);
     assessment.setGoals([]);
     assessment.setOtherGoal("");
+    assessment.setGoalTimeframe("");
     assessment.setDebtTypes([]);
     // Reset health check fields
     assessment.setPostcode("");
@@ -234,6 +238,7 @@ export function useAssessmentData(assessment: AssessmentState) {
       investment_experience: assessment.investmentExperience,
       goals: assessment.goals,
       other_goal: assessment.otherGoal,
+      goal_timeframe: assessment.goalTimeframe,
       debt_types: assessment.debtTypes,
       // Health check fields
       postcode: assessment.postcode || null,

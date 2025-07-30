@@ -114,6 +114,7 @@ export function useAssessmentState() {
   const [showAssessment, setShowAssessment] = useState(false);
   const [goals, setGoals] = useState<string[]>([]);
   const [otherGoal, setOtherGoal] = useState("");
+  const [goalTimeframe, setGoalTimeframe] = useState("");
   const [debtTypes, setDebtTypes] = useState<string[]>([]);
   const [debtDetails, setDebtDetails] = useState<DebtDetail[]>([]);
   const [investmentExperience, setInvestmentExperience] = useState<string[]>([]);
@@ -160,6 +161,8 @@ export function useAssessmentState() {
     setGoals,
     otherGoal,
     setOtherGoal,
+    goalTimeframe,
+    setGoalTimeframe,
     debtTypes,
     setDebtTypes,
     debtDetails,
