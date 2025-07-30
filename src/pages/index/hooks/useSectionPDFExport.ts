@@ -6,7 +6,6 @@ export const useSectionPDFExport = () => {
     const pdf = new jsPDF('p', 'mm', 'a4');
     const pdfWidth = pdf.internal.pageSize.getWidth();
     const pdfHeight = pdf.internal.pageSize.getHeight();
-    let isFirstPage = true;
 
     // Define section selectors in order
     const sectionSelectors = [
@@ -45,11 +44,10 @@ export const useSectionPDFExport = () => {
         const imgWidth = pdfWidth;
         const imgHeight = pdfWidth / ratio;
 
-        // Add new page if not first page
-        if (!isFirstPage) {
+        // Add new page for each section (except the very first one)
+        if (sectionSelectors.indexOf(selector) > 0) {
           pdf.addPage();
         }
-        isFirstPage = false;
 
         // If section is too tall for one page, split it
         if (imgHeight > pdfHeight) {
