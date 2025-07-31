@@ -31,14 +31,13 @@ const LandingSection = ({ onStartAssessment, isLoading }: { onStartAssessment: (
   };
 
   return (
-    <div className="w-full min-h-screen relative flex flex-col items-center justify-center overflow-hidden bg-gradient-to-br from-[#202336] via-[#28365a] to-[#191d29]">
+    <div className="w-full min-h-screen relative flex flex-col items-center justify-center overflow-hidden">
       <div 
         className="absolute inset-0 z-0 bg-cover bg-center bg-no-repeat"
         style={{
-          backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.75), rgba(0, 0, 0, 0.6)), url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZGVmcz48cGF0dGVybiBpZD0iYXVzdHJhbGlhbl9jdXJyZW5jeSIgcGF0dGVyblVuaXRzPSJ1c2VyU3BhY2VPblVzZSIgd2lkdGg9IjEwMCIgaGVpZ2h0PSIxMDAiPjxnIGZpbGw9Im5vbmUiIHN0cm9rZT0iIzAwRkY4MCIgc3Ryb2tlLXdpZHRoPSIwLjUiIG9wYWNpdHk9IjAuMSI+PGNpcmNsZSBjeD0iMjAiIGN5PSIyMCIgcj0iMTUiLz48Y2lyY2xlIGN4PSI4MCIgY3k9IjIwIiByPSIxMCIvPjxjaXJjbGUgY3g9IjUwIiBjeT0iNTAiIHI9IjEyIi8+PGNpcmNsZSBjeD0iMjAiIGN5PSI4MCIgcj0iOCIvPjxjaXJjbGUgY3g9IjgwIiBjeT0iODAiIHI9IjE0Ii8+PHBhdGggZD0iTTEwIDEwTDkwIDkwTTkwIDEwTDEwIDkwIi8+PC9nPjx0ZXh0IHg9IjQ1IiB5PSI1NSIgZm9udC1mYW1pbHk9IkFyaWFsIiBmb250LXNpemU9IjEyIiBmaWxsPSIjMDBGRjgwIiBvcGFjaXR5PSIwLjEiPiQ8L3RleHQ+PC9wYXR0ZXJuPjwvZGVmcz48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSJ1cmwoI2F1c3RyYWxpYW5fY3VycmVuY3kpIi8+PC9zdmc+')`
+          backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.6)), url('/lovable-uploads/546f2941-6df7-4c99-83fc-4b94b91b895a.png')`
         }}
       />
-      <div className="absolute inset-0 z-1 bg-gradient-to-br from-emerald-900/20 via-blue-900/30 to-purple-900/20" />
       
       <main className="relative z-10 w-full flex flex-col items-center mt-4 md:mt-6 px-2">
         <div className="flex items-center justify-center gap-2 mb-12">
