@@ -216,6 +216,12 @@ const FullFinancialHealthCheck: React.FC<FullFinancialHealthCheckProps> = ({
   const insuranceAnalysis = getInsuranceAnalysis();
   const scoreRequirements = getScoreRequirements();
 
+  console.log('FullFinancialHealthCheck Debug:', {
+    debtDetails,
+    highInterestDebt,
+    debtDetailsLength: debtDetails?.length || 0
+  });
+
   // Determine risk profile
   const riskProfile = age && age < 40 ? 'Growth' : age && age < 55 ? 'Balanced' : 'Conservative';
 

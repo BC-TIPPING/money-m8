@@ -20,6 +20,12 @@ const PostDebtInvestmentVisualization: React.FC<PostDebtInvestmentVisualizationP
     parseFloat(debt.interestRate) > 0
   );
 
+  console.log('PostDebtInvestmentVisualization Debug:', {
+    debtDetails,
+    highInterestDebts,
+    highInterestDebtsLength: highInterestDebts.length
+  });
+
   const generateInvestmentProjection = () => {
     if (highInterestDebts.length === 0) return { data: [], metrics: null };
 
