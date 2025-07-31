@@ -39,6 +39,9 @@ const LandingSection = ({ onStartAssessment, isLoading }: { onStartAssessment: (
         }}
       />
       
+      {/* White transparent curved background for text readability */}
+      <div className="absolute inset-x-4 top-1/2 -translate-y-1/2 z-5 bg-white/10 backdrop-blur-sm rounded-3xl max-w-4xl mx-auto" style={{ height: '80vh' }} />
+      
       <main className="relative z-10 w-full flex flex-col items-center mt-4 md:mt-6 px-2">
         <div className="flex items-center justify-center gap-2 mb-12">
           <DollarSign className="h-6 w-6 md:h-7 md:w-7 text-emerald-400" />
