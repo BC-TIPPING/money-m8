@@ -167,6 +167,45 @@ const PostDebtInvestmentVisualization: React.FC<PostDebtInvestmentVisualizationP
 
   // Always show the component in investment section
   if (highInterestDebts.length === 0) {
+    // Generate immediate investment projection data
+    const monthlyInvestmentAmount = Math.min(monthlyIncome * 0.15, 500);
+    const projectionData = [];
+    
+    let conservativeBalance = 0;
+    let moderateBalance = 0;
+    let aggressiveBalance = 0;
+    
+    for (let month = 0; month <= 240; month++) { // 20 years
+      if (month > 0) {
+        conservativeBalance = conservativeBalance * (1 + 0.05/12) + monthlyInvestmentAmount;
+        moderateBalance = moderateBalance * (1 + 0.075/12) + monthlyInvestmentAmount;
+        aggressiveBalance = aggressiveBalance * (1 + 0.10/12) + monthlyInvestmentAmount;
+      }
+      
+      projectionData.push({
+        month,
+        conservative: Math.max(0, conservativeBalance),
+        moderate: Math.max(0, moderateBalance),
+        aggressive: Math.max(0, aggressiveBalance)
+      });
+    }
+
+    const CustomTooltip = ({ active, payload, label }: any) => {
+      if (active && payload && payload.length) {
+        return (
+          <div className="bg-background p-3 border rounded shadow-lg">
+            <p className="font-semibold">{`Month: ${label}`}</p>
+            {payload.map((entry: any, index: number) => (
+              <p key={index} style={{ color: entry.color }}>
+                {`${entry.name}: $${entry.value.toLocaleString()}`}
+              </p>
+            ))}
+          </div>
+        );
+      }
+      return null;
+    };
+
     return (
       <Card className="w-full">
         <CardHeader className="flex flex-row items-center gap-2">
@@ -180,16 +219,82 @@ const PostDebtInvestmentVisualization: React.FC<PostDebtInvestmentVisualizationP
             </p>
           </div>
           
+          {/* Investment Metrics Summary */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 p-4 bg-blue-50 rounded-lg">
+            <div className="text-center">
+              <p className="text-2xl font-bold text-blue-600">
+                ${monthlyInvestmentAmount.toLocaleString()}
+              </p>
+              <p className="text-sm text-muted-foreground">Monthly Investment</p>
+            </div>
+            <div className="text-center">
+              <p className="text-2xl font-bold text-purple-600">
+                ${(projectionData[120]?.moderate / 1000 || 0).toFixed(0)}k
+              </p>
+              <p className="text-sm text-muted-foreground">10yr Portfolio Value</p>
+            </div>
+            <div className="text-center">
+              <p className="text-2xl font-bold text-orange-600">
+                ${(projectionData[240]?.moderate / 1000 || 0).toFixed(0)}k
+              </p>
+              <p className="text-sm text-muted-foreground">20yr Portfolio Value</p>
+            </div>
+          </div>
+
           <div className="text-sm text-muted-foreground space-y-2">
             <p>
-              <strong>💡 Recommended approach:</strong> Start investing <strong>${Math.min(monthlyIncome * 0.15, 500).toLocaleString()}/month</strong> 
+              <strong>💡 Recommended approach:</strong> Start investing <strong>${monthlyInvestmentAmount.toLocaleString()}/month</strong> 
               in a diversified portfolio right away since you have no high-interest debt holding you back.
             </p>
             <p>
-              <strong>📈 Strategy:</strong> Consider a balanced portfolio with 7.5% average annual returns. 
-              Over 20 years, this could grow to approximately <strong>${(Math.min(monthlyIncome * 0.15, 500) * 12 * 20 * 1.5).toLocaleString()}</strong> 
-              (including compound growth).
+              <strong>📈 Growth Potential:</strong> The chart below shows three investment scenarios with different risk levels. 
+              A moderate balanced portfolio (7.5% average annual return) could grow to approximately 
+              <strong>${(projectionData[240]?.moderate / 1000 || 0).toFixed(0)}k</strong> over 20 years.
             </p>
+          </div>
+
+          {/* Chart */}
+          <div className="h-80">
+            <ResponsiveContainer width="100%" height="100%">
+              <AreaChart data={projectionData} margin={{ top: 20, right: 30, left: 20, bottom: 20 }}>
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis 
+                  dataKey="month" 
+                  tickFormatter={(value) => `${Math.floor(value / 12)}y`}
+                />
+                <YAxis tickFormatter={(value) => `$${(value / 1000).toFixed(0)}k`} />
+                <Tooltip content={<CustomTooltip />} />
+                <Legend />
+                
+                <Area 
+                  type="monotone" 
+                  dataKey="conservative" 
+                  stackId="1" 
+                  stroke="hsl(var(--muted-foreground))" 
+                  fill="hsl(var(--muted-foreground))" 
+                  fillOpacity={0.3}
+                  name="Conservative (5%)"
+                />
+                <Area 
+                  type="monotone" 
+                  dataKey="moderate" 
+                  stackId="2" 
+                  stroke="hsl(var(--primary))" 
+                  fill="hsl(var(--primary))" 
+                  fillOpacity={0.6}
+                  name="Moderate (7.5%)"
+                />
+                <Area 
+                  type="monotone" 
+                  dataKey="aggressive" 
+                  stackId="3" 
+                  stroke="hsl(var(--chart-2))" 
+                  fill="hsl(var(--chart-2))" 
+                  fillOpacity={0.4}
+                  name="Aggressive (10%)"
+                />
+              </AreaChart>
+            </ResponsiveContainer>
           </div>
           
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -199,9 +304,9 @@ const PostDebtInvestmentVisualization: React.FC<PostDebtInvestmentVisualizationP
                 Investment Timeline
               </h4>
               <ul className="text-sm text-blue-800 space-y-1">
-                <li>• Start immediately: ${Math.min(monthlyIncome * 0.15, 500).toLocaleString()}/month</li>
-                <li>• 10 years: ~${(Math.min(monthlyIncome * 0.15, 500) * 12 * 10 * 1.3 / 1000).toFixed(0)}k portfolio</li>
-                <li>• 20 years: ~${(Math.min(monthlyIncome * 0.15, 500) * 12 * 20 * 1.5 / 1000).toFixed(0)}k portfolio</li>
+                <li>• Start immediately: ${monthlyInvestmentAmount.toLocaleString()}/month</li>
+                <li>• 10 years: ~${(projectionData[120]?.moderate / 1000 || 0).toFixed(0)}k portfolio</li>
+                <li>• 20 years: ~${(projectionData[240]?.moderate / 1000 || 0).toFixed(0)}k portfolio</li>
               </ul>
             </div>
             
