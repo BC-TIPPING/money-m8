@@ -53,11 +53,29 @@ const FullFinancialHealthCheck: React.FC<FullFinancialHealthCheckProps> = ({
   const monthlyExpenses = calculateMonthlyAmount(expenseItems);
   const monthlySurplus = monthlyNetIncome - monthlyExpenses;
 
-  // Australian income benchmarks
-  const nationalMedian = 88000; // Updated to median full-time ~A$88,000/year
-  const nationalAverage = 95000;
-  const postcodeMedian = postcode ? 
-    (parseInt(postcode.substring(0, 1)) > 3 ? 52000 : 78000) : nationalMedian;
+  // Australian income benchmarks - must match IncomeComparisonChart exactly
+  const nationalMedian = 88400; // Updated to median full-time ~A$88,400/year
+  const nationalAverage = 92000;
+  
+  // Use the same postcode median calculation as IncomeComparisonChart
+  const getPostcodeMedian = (postcode: string): number => {
+    const firstDigit = parseInt(postcode.substring(0, 1));
+    // Rough estimates based on state income patterns from ATO data
+    switch (firstDigit) {
+      case 1: return 65000; // NSW regional
+      case 2: return 85000; // NSW metro (Sydney)
+      case 3: return 75000; // VIC
+      case 4: return 70000; // QLD
+      case 5: return 68000; // SA
+      case 6: return 80000; // WA
+      case 7: return 62000; // TAS
+      case 8: return 75000; // NT
+      case 9: return 70000; // ACT
+      default: return nationalMedian;
+    }
+  };
+  
+  const postcodeMedian = postcode ? getPostcodeMedian(postcode) : nationalMedian;
 
   // Income analysis
   const getIncomePercentile = () => {
@@ -327,10 +345,12 @@ const FullFinancialHealthCheck: React.FC<FullFinancialHealthCheckProps> = ({
       {/* Section 1: Income Analysis */}
       <Card className="border-emerald-200 bg-gradient-to-br from-emerald-50 to-white">
         <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <span className="w-8 h-8 bg-emerald-600 text-white rounded-full flex items-center justify-center text-sm font-bold">1</span>
-            <TrendingUp className="h-5 w-5 text-emerald-600" />
-            Income Analysis
+          <CardTitle className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <span className="w-8 h-8 bg-emerald-600 text-white rounded-full flex items-center justify-center text-sm font-bold">1</span>
+              <TrendingUp className="h-5 w-5 text-emerald-600" />
+              Income Analysis
+            </div>
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
@@ -374,10 +394,18 @@ const FullFinancialHealthCheck: React.FC<FullFinancialHealthCheckProps> = ({
       {/* Section 2: Budget Analysis */}
       <Card className="border-purple-200 bg-gradient-to-br from-purple-50 to-white">
         <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <span className="w-8 h-8 bg-purple-600 text-white rounded-full flex items-center justify-center text-sm font-bold">2</span>
-            <BarChart3 className="h-5 w-5 text-purple-600" />
-            Budget Analysis
+          <CardTitle className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <span className="w-8 h-8 bg-purple-600 text-white rounded-full flex items-center justify-center text-sm font-bold">2</span>
+              <BarChart3 className="h-5 w-5 text-purple-600" />
+              Budget Analysis
+            </div>
+            <Button variant="outline" size="sm" onClick={() => {
+              const event = new CustomEvent('selectGoal', { detail: 'Set a budget' });
+              window.dispatchEvent(event);
+            }}>
+              Budget Planner <ArrowRight className="h-4 w-4 ml-1" />
+            </Button>
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
@@ -428,17 +456,19 @@ const FullFinancialHealthCheck: React.FC<FullFinancialHealthCheckProps> = ({
 
       {/* Section 3: Superannuation Health */}
       <Card className="border-blue-200 bg-gradient-to-br from-blue-50 to-white">
-        <CardHeader className="flex flex-row items-center justify-between">
-          <CardTitle className="flex items-center gap-2">
-            <span className="w-8 h-8 bg-blue-600 text-white rounded-full flex items-center justify-center text-sm font-bold">3</span>
-            <PiggyBank className="h-5 w-5 text-blue-600" />
-            Superannuation Health
+        <CardHeader>
+          <CardTitle className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <span className="w-8 h-8 bg-blue-600 text-white rounded-full flex items-center justify-center text-sm font-bold">3</span>
+              <PiggyBank className="h-5 w-5 text-blue-600" />
+              Superannuation Health
+            </div>
+            <Link to="/maximise-super">
+              <Button variant="outline" size="sm">
+                Super Calculator <ArrowRight className="h-4 w-4 ml-1" />
+              </Button>
+            </Link>
           </CardTitle>
-          <Link to="/maximise-super">
-            <Button variant="outline" size="sm">
-              Super Calculator <ArrowRight className="h-4 w-4 ml-1" />
-            </Button>
-          </Link>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="bg-blue-50 p-3 rounded-lg mb-4">
@@ -553,13 +583,34 @@ const FullFinancialHealthCheck: React.FC<FullFinancialHealthCheckProps> = ({
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
-          <div className="bg-red-50 p-3 rounded-lg mb-4">
-            <p className="text-sm text-red-800">
-              <strong>High-interest debt is wealth destruction in action.</strong> 
-              Credit cards and personal loans typically charge 15-25% interest, making them impossible to outpace 
-              with investments. Eliminating high-interest debt provides a guaranteed return equal to the interest rate 
-              - often better than any investment you could make.
-            </p>
+          {highInterestDebt && (
+            <div className="bg-red-50 p-3 rounded-lg mb-4">
+              <p className="text-sm text-red-800">
+                <strong>High-interest debt is wealth destruction in action.</strong> 
+                Credit cards and personal loans typically charge 15-25% interest, making them impossible to outpace 
+                with investments. Eliminating high-interest debt provides a guaranteed return equal to the interest rate 
+                - often better than any investment you could make.
+              </p>
+            </div>
+          )}
+          
+          {!highInterestDebt && (
+            <div className="bg-green-50 p-3 rounded-lg mb-4">
+              <p className="text-sm text-green-800">
+                <strong>Great news - no high-interest debt detected!</strong> 
+                Focus on your mortgage paydown strategy and building your investment portfolio for long-term wealth creation.
+              </p>
+            </div>
+          )}
+          
+          <div className="flex items-center justify-between">
+            <h3 className="text-lg font-semibold">Your Debt Portfolio</h3>
+            <Button variant="outline" size="sm" onClick={() => {
+              const event = new CustomEvent('selectGoal', { detail: 'Reduce debt' });
+              window.dispatchEvent(event);
+            }}>
+              Debt Calculator <ArrowRight className="h-4 w-4 ml-1" />
+            </Button>
           </div>
           
           <DebtSummaryTable
@@ -568,36 +619,43 @@ const FullFinancialHealthCheck: React.FC<FullFinancialHealthCheckProps> = ({
           />
 
           {highInterestDebt && (
-            <>
-              <div className="bg-yellow-50 border-l-4 border-yellow-400 p-4 rounded-r-lg">
-                <div className="flex items-center gap-2 mb-2">
-                  <Badge variant="outline" className="bg-yellow-100 text-yellow-800 border-yellow-400">
-                    Dave Ramsey Says
-                  </Badge>
-                </div>
-                <p className="text-sm text-yellow-800">
-                  <strong>"Debt is the enemy of your most powerful wealth-building tool: your income!"</strong> 
-                  With ${highInterestDebt.totalBalance.toLocaleString()} in high-interest debt at {highInterestDebt.weightedRate.toFixed(1)}% average rate, 
-                  you're bleeding money every month. Stop investing, cut up the credit cards, and attack this debt with gazelle intensity. 
-                  Every dollar thrown at this debt is a <strong>guaranteed {highInterestDebt.weightedRate.toFixed(1)}% return</strong> - 
-                  better than any investment! Use the debt snowball method: list all debts smallest to largest, 
-                  pay minimums on all, then throw every extra penny at the smallest debt until it's gone. 
-                  This isn't about math, it's about changing behavior and building momentum!
-                </p>
+            <div className="bg-yellow-50 border-l-4 border-yellow-400 p-4 rounded-r-lg">
+              <div className="flex items-center gap-2 mb-2">
+                <Badge variant="outline" className="bg-yellow-100 text-yellow-800 border-yellow-400">
+                  Immediate Action Required
+                </Badge>
               </div>
-              <DebtPayoffVisualization debtDetails={debtDetails} monthlyIncome={monthlyIncome} />
-            </>
+              <p className="text-sm text-yellow-800">
+                <strong>"Debt is the enemy of your most powerful wealth-building tool: your income!"</strong> 
+                With ${highInterestDebt.totalBalance.toLocaleString()} in high-interest debt at {highInterestDebt.weightedRate.toFixed(1)}% average rate, 
+                you're bleeding money every month. Stop investing, cut up the credit cards, and attack this debt with gazelle intensity. 
+                Every dollar thrown at this debt is a <strong>guaranteed {highInterestDebt.weightedRate.toFixed(1)}% return</strong> - 
+                better than any investment! Use the debt snowball method: list all debts smallest to largest, 
+                pay minimums on all, then throw every extra penny at the smallest debt until it's gone. 
+                This isn't about math, it's about changing behavior and building momentum!
+              </p>
+            </div>
           )}
+          
+          <DebtPayoffVisualization debtDetails={debtDetails} monthlyIncome={monthlyIncome} />
         </CardContent>
       </Card>
 
       {/* Section 6: Investment Strategy */}
       <Card className="border-indigo-200 bg-gradient-to-br from-indigo-50 to-white">
         <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <span className="w-8 h-8 bg-indigo-600 text-white rounded-full flex items-center justify-center text-sm font-bold">6</span>
-            <Target className="h-5 w-5 text-indigo-600" />
-            Investment Strategy
+          <CardTitle className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <span className="w-8 h-8 bg-indigo-600 text-white rounded-full flex items-center justify-center text-sm font-bold">6</span>
+              <Target className="h-5 w-5 text-indigo-600" />
+              Investment Strategy
+            </div>
+            <Button variant="outline" size="sm" onClick={() => {
+              const event = new CustomEvent('selectGoal', { detail: 'Grow investments' });
+              window.dispatchEvent(event);
+            }}>
+              Investment Growth <ArrowRight className="h-4 w-4 ml-1" />
+            </Button>
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">

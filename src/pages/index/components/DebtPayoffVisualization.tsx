@@ -216,7 +216,7 @@ const DebtPayoffVisualization: React.FC<DebtPayoffVisualizationProps> = ({ debtD
           <CardTitle>Debt Payoff Strategy</CardTitle>
         </CardHeader>
         <CardContent>
-          <p className="text-muted-foreground">No high-interest debt detected. Great job!</p>
+          <p className="text-muted-foreground">No debt detected. Excellent financial position!</p>
         </CardContent>
       </Card>
     );
