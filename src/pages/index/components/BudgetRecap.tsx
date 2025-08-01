@@ -55,9 +55,9 @@ const BudgetRecap: React.FC<BudgetRecapProps> = ({
     const actualSpending = calculateCategorySpending(category);
     const actualPercentage = totalMonthlyNetIncome > 0 ? (actualSpending / totalMonthlyNetIncome) * 100 : 0;
     
-    let status: 'good' | 'warning' | 'over' = 'good';
+    let status: 'good' | 'warning' | 'over' | 'under' = 'good';
     if (actualPercentage > guideline.max) status = 'over';
-    else if (actualPercentage < guideline.min) status = 'warning';
+    else if (actualPercentage < guideline.min) status = 'under';
     
     return {
       category,
@@ -74,7 +74,7 @@ const BudgetRecap: React.FC<BudgetRecapProps> = ({
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'good': return 'bg-green-100 text-green-800';
-      case 'warning': return 'bg-yellow-100 text-yellow-800';
+      case 'under': return 'bg-yellow-100 text-yellow-800';
       case 'over': return 'bg-red-100 text-red-800';
       default: return 'bg-gray-100 text-gray-800';
     }
@@ -83,7 +83,7 @@ const BudgetRecap: React.FC<BudgetRecapProps> = ({
   const getStatusIcon = (status: string) => {
     switch (status) {
       case 'good': return <TrendingUp className="h-4 w-4 text-green-600" />;
-      case 'warning': return <AlertCircle className="h-4 w-4 text-yellow-600" />;
+      case 'under': return <AlertCircle className="h-4 w-4 text-yellow-600" />;
       case 'over': return <TrendingDown className="h-4 w-4 text-red-600" />;
       default: return null;
     }
@@ -142,7 +142,7 @@ const BudgetRecap: React.FC<BudgetRecapProps> = ({
                 <div className="text-right">
                   <Badge className={getStatusColor(item.status)}>
                     {item.status === 'good' ? 'On Track' : 
-                     item.status === 'warning' ? 'Under' : 'Over'}
+                     item.status === 'under' ? 'Under' : 'Over'}
                   </Badge>
                   <p className="text-xs text-muted-foreground mt-1">
                     Target: {item.guideline.min}-{item.guideline.max}%
@@ -157,7 +157,10 @@ const BudgetRecap: React.FC<BudgetRecapProps> = ({
           <h4 className="font-semibold text-yellow-900 mb-2">Budget Recommendations</h4>
           <ul className="text-sm text-yellow-800 space-y-1">
             {budgetAnalysis.filter(item => item.status === 'over').map((item, index) => (
-              <li key={index}>• Reduce {item.category} spending by ${((item.actualPercentage - item.guideline.max) * totalMonthlyNetIncome / 100).toFixed(0)}/month</li>
+              <li key={index}>• {item.category} is over-indexed by ${((item.actualPercentage - item.guideline.max) * totalMonthlyNetIncome / 100).toFixed(0)}/month</li>
+            ))}
+            {budgetAnalysis.filter(item => item.status === 'under').map((item, index) => (
+              <li key={index}>• {item.category} is under-indexed by ${((item.guideline.max - item.actualPercentage) * totalMonthlyNetIncome / 100).toFixed(0)}/month</li>
             ))}
             {savingsRate < 10 && (
               <li>• Increase savings rate to at least 10% (${(totalMonthlyNetIncome * 0.1).toFixed(0)}/month)</li>

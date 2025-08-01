@@ -121,7 +121,7 @@ const AISearchSection: React.FC<AISearchSectionProps> = ({ onGoalSuggested }) =>
       </form>
       
       <p className="text-center text-xs text-white/60 italic mb-1 px-2">
-        Expert knowledge based on ATO guidelines and Australian banking regulations
+        Concise expert advice with practical examples
       </p>
 
       {isLoading && (
@@ -137,7 +137,7 @@ const AISearchSection: React.FC<AISearchSectionProps> = ({ onGoalSuggested }) =>
 
       {answer && (
         <Card className="bg-white/10 backdrop-blur-md border-white/20 mb-3">
-          <CardContent className="p-4">
+          <CardContent className="p-3">
             <div className="text-white text-sm whitespace-pre-wrap">{answer}</div>
           </CardContent>
         </Card>

@@ -58,7 +58,6 @@ export default function MaximiseSuper() {
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Input Panel */}
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
@@ -124,7 +123,6 @@ export default function MaximiseSuper() {
             </CardContent>
           </Card>
 
-          {/* Results Panel */}
           <Card className="lg:col-span-2">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
@@ -147,7 +145,6 @@ export default function MaximiseSuper() {
           </Card>
         </div>
 
-        {/* Summary Cards */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-6">
           <Card>
             <CardHeader>
@@ -192,7 +189,6 @@ export default function MaximiseSuper() {
           </Card>
         </div>
 
-        {/* Recommendations */}
         <Card className="mt-6">
           <CardHeader>
             <CardTitle>Recommendations</CardTitle>

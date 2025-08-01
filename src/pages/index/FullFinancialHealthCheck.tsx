@@ -626,7 +626,7 @@ const FullFinancialHealthCheck: React.FC<FullFinancialHealthCheckProps> = ({
                 </Badge>
               </div>
               <p className="text-sm text-yellow-800">
-                <strong>"Debt is the enemy of your most powerful wealth-building tool: your income!"</strong> 
+                <strong>"High-interest debt is wealth destruction in action!"</strong> 
                 With ${highInterestDebt.totalBalance.toLocaleString()} in high-interest debt at {highInterestDebt.weightedRate.toFixed(1)}% average rate, 
                 you're bleeding money every month. Stop investing, cut up the credit cards, and attack this debt with gazelle intensity. 
                 Every dollar thrown at this debt is a <strong>guaranteed {highInterestDebt.weightedRate.toFixed(1)}% return</strong> - 

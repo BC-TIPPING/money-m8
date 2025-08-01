@@ -204,7 +204,7 @@ const AssessmentStepper: React.FC<AssessmentStepperProps> = (props) => {
       return next;
     });
   };
-  const addIncomeSource = () => setIncomeSources([...incomeSources, { category: "", amount: "", frequency: "Monthly" }]);
+  const addIncomeSource = () => setIncomeSources([...incomeSources, { category: "", amount: "", frequency: "Yearly" }]);
   const removeIncomeSource = (idx: number) =>
     setIncomeSources(incomeSources.length === 1 ? incomeSources : incomeSources.filter((_, i) => i !== idx));
   const handleExpenseChange = (idx: number, key: "category" | "amount" | "frequency", value: string) => {
@@ -866,7 +866,11 @@ const AssessmentStepper: React.FC<AssessmentStepperProps> = (props) => {
           )}
 
           <div className="text-center mt-8">
-             <Button variant="outline" onClick={() => window.location.reload()}>Start Over</Button>
+           <Button variant="outline" onClick={() => {
+             setStep(0);
+             setShowAssessment(false);
+             setIsFinished(false);
+           }}>Start Over</Button>
           </div>
         </CenteredCard>
       </div>

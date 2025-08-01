@@ -189,8 +189,8 @@ export default function PayOffHomeLoanPage() {
                     <Link to="/"><ArrowLeft className="mr-2 h-4 w-4" /> Back to Dashboard</Link>
                 </Button>
             </div>
-            <div className="grid gap-8 md:grid-cols-2">
-                <Card>
+        <div className="grid gap-8 md:grid-cols-2">
+            <Card>
                     <CardHeader>
                         <CardTitle>Home Loan Repayment Calculator</CardTitle>
                         <CardDescription>See how extra repayments can impact your loan.</CardDescription>
@@ -279,8 +279,8 @@ export default function PayOffHomeLoanPage() {
                     </CardContent>
                 </Card>
 
-                {results && (
-                     <Card className="bg-green-50">
+            {results && (
+                <Card className="bg-green-50">
                         <CardHeader>
                             <CardTitle className="text-green-800">Your Results ✨</CardTitle>
                         </CardHeader>
@@ -331,9 +331,9 @@ export default function PayOffHomeLoanPage() {
                                 </>
                             )}
                         </CardContent>
-                    </Card>
-                )}
-            </div>
+                </Card>
+            )}
+        </div>
         </div>
     );
 }
