@@ -179,9 +179,13 @@ const FullFinancialHealthCheck: React.FC<FullFinancialHealthCheckProps> = ({
       score += Math.max(0, 25 - Math.min(highInterestDebt.totalBalance / 1000, 25));
     }
     
-    // Savings rate (10 points)
-    const savingsRate = monthlyNetIncome > 0 ? (monthlySurplus / monthlyNetIncome) * 100 : 0;
-    score += Math.min(savingsRate / 2, 10); // Up to 10 points for 20% savings rate
+    // Savings rate (10 points) - includes savings/investments + surplus
+    const savingsAndInvestmentsAmount = expenseItems
+      .filter(item => item.category === 'Savings & Investments')
+      .reduce((sum, item) => sum + parseFloat(item.amount || '0'), 0);
+    const totalSavingsRate = monthlyNetIncome > 0 ? 
+      ((savingsAndInvestmentsAmount + Math.max(0, monthlySurplus)) / monthlyNetIncome) * 100 : 0;
+    score += Math.min(totalSavingsRate / 2, 10); // Up to 10 points for 20% savings rate
     
     return Math.min(Math.round(score), 100);
   };
@@ -224,9 +228,13 @@ const FullFinancialHealthCheck: React.FC<FullFinancialHealthCheckProps> = ({
     }
     
     // Savings requirements
-    const savingsRate = monthlyNetIncome > 0 ? (monthlySurplus / monthlyNetIncome) * 100 : 0;
-    if (savingsRate < 20) {
-      requirements.push(`Achieve 20% savings rate (currently ${savingsRate.toFixed(1)}%)`);
+    const savingsAndInvestmentsAmount = expenseItems
+      .filter(item => item.category === 'Savings & Investments')
+      .reduce((sum, item) => sum + parseFloat(item.amount || '0'), 0);
+    const totalSavingsRate = monthlyNetIncome > 0 ? 
+      ((savingsAndInvestmentsAmount + Math.max(0, monthlySurplus)) / monthlyNetIncome) * 100 : 0;
+    if (totalSavingsRate < 20) {
+      requirements.push(`Achieve 20% savings rate (currently ${totalSavingsRate.toFixed(1)}%)`);
     }
     
     return requirements;
@@ -328,7 +336,14 @@ const FullFinancialHealthCheck: React.FC<FullFinancialHealthCheckProps> = ({
               <span className="text-sm text-muted-foreground">Savings Rate</span>
             </div>
             <p className="text-2xl font-bold text-purple-600">
-              {monthlyNetIncome > 0 ? ((monthlySurplus / monthlyNetIncome) * 100).toFixed(1) : 0}%
+              {(() => {
+                const savingsAndInvestmentsAmount = expenseItems
+                  .filter(item => item.category === 'Savings & Investments')
+                  .reduce((sum, item) => sum + parseFloat(item.amount || '0'), 0);
+                const totalSavingsRate = monthlyNetIncome > 0 ? 
+                  ((savingsAndInvestmentsAmount + Math.max(0, monthlySurplus)) / monthlyNetIncome) * 100 : 0;
+                return totalSavingsRate.toFixed(1);
+              })()}%
             </p>
             <p className="text-xs text-muted-foreground">target: 10-20%</p>
           </CardContent>
@@ -416,7 +431,14 @@ const FullFinancialHealthCheck: React.FC<FullFinancialHealthCheckProps> = ({
           <div className="bg-purple-50 p-3 rounded-lg mb-4">
             <p className="text-sm text-purple-800">
               <strong>A healthy budget with 10-20% savings rate creates the foundation for wealth building and financial security.</strong> 
-              Current Savings Rate: {monthlyNetIncome > 0 ? ((monthlySurplus / monthlyNetIncome) * 100).toFixed(1) : 0}%
+              Current Savings Rate: {(() => {
+                const savingsAndInvestmentsAmount = expenseItems
+                  .filter(item => item.category === 'Savings & Investments')
+                  .reduce((sum, item) => sum + parseFloat(item.amount || '0'), 0);
+                const totalSavingsRate = monthlyNetIncome > 0 ? 
+                  ((savingsAndInvestmentsAmount + Math.max(0, monthlySurplus)) / monthlyNetIncome) * 100 : 0;
+                return totalSavingsRate.toFixed(1);
+              })()}%
               • Target: 10-20% • Australian Average: 8.6%
             </p>
           </div>
@@ -447,7 +469,14 @@ const FullFinancialHealthCheck: React.FC<FullFinancialHealthCheckProps> = ({
           <div className="bg-blue-50 p-4 rounded-lg">
             <h4 className="font-semibold text-blue-900 mb-2">Savings Rate Analysis</h4>
             <div className="text-sm text-blue-800 space-y-1">
-              <p>• <strong>Current Rate:</strong> {monthlyNetIncome > 0 ? ((monthlySurplus / monthlyNetIncome) * 100).toFixed(1) : 0}%</p>
+              <p>• <strong>Current Rate:</strong> {(() => {
+                const savingsAndInvestmentsAmount = expenseItems
+                  .filter(item => item.category === 'Savings & Investments')
+                  .reduce((sum, item) => sum + parseFloat(item.amount || '0'), 0);
+                const totalSavingsRate = monthlyNetIncome > 0 ? 
+                  ((savingsAndInvestmentsAmount + Math.max(0, monthlySurplus)) / monthlyNetIncome) * 100 : 0;
+                return totalSavingsRate.toFixed(1);
+              })()}%</p>
               <p>• <strong>Target Rate:</strong> 10-20% (Financial experts recommend)</p>
               <p>• <strong>Australian Average:</strong> 8.6% (ABS data)</p>
               {monthlySurplus < 0 && (
