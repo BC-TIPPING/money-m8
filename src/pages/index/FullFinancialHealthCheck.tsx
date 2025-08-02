@@ -96,6 +96,10 @@ const FullFinancialHealthCheck: React.FC<FullFinancialHealthCheckProps> = ({
     if (highInterestDebts.length === 0) return null;
     
     const totalBalance = highInterestDebts.reduce((sum, debt) => sum + parseFloat(debt.balance), 0);
+    
+    // Only return analysis if there's actually significant high-interest debt
+    if (totalBalance <= 0) return null;
+    
     const weightedRate = highInterestDebts.reduce((sum, debt) => 
       sum + (parseFloat(debt.balance) * parseFloat(debt.interestRate)), 0
     ) / totalBalance;
