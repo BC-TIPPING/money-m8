@@ -88,23 +88,37 @@ const FullFinancialHealthCheck: React.FC<FullFinancialHealthCheckProps> = ({
 
   // High-interest debt analysis
   const getHighInterestDebtAnalysis = () => {
-    const highInterestDebts = debtDetails.filter(debt => 
-      ['Credit Card', 'Personal Loan', 'BNPL (e.g. Afterpay)'].includes(debt.type) && 
-      parseFloat(debt.balance) > 0
-    );
+    console.log('Debug - All debt details:', debtDetails);
     
-    if (highInterestDebts.length === 0) return null;
+    const highInterestDebts = debtDetails.filter(debt => {
+      const isHighInterestType = ['Credit Card', 'Personal Loan', 'BNPL (e.g. Afterpay)'].includes(debt.type);
+      const hasBalance = parseFloat(debt.balance) > 0;
+      console.log(`Debug - Debt: ${debt.type}, IsHighInterest: ${isHighInterestType}, HasBalance: ${hasBalance}, Balance: ${debt.balance}`);
+      return isHighInterestType && hasBalance;
+    });
+    
+    console.log('Debug - Filtered high interest debts:', highInterestDebts);
+    
+    if (highInterestDebts.length === 0) {
+      console.log('Debug - No high interest debts found, returning null');
+      return null;
+    }
     
     const totalBalance = highInterestDebts.reduce((sum, debt) => sum + parseFloat(debt.balance), 0);
     
     // Only return analysis if there's actually significant high-interest debt
-    if (totalBalance <= 0) return null;
+    if (totalBalance <= 0) {
+      console.log('Debug - Total balance is 0 or negative, returning null');
+      return null;
+    }
     
     const weightedRate = highInterestDebts.reduce((sum, debt) => 
       sum + (parseFloat(debt.balance) * parseFloat(debt.interestRate)), 0
     ) / totalBalance;
     
-    return { totalBalance, weightedRate, debts: highInterestDebts };
+    const result = { totalBalance, weightedRate, debts: highInterestDebts };
+    console.log('Debug - Returning high interest debt analysis:', result);
+    return result;
   };
 
   // Insurance analysis
