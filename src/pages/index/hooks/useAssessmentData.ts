@@ -149,16 +149,15 @@ export function useAssessmentData(assessment: AssessmentState) {
   }, [isFetchSuccess, user, existingAssessment, toast]);
 
   const handleStartOver = () => {
-    // If assessment was completed, go directly to summary (skip to end)
-    if (hasCompletedAssessment) {
-      assessment.setStep(questions.length);
-      assessment.setShowAssessment(true);
-      toast({ 
-        title: "Assessment Skipped", 
-        description: "Since you've completed the assessment before, we've taken you directly to the results." 
-      });
-      return;
-    }
+    // Reset everything to start fresh from question 1
+    assessment.setStep(0);
+    assessment.setShowAssessment(true);
+    setHasCompletedAssessment(false);
+    setAiSummary(null);
+    toast({ 
+      title: "Starting Fresh", 
+      description: "Taking you back to the beginning of the assessment." 
+    });
 
     // Otherwise, do a full reset
     assessment.setStep(0);

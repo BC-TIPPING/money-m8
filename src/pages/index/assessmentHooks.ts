@@ -120,7 +120,7 @@ export function useAssessmentState() {
   const [investmentExperience, setInvestmentExperience] = useState<string[]>([]);
   const [hasRegularIncome, setHasRegularIncome] = useState<boolean | undefined>();
   const [incomeSources, setIncomeSources] = useState([
-    { category: "", amount: "", frequency: "Monthly" },
+    { category: "", amount: "", frequency: "Yearly" },
   ]);
   const [expenseItems, setExpenseItems] = useState<{
     category: string;

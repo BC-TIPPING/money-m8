@@ -160,7 +160,7 @@ const BudgetRecap: React.FC<BudgetRecapProps> = ({
               <li key={index}>• {item.category} is over-indexed by ${((item.actualPercentage - item.guideline.max) * totalMonthlyNetIncome / 100).toFixed(0)}/month</li>
             ))}
             {budgetAnalysis.filter(item => item.status === 'under').map((item, index) => (
-              <li key={index}>• {item.category} is under-indexed by ${((item.guideline.max - item.actualPercentage) * totalMonthlyNetIncome / 100).toFixed(0)}/month</li>
+              <li key={index}>• {item.category} is under-indexed by ${((item.guideline.min - item.actualPercentage) * totalMonthlyNetIncome / 100).toFixed(0)}/month</li>
             ))}
             {savingsRate < 10 && (
               <li>• Increase savings rate to at least 10% (${(totalMonthlyNetIncome * 0.1).toFixed(0)}/month)</li>
