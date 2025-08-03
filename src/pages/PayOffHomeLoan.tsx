@@ -183,21 +183,23 @@ export default function PayOffHomeLoanPage() {
     }
 
     return (
-        <div className="container mx-auto px-4 py-8">
-            <div className="mb-6">
-                <Button asChild variant="ghost">
-                    <Link to="/"><ArrowLeft className="mr-2 h-4 w-4" /> Back to Dashboard</Link>
-                </Button>
-            </div>
-        <div className="grid gap-8 md:grid-cols-2">
+    <div className="container mx-auto px-4 py-8">
+        <div className="mb-6">
+            <Button asChild variant="ghost">
+                <Link to="/"><ArrowLeft className="mr-2 h-4 w-4" /> Back to Dashboard</Link>
+            </Button>
+        </div>
+        
+        <div className="max-w-4xl mx-auto space-y-8">
             <Card>
-                    <CardHeader>
-                        <CardTitle>Home Loan Repayment Calculator</CardTitle>
-                        <CardDescription>See how extra repayments can impact your loan.</CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                        <Form {...form}>
-                            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+                <CardHeader>
+                    <CardTitle>🏠 Pay Off Home Loan Sooner</CardTitle>
+                    <CardDescription>See how extra repayments can save you thousands and years!</CardDescription>
+                </CardHeader>
+                <CardContent>
+                    <Form {...form}>
+                        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 <FormField
                                     control={form.control}
                                     name="loanAmount"
@@ -250,45 +252,47 @@ export default function PayOffHomeLoanPage() {
                                         </FormItem>
                                     )}
                                 />
-                                <FormField
-                                    control={form.control}
-                                    name="repaymentFrequency"
-                                    render={({ field }) => (
-                                        <FormItem>
-                                            <FormLabel>Repayment Frequency</FormLabel>
-                                            <Select onValueChange={field.onChange} defaultValue={field.value}>
-                                                <FormControl>
-                                                    <SelectTrigger>
-                                                        <SelectValue placeholder="Select frequency" />
-                                                    </SelectTrigger>
-                                                </FormControl>
-                                                <SelectContent>
-                                                    <SelectItem value="weekly">Weekly</SelectItem>
-                                                    <SelectItem value="fortnightly">Fortnightly</SelectItem>
-                                                    <SelectItem value="monthly">Monthly</SelectItem>
-                                                    <SelectItem value="yearly">Yearly</SelectItem>
-                                                </SelectContent>
-                                            </Select>
-                                            <FormMessage />
-                                        </FormItem>
-                                    )}
-                                />
-                                <Button type="submit" className="w-full">Calculate</Button>
-                            </form>
-                        </Form>
-                    </CardContent>
-                </Card>
+                            </div>
+                            <FormField
+                                control={form.control}
+                                name="repaymentFrequency"
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel>Repayment Frequency</FormLabel>
+                                        <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                            <FormControl>
+                                                <SelectTrigger>
+                                                    <SelectValue placeholder="Select frequency" />
+                                                </SelectTrigger>
+                                            </FormControl>
+                                            <SelectContent>
+                                                <SelectItem value="weekly">Weekly</SelectItem>
+                                                <SelectItem value="fortnightly">Fortnightly</SelectItem>
+                                                <SelectItem value="monthly">Monthly</SelectItem>
+                                                <SelectItem value="yearly">Yearly</SelectItem>
+                                            </SelectContent>
+                                        </Select>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
+                            <Button type="submit" className="w-full">Calculate</Button>
+                        </form>
+                    </Form>
+                </CardContent>
+            </Card>
 
             {results && (
                 <Card className="bg-green-50">
-                        <CardHeader>
-                            <CardTitle className="text-green-800">Your Results ✨</CardTitle>
-                        </CardHeader>
-                        <CardContent className="space-y-4 text-green-700">
-                            {results.error ? (
-                                <p className="text-red-500 font-bold">{results.error}</p>
-                            ) : (
-                                <>
+                    <CardHeader>
+                        <CardTitle className="text-green-800">Your Results ✨</CardTitle>
+                    </CardHeader>
+                    <CardContent className="space-y-4 text-green-700">
+                        {results.error ? (
+                            <p className="text-red-500 font-bold">{results.error}</p>
+                        ) : (
+                            <>
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                     <div>
                                         <p className="text-lg font-semibold">Interest Saved</p>
                                         <p className="text-2xl font-bold">{results.interestSaved.toLocaleString('en-AU', { style: 'currency', currency: 'AUD', minimumFractionDigits: 0 })}</p>
@@ -297,43 +301,44 @@ export default function PayOffHomeLoanPage() {
                                         <p className="text-lg font-semibold">Time Saved</p>
                                         <p className="text-2xl font-bold">{results.timeSaved}</p>
                                     </div>
-                                    <div className="pt-4 border-t border-green-200">
-                                        <p><strong>Minimum Monthly Repayment:</strong> {results.monthlyPayment.toLocaleString('en-AU', { style: 'currency', currency: 'AUD' })}</p>
-                                        <p><strong>Original Loan Term:</strong> {results.originalTerm}</p>
-                                        <p><strong>New Loan Term (with extra repayments):</strong> {results.newTerm}</p>
+                                </div>
+                                <div className="pt-4 border-t border-green-200">
+                                    <p><strong>Minimum Monthly Repayment:</strong> {results.monthlyPayment.toLocaleString('en-AU', { style: 'currency', currency: 'AUD' })}</p>
+                                    <p><strong>Original Loan Term:</strong> {results.originalTerm}</p>
+                                    <p><strong>New Loan Term (with extra repayments):</strong> {results.newTerm}</p>
+                                </div>
+                                {results.chartData && results.chartData.length > 1 && (
+                                    <div className="pt-6 mt-6 border-t border-green-200">
+                                        <p className="text-lg font-semibold mb-4 text-green-800">Loan Balance Over Time</p>
+                                        <ChartContainer config={{
+                                            originalLoan: { label: "Original Loan", color: "#9CA3AF" },
+                                            withExtraRepayments: { label: "With Extra Repayments", color: "#059669" },
+                                        }} className="h-[300px] w-full">
+                                            <LineChart data={results.chartData} margin={{ top: 5, right: 20, bottom: 5, left: 0 }}>
+                                                <CartesianGrid vertical={false} strokeDasharray="3 3" />
+                                                <XAxis dataKey="year" tickLine={false} axisLine={false} tickMargin={8} tickFormatter={(value) => `Yr ${value}`} />
+                                                <YAxis tickLine={false} axisLine={false} tickMargin={8} tickFormatter={(value) => `$${(value / 1000)}k`} domain={['auto', 'auto']} />
+                                                <Tooltip
+                                                    cursor={true}
+                                                    content={<ChartTooltipContent
+                                                        indicator="dot"
+                                                        formatter={(value) => value.toLocaleString('en-AU', { style: 'currency', currency: 'AUD', minimumFractionDigits: 0 })}
+                                                        labelFormatter={(label) => `Year ${label}`}
+                                                    />}
+                                                />
+                                                <Legend />
+                                                <Line dataKey="originalLoan" type="monotone" stroke="var(--color-originalLoan)" strokeWidth={2} dot={false} />
+                                                <Line dataKey="withExtraRepayments" type="monotone" stroke="var(--color-withExtraRepayments)" strokeWidth={2} dot={false} />
+                                            </LineChart>
+                                        </ChartContainer>
                                     </div>
-                                    {results.chartData && results.chartData.length > 1 && (
-                                        <div className="pt-6 mt-6 border-t border-green-200">
-                                            <p className="text-lg font-semibold mb-4 text-green-800">Loan Balance Over Time</p>
-                                            <ChartContainer config={{
-                                                originalLoan: { label: "Original Loan", color: "#9CA3AF" },
-                                                withExtraRepayments: { label: "With Extra Repayments", color: "#059669" },
-                                            }} className="h-[300px] w-full">
-                                                <LineChart data={results.chartData} margin={{ top: 5, right: 20, bottom: 5, left: 0 }}>
-                                                    <CartesianGrid vertical={false} strokeDasharray="3 3" />
-                                                    <XAxis dataKey="year" tickLine={false} axisLine={false} tickMargin={8} tickFormatter={(value) => `Yr ${value}`} />
-                                                    <YAxis tickLine={false} axisLine={false} tickMargin={8} tickFormatter={(value) => `$${(value / 1000)}k`} domain={['auto', 'auto']} />
-                                                    <Tooltip
-                                                        cursor={true}
-                                                        content={<ChartTooltipContent
-                                                            indicator="dot"
-                                                            formatter={(value) => value.toLocaleString('en-AU', { style: 'currency', currency: 'AUD', minimumFractionDigits: 0 })}
-                                                            labelFormatter={(label) => `Year ${label}`}
-                                                        />}
-                                                    />
-                                                    <Legend />
-                                                    <Line dataKey="originalLoan" type="monotone" stroke="var(--color-originalLoan)" strokeWidth={2} dot={false} />
-                                                    <Line dataKey="withExtraRepayments" type="monotone" stroke="var(--color-withExtraRepayments)" strokeWidth={2} dot={false} />
-                                                </LineChart>
-                                            </ChartContainer>
-                                        </div>
-                                    )}
-                                </>
-                            )}
-                        </CardContent>
+                                )}
+                            </>
+                        )}
+                    </CardContent>
                 </Card>
             )}
         </div>
-        </div>
+    </div>
     );
 }

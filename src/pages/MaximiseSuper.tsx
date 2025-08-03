@@ -43,7 +43,7 @@ export default function MaximiseSuper() {
 
   return (
     <div className="min-h-screen bg-gray-50 py-8">
-      <div className="container mx-auto px-4 max-w-6xl">
+      <div className="container mx-auto px-4 max-w-4xl">
         <div className="mb-6">
           <Button asChild variant="outline" className="mb-4">
             <Link to="/">
@@ -51,13 +51,13 @@ export default function MaximiseSuper() {
               Back to Assessment
             </Link>
           </Button>
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">Maximise Your Super 💰</h1>
+          <h1 className="text-3xl font-bold text-gray-900 mb-2">💰 Maximise Your Super</h1>
           <p className="text-gray-600">
             Discover how extra super contributions can boost your retirement savings and reduce your tax.
           </p>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div className="space-y-6">
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
@@ -65,65 +65,67 @@ export default function MaximiseSuper() {
                 Your Details
               </CardTitle>
             </CardHeader>
-            <CardContent className="space-y-4">
-              <div>
-                <Label htmlFor="currentAge">Current Age</Label>
-                <Input
-                  id="currentAge"
-                  type="number"
-                  value={currentAge}
-                  onChange={(e) => setCurrentAge(Number(e.target.value))}
-                />
-              </div>
-              <div>
-                <Label htmlFor="retirementAge">Retirement Age</Label>
-                <Input
-                  id="retirementAge"
-                  type="number"
-                  value={retirementAge}
-                  onChange={(e) => setRetirementAge(Number(e.target.value))}
-                />
-              </div>
-              <div>
-                <Label htmlFor="currentBalance">Current Super Balance</Label>
-                <Input
-                  id="currentBalance"
-                  type="number"
-                  value={currentBalance}
-                  onChange={(e) => setCurrentBalance(Number(e.target.value))}
-                />
-              </div>
-              <div>
-                <Label htmlFor="currentSalary">Current Salary</Label>
-                <Input
-                  id="currentSalary"
-                  type="number"
-                  value={currentSalary}
-                  onChange={(e) => setCurrentSalary(Number(e.target.value))}
-                />
-              </div>
-              <div>
-                <Label htmlFor="additionalContributions">Extra Annual Contributions</Label>
-                <Input
-                  id="additionalContributions"
-                  type="number"
-                  value={additionalContributions}
-                  onChange={(e) => setAdditionalContributions(Number(e.target.value))}
-                />
-              </div>
-              <div>
-                <Label htmlFor="salaryPackaging">Salary Packaging to Super</Label>
-                <Input
-                  id="salaryPackaging"
-                  type="number"
-                  value={salaryPackaging}
-                  onChange={(e) => setSalaryPackaging(Number(e.target.value))}
-                />
+            <CardContent>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                <div>
+                  <Label htmlFor="currentAge">Current Age</Label>
+                  <Input
+                    id="currentAge"
+                    type="number"
+                    value={currentAge}
+                    onChange={(e) => setCurrentAge(Number(e.target.value))}
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="retirementAge">Retirement Age</Label>
+                  <Input
+                    id="retirementAge"
+                    type="number"
+                    value={retirementAge}
+                    onChange={(e) => setRetirementAge(Number(e.target.value))}
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="currentBalance">Current Super Balance</Label>
+                  <Input
+                    id="currentBalance"
+                    type="number"
+                    value={currentBalance}
+                    onChange={(e) => setCurrentBalance(Number(e.target.value))}
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="currentSalary">Current Salary</Label>
+                  <Input
+                    id="currentSalary"
+                    type="number"
+                    value={currentSalary}
+                    onChange={(e) => setCurrentSalary(Number(e.target.value))}
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="additionalContributions">Extra Annual Contributions</Label>
+                  <Input
+                    id="additionalContributions"
+                    type="number"
+                    value={additionalContributions}
+                    onChange={(e) => setAdditionalContributions(Number(e.target.value))}
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="salaryPackaging">Salary Packaging to Super</Label>
+                  <Input
+                    id="salaryPackaging"
+                    type="number"
+                    value={salaryPackaging}
+                    onChange={(e) => setSalaryPackaging(Number(e.target.value))}
+                  />
+                </div>
               </div>
             </CardContent>
           </Card>
 
-          <Card className="lg:col-span-2">
+          <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <TrendingUp className="h-5 w-5" />
