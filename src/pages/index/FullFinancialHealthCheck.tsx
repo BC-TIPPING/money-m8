@@ -50,8 +50,20 @@ const FullFinancialHealthCheck: React.FC<FullFinancialHealthCheckProps> = ({
   const annualIncome = monthlyIncome * 12;
   const annualTax = calculateAustralianIncomeTax(annualIncome);
   const monthlyNetIncome = annualIncome > 0 ? (annualIncome - annualTax) / 12 : 0;
-  const monthlyExpenses = calculateMonthlyAmount(expenseItems);
+  
+  // Separate savings/investments from other expenses
+  const savingsAndInvestmentsAmount = calculateMonthlyAmount(
+    expenseItems.filter(item => item.category === 'Savings & Investments')
+  );
+  const nonSavingsExpenses = calculateMonthlyAmount(
+    expenseItems.filter(item => item.category !== 'Savings & Investments')
+  );
+  const monthlyExpenses = nonSavingsExpenses;
   const monthlySurplus = monthlyNetIncome - monthlyExpenses;
+  
+  // Total savings rate includes both allocated savings/investments and any surplus
+  const totalMonthlySavings = savingsAndInvestmentsAmount + Math.max(0, monthlySurplus);
+  const savingsRate = monthlyNetIncome > 0 ? (totalMonthlySavings / monthlyNetIncome) * 100 : 0;
 
   // Australian income benchmarks - must match IncomeComparisonChart exactly
   const nationalMedian = 88400; // Updated to median full-time ~A$88,400/year
@@ -194,12 +206,7 @@ const FullFinancialHealthCheck: React.FC<FullFinancialHealthCheckProps> = ({
     }
     
     // Savings rate (10 points) - includes savings/investments + surplus
-    const savingsAndInvestmentsAmount = expenseItems
-      .filter(item => item.category === 'Savings & Investments')
-      .reduce((sum, item) => sum + parseFloat(item.amount || '0'), 0);
-    const totalSavingsRate = monthlyNetIncome > 0 ? 
-      ((savingsAndInvestmentsAmount + Math.max(0, monthlySurplus)) / monthlyNetIncome) * 100 : 0;
-    score += Math.min(totalSavingsRate / 2, 10); // Up to 10 points for 20% savings rate
+    score += Math.min(savingsRate / 2, 10); // Up to 10 points for 20% savings rate
     
     return Math.min(Math.round(score), 100);
   };
@@ -242,13 +249,8 @@ const FullFinancialHealthCheck: React.FC<FullFinancialHealthCheckProps> = ({
     }
     
     // Savings requirements
-    const savingsAndInvestmentsAmount = expenseItems
-      .filter(item => item.category === 'Savings & Investments')
-      .reduce((sum, item) => sum + parseFloat(item.amount || '0'), 0);
-    const totalSavingsRate = monthlyNetIncome > 0 ? 
-      ((savingsAndInvestmentsAmount + Math.max(0, monthlySurplus)) / monthlyNetIncome) * 100 : 0;
-    if (totalSavingsRate < 20) {
-      requirements.push(`Achieve 20% savings rate (currently ${totalSavingsRate.toFixed(1)}%)`);
+    if (savingsRate < 20) {
+      requirements.push(`Achieve 20% savings rate (currently ${savingsRate.toFixed(1)}%)`);
     }
     
     return requirements;
@@ -350,14 +352,7 @@ const FullFinancialHealthCheck: React.FC<FullFinancialHealthCheckProps> = ({
               <span className="text-sm text-muted-foreground">Savings Rate</span>
             </div>
             <p className="text-2xl font-bold text-purple-600">
-              {(() => {
-                const savingsAndInvestmentsAmount = expenseItems
-                  .filter(item => item.category === 'Savings & Investments')
-                  .reduce((sum, item) => sum + parseFloat(item.amount || '0'), 0);
-                const totalSavingsRate = monthlyNetIncome > 0 ? 
-                  ((savingsAndInvestmentsAmount + Math.max(0, monthlySurplus)) / monthlyNetIncome) * 100 : 0;
-                return totalSavingsRate.toFixed(1);
-              })()}%
+              {savingsRate.toFixed(1)}%
             </p>
             <p className="text-xs text-muted-foreground">target: 10-20%</p>
           </CardContent>
@@ -443,18 +438,11 @@ const FullFinancialHealthCheck: React.FC<FullFinancialHealthCheckProps> = ({
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="bg-purple-50 p-3 rounded-lg mb-4">
-            <p className="text-sm text-purple-800">
-              <strong>A healthy budget with 10-20% savings rate creates the foundation for wealth building and financial security.</strong> 
-              Current Savings Rate: {(() => {
-                const savingsAndInvestmentsAmount = expenseItems
-                  .filter(item => item.category === 'Savings & Investments')
-                  .reduce((sum, item) => sum + parseFloat(item.amount || '0'), 0);
-                const totalSavingsRate = monthlyNetIncome > 0 ? 
-                  ((savingsAndInvestmentsAmount + Math.max(0, monthlySurplus)) / monthlyNetIncome) * 100 : 0;
-                return totalSavingsRate.toFixed(1);
-              })()}%
-              • Target: 10-20% • Australian Average: 8.6%
-            </p>
+             <p className="text-sm text-purple-800">
+               <strong>A healthy budget with 10-20% savings rate creates the foundation for wealth building and financial security.</strong> 
+               Current Savings Rate: {savingsRate.toFixed(1)}%
+               • Target: 10-20% • Australian Average: 8.6%
+             </p>
           </div>
           
           <BudgetRecap 
