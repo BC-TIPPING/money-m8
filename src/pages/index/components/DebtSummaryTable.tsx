@@ -139,16 +139,22 @@ const DebtSummaryTable: React.FC<DebtSummaryTableProps> = ({ debtDetails, monthl
           </div>
         </div>
 
-        <div className="bg-red-50 p-4 rounded-lg">
-          <h4 className="font-semibold text-red-900 mb-2">🚨 Immediate Action Required</h4>
-          <ul className="text-sm text-red-800 space-y-1">
-            <li>• <strong>Stop all unnecessary spending</strong> - Cancel subscriptions, reduce entertainment, eat out less</li>
-            <li>• <strong>Pay minimum on all debts</strong> except the highest interest rate ({sortedDebts[0]?.type})</li>
-            <li>• <strong>Attack {sortedDebts[0]?.type} with ${recommendedExtra.toFixed(0)}/month extra</strong></li>
-            <li>• <strong>Consider debt consolidation</strong> if you can get a lower rate</li>
-            <li>• <strong>No investing until high-interest debt is eliminated</strong></li>
-          </ul>
-        </div>
+        {/* Only show immediate action if there's high interest debt (excluding mortgages) */}
+        {sortedDebts.some(debt => 
+          ['Credit Card', 'Personal Loan', 'BNPL (e.g. Afterpay)'].includes(debt.type) && 
+          parseFloat(debt.balance) > 0
+        ) && (
+          <div className="bg-red-50 p-4 rounded-lg">
+            <h4 className="font-semibold text-red-900 mb-2">🚨 Immediate Action Required</h4>
+            <ul className="text-sm text-red-800 space-y-1">
+              <li>• <strong>Stop all unnecessary spending</strong> - Cancel subscriptions, reduce entertainment, eat out less</li>
+              <li>• <strong>Pay minimum on all debts</strong> except the highest interest rate ({sortedDebts[0]?.type})</li>
+              <li>• <strong>Attack {sortedDebts[0]?.type} with ${recommendedExtra.toFixed(0)}/month extra</strong></li>
+              <li>• <strong>Consider debt consolidation</strong> if you can get a lower rate</li>
+              <li>• <strong>No investing until high-interest debt is eliminated</strong></li>
+            </ul>
+          </div>
+        )}
 
         <div className="bg-green-50 p-4 rounded-lg">
           <h4 className="font-semibold text-green-900 mb-2">✅ After Debt Elimination</h4>
