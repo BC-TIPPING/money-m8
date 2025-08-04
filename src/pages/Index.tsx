@@ -296,10 +296,19 @@ export default function Index() {
                         <BudgetPlanner expenseItems={assessment.expenseItems} totalMonthlyNetIncome={totalMonthlyNetIncome} />
                     )}
                     {assessment.goals.includes('Reduce debt') && assessment.debtDetails && assessment.debtDetails.length > 0 && (
-                        <EnhancedDebtCalculator 
-                          debtDetails={assessment.debtDetails}
-                          totalMonthlySurplus={monthlySurplus}
-                        />
+                        <>
+                          <EnhancedDebtCalculator 
+                            debtDetails={assessment.debtDetails}
+                            totalMonthlySurplus={monthlySurplus}
+                          />
+                          {/* Show debt reduction charts when chart data is available */}
+                          {chartData?.debtReductionData && chartData.debtReductionData.length > 0 && (
+                            <DebtReductionChart data={chartData.debtReductionData} />
+                          )}
+                          {chartData?.interestSavedData && chartData.interestSavedData.length > 0 && (
+                            <InterestSavedChart data={chartData.interestSavedData} />
+                          )}
+                        </>
                     )}
                     {assessment.goals.includes('Grow investments') && (
                         <>
@@ -313,10 +322,6 @@ export default function Index() {
                           />
                         </>
                     )}
-                    <div className="chart-section">
-                      {chartData?.debtReductionData && <DebtReductionChart data={chartData.debtReductionData} />}
-                      {chartData?.interestSavedData && <InterestSavedChart data={chartData.interestSavedData} />}
-                    </div>
                     
                     
                     <div className="action-items-section">
