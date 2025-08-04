@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
@@ -53,6 +53,7 @@ const FullFinancialHealthCheck: React.FC<FullFinancialHealthCheckProps> = ({
   isGeneratingSummary,
   aiSummary
 }) => {
+  const [showToughLove, setShowToughLove] = useState(false);
   // Calculate income using the established function
   const monthlyIncome = calculateMonthlyAmount(incomeSources);
   const annualIncome = monthlyIncome * 12;
@@ -694,39 +695,44 @@ const FullFinancialHealthCheck: React.FC<FullFinancialHealthCheckProps> = ({
                 This isn't about math, it's about changing behavior and building momentum!
               </p>
               {generateSummary && (
-                <div className="space-y-3">
-                  <Button 
-                    onClick={() => generateSummary({ personality: 'dave_ramsey' })}
-                    variant="destructive"
-                    size="sm"
-                    disabled={isGeneratingSummary}
-                    className="w-full"
-                  >
-                    {isGeneratingSummary ? (
-                      <>
-                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                        Getting tough love advice...
-                      </>
-                    ) : (
-                      "Get Tough Love Debt Strategy"
-                    )}
-                  </Button>
-                  
-                  {/* Display AI Summary if it appears to be a tough love/debt strategy summary */}
-                  {aiSummary && !isGeneratingSummary && (aiSummary.toLowerCase().includes('debt') || aiSummary.toLowerCase().includes('ramsey') || aiSummary.toLowerCase().includes('gazelle')) && (
-                    <div className="bg-red-50 border-l-4 border-red-400 p-4 rounded-r-lg">
-                      <h4 className="font-semibold text-red-900 mb-2 flex items-center gap-2">
-                        <TrendingDown className="h-4 w-4" />
-                        Your Tough Love Debt Strategy
-                      </h4>
-                      <div className="prose prose-sm prose-red max-w-none text-red-800">
-                        <ReactMarkdown remarkPlugins={[remarkGfm]}>
-                          {aiSummary}
-                        </ReactMarkdown>
-                      </div>
-                    </div>
-                  )}
-                </div>
+                 <div className="space-y-3">
+                   <Button 
+                     onClick={() => {
+                       setShowToughLove(!showToughLove);
+                       if (!showToughLove && generateSummary) {
+                         generateSummary({ personality: 'dave_ramsey' });
+                       }
+                     }}
+                     variant="destructive"
+                     size="sm"
+                     disabled={isGeneratingSummary}
+                     className="w-full"
+                   >
+                     {isGeneratingSummary ? (
+                       <>
+                         <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                         Getting tough love advice...
+                       </>
+                     ) : (
+                       showToughLove ? "Hide Tough Love Strategy" : "Get Tough Love Debt Strategy"
+                     )}
+                   </Button>
+                   
+                   {/* Display shortened AI Summary only when button is selected and AI has responded */}
+                   {showToughLove && aiSummary && !isGeneratingSummary && (aiSummary.toLowerCase().includes('debt') || aiSummary.toLowerCase().includes('ramsey') || aiSummary.toLowerCase().includes('gazelle')) && (
+                     <div className="bg-red-50 border-l-4 border-red-400 p-4 rounded-r-lg">
+                       <h4 className="font-semibold text-red-900 mb-2 flex items-center gap-2">
+                         <TrendingDown className="h-4 w-4" />
+                         Your Tough Love Debt Strategy
+                       </h4>
+                       <div className="text-sm text-red-800">
+                         <p className="font-medium">
+                           Stop the financial bleeding! You have ${highInterestDebt.totalBalance.toLocaleString()} in high-interest debt at {highInterestDebt.weightedRate.toFixed(1)}% - that's money being stolen from your future every single month. Cut up the credit cards, create a bare-bones budget, and attack the smallest debt first with every spare dollar. This is an emergency, not a lifestyle choice. No investing, no fancy purchases until this debt is GONE!
+                         </p>
+                       </div>
+                     </div>
+                   )}
+                 </div>
               )}
             </div>
           )}
