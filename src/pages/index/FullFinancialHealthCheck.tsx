@@ -4,7 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
-import { ArrowRight, TrendingUp, Shield, Home, PiggyBank, Target, BarChart3, DollarSign, Calendar, TrendingDown } from "lucide-react";
+import { ArrowRight, TrendingUp, Shield, Home, PiggyBank, Target, BarChart3, DollarSign, Calendar, TrendingDown, Loader2 } from "lucide-react";
 import { Link } from "react-router-dom";
 import IncomeComparisonChart from "./components/IncomeComparisonChart";
 import SuperBenchmarkChart from "./components/SuperBenchmarkChart";
@@ -29,6 +29,8 @@ interface FullFinancialHealthCheckProps {
   incomeSources: { category: string; amount: string; frequency: string }[];
   expenseItems: { category: string; amount: string; frequency: string }[];
   goals: string[];
+  generateSummary?: (options: { personality?: string }) => void;
+  isGeneratingSummary?: boolean;
 }
 
 const FullFinancialHealthCheck: React.FC<FullFinancialHealthCheckProps> = ({
@@ -43,7 +45,9 @@ const FullFinancialHealthCheck: React.FC<FullFinancialHealthCheckProps> = ({
   debtDetails,
   incomeSources,
   expenseItems,
-  goals
+  goals,
+  generateSummary,
+  isGeneratingSummary
 }) => {
   // Calculate income using the established function
   const monthlyIncome = calculateMonthlyAmount(incomeSources);
@@ -671,7 +675,7 @@ const FullFinancialHealthCheck: React.FC<FullFinancialHealthCheckProps> = ({
                   Immediate Action Required
                 </Badge>
               </div>
-              <p className="text-sm text-yellow-800">
+              <p className="text-sm text-yellow-800 mb-3">
                 <strong>High-interest debt is wealth destruction in action!</strong> 
                 With ${highInterestDebt.totalBalance.toLocaleString()} in high-interest debt at {highInterestDebt.weightedRate.toFixed(1)}% average rate, 
                 you're bleeding money every month. Stop investing, cut up the credit cards, and attack this debt with gazelle intensity. 
@@ -680,6 +684,24 @@ const FullFinancialHealthCheck: React.FC<FullFinancialHealthCheckProps> = ({
                 pay minimums on all, then throw every extra penny at the smallest debt until it's gone. 
                 This isn't about math, it's about changing behavior and building momentum!
               </p>
+              {generateSummary && (
+                <Button 
+                  onClick={() => generateSummary({ personality: 'dave_ramsey' })}
+                  variant="destructive"
+                  size="sm"
+                  disabled={isGeneratingSummary}
+                  className="w-full"
+                >
+                  {isGeneratingSummary ? (
+                    <>
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      Getting tough love advice...
+                    </>
+                  ) : (
+                    "Get Tough Love Debt Strategy"
+                  )}
+                </Button>
+              )}
             </div>
           )}
           
