@@ -107,10 +107,15 @@ const FullFinancialHealthCheck: React.FC<FullFinancialHealthCheckProps> = ({
     console.log('Debug - All debt details:', debtDetails);
     
     const highInterestDebts = debtDetails.filter(debt => {
-      const isHighInterestType = ['Credit Card', 'Personal Loan', 'BNPL (e.g. Afterpay)'].includes(debt.type);
       const hasBalance = parseFloat(debt.balance) > 0;
-      console.log(`Debug - Debt: ${debt.type}, IsHighInterest: ${isHighInterestType}, HasBalance: ${hasBalance}, Balance: ${debt.balance}`);
-      return isHighInterestType && hasBalance;
+      const interestRate = parseFloat(debt.interestRate);
+      // Consider debt high-interest if rate is above 8% (excluding mortgage which is typically lower)
+      // Also include traditional high-interest debt types regardless of rate
+      const isHighInterestRate = interestRate > 8;
+      const isHighInterestType = ['Credit Card', 'Personal Loan', 'BNPL (e.g. Afterpay)'].includes(debt.type);
+      const isHighInterest = isHighInterestRate || isHighInterestType;
+      console.log(`Debug - Debt: ${debt.type}, Rate: ${interestRate}%, IsHighInterestRate: ${isHighInterestRate}, IsHighInterestType: ${isHighInterestType}, HasBalance: ${hasBalance}, Balance: ${debt.balance}`);
+      return isHighInterest && hasBalance;
     });
     
     console.log('Debug - Filtered high interest debts:', highInterestDebts);
