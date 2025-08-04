@@ -153,12 +153,23 @@ const FullFinancialHealthCheck: React.FC<FullFinancialHealthCheckProps> = ({
       });
     }
     
-    // Medicare Levy Surcharge thresholds for 2024-25
-    const medicareThreshold = 97000; // Single person
-    const surchargeRate = annualIncome > medicareThreshold ? 
-      (annualIncome <= 113000 ? 0.01 : 
-       annualIncome <= 151000 ? 0.0125 : 0.015) : 0;
-    const surchargeAmount = Math.max(0, (annualIncome - medicareThreshold) * surchargeRate);
+    // Medicare Levy Surcharge thresholds for 2025-26
+    const medicareThreshold = 101000; // Single person threshold
+    const familyThreshold = 202000; // Family threshold
+    
+    // Calculate surcharge rate based on 2025-26 tiers
+    let surchargeRate = 0;
+    if (annualIncome > medicareThreshold) {
+      if (annualIncome <= 118000) {
+        surchargeRate = 0.01; // Tier 1: 1%
+      } else if (annualIncome <= 158000) {
+        surchargeRate = 0.0125; // Tier 2: 1.25%
+      } else {
+        surchargeRate = 0.015; // Tier 3: 1.5%
+      }
+    }
+    
+    const surchargeAmount = annualIncome * surchargeRate;
     
     const needsPrivateHealth = annualIncome > medicareThreshold && 
       !insurances.includes("Health Insurance");

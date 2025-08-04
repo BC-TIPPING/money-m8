@@ -63,7 +63,7 @@ export function calculateAustralianIncomeTax(income: number) {
   }
   
   // Add Medicare Levy (2% for most taxpayers)
-  // Medicare Levy threshold for 2024-25 is $24,276 for individuals
+  // Medicare Levy threshold for 2025-26 is $24,276 for individuals
   let medicareLevy = 0;
   if (income > 24276) {
     medicareLevy = income * 0.02;
