@@ -17,15 +17,15 @@ const BudgetRecap: React.FC<BudgetRecapProps> = ({
 }) => {
   // Australian budget guidelines (as % of net income) - mapped to survey categories
   const australianBudgetGuidelines = {
-    'Housing (Rent/Mortgage)': { min: 15, max: 25, category: 'Housing' },
+    'Housing (Rent/Mortgage)': { min: 25, max: 35, category: 'Housing' },
     'Food & Groceries': { min: 10, max: 15, category: 'Food' },
     'Utilities': { min: 3, max: 8, category: 'Utilities' },
-    'Transport': { min: 10, max: 15, category: 'Transport' },
+    'Transport': { min: 5, max: 10, category: 'Transport' },
     'Insurance': { min: 2, max: 5, category: 'Insurance' },
     'Entertainment & Subscriptions': { min: 2, max: 5, category: 'Entertainment' },
     'Clothing & Personal Care': { min: 2, max: 5, category: 'Clothing' },
     'Health & Medical': { min: 3, max: 6, category: 'Healthcare' },
-    'Savings & Investments': { min: 10, max: 20, category: 'Savings' },
+    'Savings & Investments': { min: 5, max: 15, category: 'Savings' },
     'Travel & Holidays': { min: 3, max: 8, category: 'Travel' },
     'Debt Repayments': { min: 5, max: 10, category: 'Debt' },
     'Children & Education': { min: 5, max: 10, category: 'Education' },
