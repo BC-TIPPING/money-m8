@@ -204,6 +204,7 @@ export default function Index() {
                       assets={assessment.assets || []}
                       generateSummary={generateSummary}
                       isGeneratingSummary={isGeneratingSummary}
+                      aiSummary={aiSummary}
                     />
                     
                     {/* Thank You Assessment Summary after Full Financial Health Check */}

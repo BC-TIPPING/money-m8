@@ -15,6 +15,8 @@ import DebtSummaryTable from "./components/DebtSummaryTable";
 import SuperKPICards from "./components/SuperKPICards";
 import PostDebtInvestmentVisualization from "./components/PostDebtInvestmentVisualization";
 import { calculateMonthlyAmount, calculateAustralianIncomeTax } from "@/lib/financialCalculations";
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 
 interface FullFinancialHealthCheckProps {
   age?: number;
@@ -31,6 +33,7 @@ interface FullFinancialHealthCheckProps {
   goals: string[];
   generateSummary?: (options: { personality?: string }) => void;
   isGeneratingSummary?: boolean;
+  aiSummary?: string;
 }
 
 const FullFinancialHealthCheck: React.FC<FullFinancialHealthCheckProps> = ({
@@ -47,7 +50,8 @@ const FullFinancialHealthCheck: React.FC<FullFinancialHealthCheckProps> = ({
   expenseItems,
   goals,
   generateSummary,
-  isGeneratingSummary
+  isGeneratingSummary,
+  aiSummary
 }) => {
   // Calculate income using the established function
   const monthlyIncome = calculateMonthlyAmount(incomeSources);
@@ -690,22 +694,39 @@ const FullFinancialHealthCheck: React.FC<FullFinancialHealthCheckProps> = ({
                 This isn't about math, it's about changing behavior and building momentum!
               </p>
               {generateSummary && (
-                <Button 
-                  onClick={() => generateSummary({ personality: 'dave_ramsey' })}
-                  variant="destructive"
-                  size="sm"
-                  disabled={isGeneratingSummary}
-                  className="w-full"
-                >
-                  {isGeneratingSummary ? (
-                    <>
-                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                      Getting tough love advice...
-                    </>
-                  ) : (
-                    "Get Tough Love Debt Strategy"
+                <div className="space-y-3">
+                  <Button 
+                    onClick={() => generateSummary({ personality: 'dave_ramsey' })}
+                    variant="destructive"
+                    size="sm"
+                    disabled={isGeneratingSummary}
+                    className="w-full"
+                  >
+                    {isGeneratingSummary ? (
+                      <>
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        Getting tough love advice...
+                      </>
+                    ) : (
+                      "Get Tough Love Debt Strategy"
+                    )}
+                  </Button>
+                  
+                  {/* Display AI Summary if it appears to be a tough love/debt strategy summary */}
+                  {aiSummary && !isGeneratingSummary && (aiSummary.toLowerCase().includes('debt') || aiSummary.toLowerCase().includes('ramsey') || aiSummary.toLowerCase().includes('gazelle')) && (
+                    <div className="bg-red-50 border-l-4 border-red-400 p-4 rounded-r-lg">
+                      <h4 className="font-semibold text-red-900 mb-2 flex items-center gap-2">
+                        <TrendingDown className="h-4 w-4" />
+                        Your Tough Love Debt Strategy
+                      </h4>
+                      <div className="prose prose-sm prose-red max-w-none text-red-800">
+                        <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                          {aiSummary}
+                        </ReactMarkdown>
+                      </div>
+                    </div>
                   )}
-                </Button>
+                </div>
               )}
             </div>
           )}
