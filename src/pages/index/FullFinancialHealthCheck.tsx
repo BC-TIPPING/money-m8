@@ -464,9 +464,7 @@ const FullFinancialHealthCheck: React.FC<FullFinancialHealthCheckProps> = ({
         <CardContent className="space-y-4">
           <div className="bg-purple-50 p-3 rounded-lg mb-4">
              <p className="text-sm text-purple-800">
-               <strong>A healthy budget with 10-20% savings rate creates the foundation for wealth building and financial security.</strong> 
-               Current Savings Rate: {savingsRate.toFixed(1)}%
-               • Target: 10-20% • Australian Average: 8.6%
+               <strong>A healthy budget with 10-20% savings rate creates the foundation for wealth building and financial security.</strong> Current Savings Rate: {savingsRate.toFixed(1)}% • Target: 10-20% • Australian Average: 8.6%
              </p>
           </div>
           
@@ -533,11 +531,7 @@ const FullFinancialHealthCheck: React.FC<FullFinancialHealthCheckProps> = ({
         <CardContent className="space-y-4">
           <div className="bg-blue-50 p-3 rounded-lg mb-4">
             <p className="text-sm text-blue-800">
-              <strong>Superannuation is one of Australia's most powerful wealth-building tools.</strong> 
-              It's typically the most tax-effective investment vehicle available, with contributions taxed at just 15% 
-              (compared to your marginal tax rate of up to 47%) and investment earnings also taxed at only 15%. 
-              In retirement, withdrawals are generally tax-free after age 60. Building a strong super balance 
-              is crucial for maintaining your lifestyle in retirement.
+              <strong>Superannuation is one of Australia's most powerful wealth-building tools.</strong> It's typically the most tax-effective investment vehicle available, with contributions taxed at just 15% (compared to your marginal tax rate of up to 47%) and investment earnings also taxed at only 15%. In retirement, withdrawals are generally tax-free after age 60. Building a strong super balance is crucial for maintaining your lifestyle in retirement.
             </p>
           </div>
           
@@ -573,10 +567,7 @@ const FullFinancialHealthCheck: React.FC<FullFinancialHealthCheckProps> = ({
         <CardContent className="space-y-3">
           <div className="bg-purple-50 p-3 rounded-lg mb-4">
             <p className="text-sm text-purple-800">
-              <strong>Insurance is your financial safety net.</strong> 
-              Life insurance, income protection, and health insurance protect you and your family from financial 
-              catastrophe when unexpected events occur. Without adequate coverage, a serious illness or accident 
-              could destroy years of financial progress in an instant.
+              <strong>Insurance is your financial safety net.</strong> Life insurance, income protection, and health insurance protect you and your family from financial catastrophe when unexpected events occur. Without adequate coverage, a serious illness or accident could destroy years of financial progress in an instant.
             </p>
           </div>
           
@@ -646,10 +637,7 @@ const FullFinancialHealthCheck: React.FC<FullFinancialHealthCheckProps> = ({
           {highInterestDebt && (
             <div className="bg-red-50 p-3 rounded-lg mb-4">
               <p className="text-sm text-red-800">
-                <strong>High-interest debt is wealth destruction in action.</strong> 
-                Credit cards and personal loans typically charge 15-25% interest, making them impossible to outpace 
-                with investments. Eliminating high-interest debt provides a guaranteed return equal to the interest rate 
-                - often better than any investment you could make.
+                <strong>High-interest debt is wealth destruction in action.</strong> Credit cards and personal loans typically charge 15-25% interest, making them impossible to outpace with investments. Eliminating high-interest debt provides a guaranteed return equal to the interest rate - often better than any investment you could make.
               </p>
             </div>
           )}
@@ -686,13 +674,7 @@ const FullFinancialHealthCheck: React.FC<FullFinancialHealthCheckProps> = ({
                 </Badge>
               </div>
               <p className="text-sm text-yellow-800 mb-3">
-                <strong>High-interest debt is wealth destruction in action!</strong> 
-                With ${highInterestDebt.totalBalance.toLocaleString()} in high-interest debt at {highInterestDebt.weightedRate.toFixed(1)}% average rate, 
-                you're bleeding money every month. Stop investing, cut up the credit cards, and attack this debt with gazelle intensity. 
-                Every dollar thrown at this debt is a <strong>guaranteed {highInterestDebt.weightedRate.toFixed(1)}% return</strong> - 
-                better than any investment! Use the debt snowball method: list all debts smallest to largest, 
-                pay minimums on all, then throw every extra penny at the smallest debt until it's gone. 
-                This isn't about math, it's about changing behavior and building momentum!
+                <strong>High-interest debt is wealth destruction in action!</strong> With ${highInterestDebt.totalBalance.toLocaleString()} in high-interest debt at {highInterestDebt.weightedRate.toFixed(1)}% average rate, you're bleeding money every month. Stop investing, cut up the credit cards, and attack this debt with gazelle intensity. Every dollar thrown at this debt is a <strong>guaranteed {highInterestDebt.weightedRate.toFixed(1)}% return</strong> - better than any investment! Use the debt snowball method: list all debts smallest to largest, pay minimums on all, then throw every extra penny at the smallest debt until it's gone. This isn't about math, it's about changing behavior and building momentum!
               </p>
               {generateSummary && (
                  <div className="space-y-3">
@@ -761,10 +743,7 @@ const FullFinancialHealthCheck: React.FC<FullFinancialHealthCheckProps> = ({
         <CardContent className="space-y-4">
           <div className="bg-indigo-50 p-3 rounded-lg mb-4">
             <p className="text-sm text-indigo-800">
-              <strong>Investing grows your wealth through compound returns.</strong> 
-              After eliminating high-interest debt and building an emergency fund, investing allows your money 
-              to work for you. The key is starting early, staying consistent, and choosing investments that match 
-              your risk tolerance and time horizon.
+              <strong>Investing grows your wealth through compound returns.</strong> After eliminating high-interest debt and building an emergency fund, investing allows your money to work for you. The key is starting early, staying consistent, and choosing investments that match your risk tolerance and time horizon.
             </p>
           </div>
           
