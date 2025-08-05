@@ -65,6 +65,9 @@ export default function Index() {
       assessment.setGoals([goal]);
       assessment.setShowAssessment(true);
     }
+    
+    // Scroll to top when starting assessment
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   // Add goal selection event handler

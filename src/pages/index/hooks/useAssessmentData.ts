@@ -149,6 +149,9 @@ export function useAssessmentData(assessment: AssessmentState) {
   }, [isFetchSuccess, user, existingAssessment, toast]);
 
   const handleStartOver = () => {
+    // Scroll to top when starting over
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    
     // Reset everything to start fresh from question 1
     assessment.setStep(0);
     assessment.setShowAssessment(true);
@@ -200,6 +203,9 @@ export function useAssessmentData(assessment: AssessmentState) {
     assessment.setGoals([]);
     assessment.setStep(0);
     assessment.setShowAssessment(false);
+    
+    // Scroll to top when changing goals
+    window.scrollTo({ top: 0, behavior: 'smooth' });
     
     toast({ 
       title: "Goal Changed", 
