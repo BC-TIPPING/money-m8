@@ -238,6 +238,7 @@ const PayOffHomeLoanCalculator: React.FC<PayOffHomeLoanCalculatorProps> = ({
                         <XAxis 
                           dataKey="year" 
                           tickFormatter={(value) => `Yr ${value}`}
+                          label={{ value: 'Years', position: 'insideBottom', offset: -5 }}
                         />
                         <YAxis 
                           tickFormatter={(value) => `$${(value / 1000)}k`}

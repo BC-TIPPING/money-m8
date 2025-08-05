@@ -428,6 +428,7 @@ const EnhancedDebtCalculator: React.FC<EnhancedDebtCalculatorProps> = ({
                   <XAxis 
                     dataKey="month" 
                     tickFormatter={(value) => `${Math.floor(value/12)}y`}
+                    label={{ value: 'Time (Years)', position: 'insideBottom', offset: -5 }}
                   />
                   <YAxis 
                     tickFormatter={(value) => `$${(value / 1000)}k`}

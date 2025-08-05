@@ -261,6 +261,7 @@ const PostDebtInvestmentVisualization: React.FC<PostDebtInvestmentVisualizationP
                 <XAxis 
                   dataKey="month" 
                   tickFormatter={(value) => `${Math.floor(value / 12)}y`}
+                  label={{ value: 'Years', position: 'insideBottom', offset: -5 }}
                 />
                 <YAxis tickFormatter={(value) => `$${(value / 1000).toFixed(0)}k`} />
                 <Tooltip content={<CustomTooltip />} />
@@ -407,6 +408,7 @@ const PostDebtInvestmentVisualization: React.FC<PostDebtInvestmentVisualizationP
               <CartesianGrid strokeDasharray="3 3" />
               <XAxis 
                 dataKey="month" 
+                label={{ value: 'Months', position: 'insideBottom', offset: -5 }}
               />
               <YAxis tickFormatter={(value) => `$${(value / 1000).toFixed(0)}k`} />
               <Tooltip content={<CustomTooltip />} />

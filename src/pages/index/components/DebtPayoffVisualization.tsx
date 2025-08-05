@@ -314,6 +314,7 @@ const DebtPayoffVisualization: React.FC<DebtPayoffVisualizationProps> = ({ debtD
                   <CartesianGrid strokeDasharray="3 3" />
                   <XAxis 
                     dataKey="month" 
+                    label={{ value: 'Months', position: 'insideBottom', offset: -5 }}
                   />
                   <YAxis tickFormatter={(value) => `$${(value / 1000).toFixed(0)}k`} />
                   <Tooltip content={<CustomTooltip />} />
@@ -395,6 +396,7 @@ const DebtPayoffVisualization: React.FC<DebtPayoffVisualizationProps> = ({ debtD
                   <CartesianGrid strokeDasharray="3 3" />
                   <XAxis 
                     dataKey="month" 
+                    label={{ value: 'Months', position: 'insideBottom', offset: -5 }}
                   />
                   <YAxis tickFormatter={(value) => `$${(value / 1000).toFixed(0)}k`} />
                   <Tooltip content={<CustomTooltip />} />

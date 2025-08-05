@@ -57,7 +57,7 @@ const DebtReductionChart: React.FC<DebtReductionChartProps> = ({ data }) => {
               top: 5,
               right: 20,
               left: 10,
-              bottom: 5,
+              bottom: 25,
             }}
           >
             <CartesianGrid vertical={false} />
@@ -67,6 +67,7 @@ const DebtReductionChart: React.FC<DebtReductionChartProps> = ({ data }) => {
               axisLine={false}
               tickMargin={8}
               tickFormatter={(value) => `M${value}`}
+              label={{ value: 'Months', position: 'insideBottom', offset: -5 }}
             />
             <YAxis
               tickFormatter={(value) => `$${(value / 1000)}k`}
