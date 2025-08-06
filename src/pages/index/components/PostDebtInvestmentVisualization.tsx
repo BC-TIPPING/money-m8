@@ -256,7 +256,7 @@ const PostDebtInvestmentVisualization: React.FC<PostDebtInvestmentVisualizationP
           {/* Chart */}
           <div className="h-80">
             <ResponsiveContainer width="100%" height="100%">
-              <AreaChart data={projectionData} margin={{ top: 20, right: 30, left: 20, bottom: 20 }}>
+              <AreaChart data={projectionData} margin={{ top: 20, right: 30, left: 20, bottom: 60 }}>
                 <CartesianGrid strokeDasharray="3 3" />
                 <XAxis 
                   dataKey="month" 
@@ -404,7 +404,7 @@ const PostDebtInvestmentVisualization: React.FC<PostDebtInvestmentVisualizationP
         {/* Chart */}
         <div className="h-80">
           <ResponsiveContainer width="100%" height="100%">
-            <AreaChart data={investmentData} margin={{ top: 20, right: 30, left: 20, bottom: 20 }}>
+            <AreaChart data={investmentData} margin={{ top: 20, right: 30, left: 20, bottom: 60 }}>
               <CartesianGrid strokeDasharray="3 3" />
               <XAxis 
                 dataKey="month" 

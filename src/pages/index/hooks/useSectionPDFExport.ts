@@ -3,10 +3,12 @@ import html2canvas from "html2canvas";
 
 export const useSectionPDFExport = () => {
   const handleExportToPDF = async () => {
+    console.log('Starting PDF export...');
+    
     const pdf = new jsPDF('p', 'mm', 'a4');
     const pdfWidth = pdf.internal.pageSize.getWidth();
     const pdfHeight = pdf.internal.pageSize.getHeight();
-    const margin = 10; // Add margin for better appearance
+    const margin = 10;
     const contentWidth = pdfWidth - (2 * margin);
     const contentHeight = pdfHeight - (2 * margin);
 
@@ -16,10 +18,6 @@ export const useSectionPDFExport = () => {
       '[data-export-section="health-check"]', // Full Financial Health Check  
       '[data-export-section="charts"]', // Charts section
       '[data-export-section="action-items"]', // Action items
-      // Fallback selectors if data attributes aren't found
-      '.space-y-8 > div:has(.text-2xl)', // Individual sections with headings
-      '.grid.gap-6 > div', // Grid sections
-      '.space-y-6 > div' // Spaced sections
     ];
 
     // Find all meaningful sections automatically
@@ -28,8 +26,10 @@ export const useSectionPDFExport = () => {
     // Try specific selectors first
     for (const selector of sectionSelectors) {
       const elements = document.querySelectorAll(selector) as NodeListOf<HTMLElement>;
+      console.log(`Found ${elements.length} elements for selector: ${selector}`);
       elements.forEach(el => {
-        if (el.offsetHeight > 50 && !sections.includes(el)) { // Only include sections with content
+        if (el.offsetHeight > 50 && !sections.includes(el)) {
+          console.log(`Adding section with height: ${el.offsetHeight}`);
           sections.push(el);
         }
       });
@@ -37,17 +37,21 @@ export const useSectionPDFExport = () => {
 
     // If no sections found, try to find main content sections
     if (sections.length === 0) {
+      console.log('No sections found with data attributes, trying fallback...');
       const mainContent = document.getElementById('export-content');
       if (mainContent) {
         const childSections = mainContent.children;
         for (let i = 0; i < childSections.length; i++) {
           const section = childSections[i] as HTMLElement;
           if (section.offsetHeight > 50) {
+            console.log(`Adding fallback section with height: ${section.offsetHeight}`);
             sections.push(section);
           }
         }
       }
     }
+
+    console.log(`Total sections found: ${sections.length}`);
 
     let isFirstSection = true;
 

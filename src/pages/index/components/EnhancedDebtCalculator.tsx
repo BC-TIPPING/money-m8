@@ -423,7 +423,7 @@ const EnhancedDebtCalculator: React.FC<EnhancedDebtCalculatorProps> = ({
             <div className="h-80 mt-6">
               <p className="text-sm font-medium text-emerald-700 mb-3">Debt Elimination Progress</p>
               <ResponsiveContainer width="100%" height="100%">
-                <LineChart data={calculationResults.chartData} margin={{ top: 20, right: 30, left: 20, bottom: 20 }}>
+                <LineChart data={calculationResults.chartData} margin={{ top: 20, right: 30, left: 20, bottom: 60 }}>
                   <CartesianGrid strokeDasharray="3 3" />
                   <XAxis 
                     dataKey="month" 

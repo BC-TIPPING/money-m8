@@ -53,7 +53,7 @@ const InterestSavedChart: React.FC<InterestSavedChartProps> = ({ data }) => {
               top: 5,
               right: 20,
               left: 10,
-              bottom: 25,
+              bottom: 60,
             }}
           >
             <CartesianGrid vertical={false} />

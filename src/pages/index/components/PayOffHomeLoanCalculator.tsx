@@ -233,7 +233,7 @@ const PayOffHomeLoanCalculator: React.FC<PayOffHomeLoanCalculatorProps> = ({
                   <p className="text-sm font-medium text-gray-700 mb-3">Loan Balance Over Time</p>
                   <ChartContainer config={chartConfig} className="h-[200px] w-full">
                     <ResponsiveContainer width="100%" height="100%">
-                      <LineChart data={results.chartData}>
+                      <LineChart data={results.chartData} margin={{ top: 20, right: 30, left: 20, bottom: 60 }}>
                         <CartesianGrid strokeDasharray="3 3" />
                         <XAxis 
                           dataKey="year" 

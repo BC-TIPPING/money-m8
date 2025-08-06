@@ -310,7 +310,7 @@ const DebtPayoffVisualization: React.FC<DebtPayoffVisualizationProps> = ({ debtD
             {/* Chart */}
             <div className="h-80">
               <ResponsiveContainer width="100%" height="100%">
-                <AreaChart data={debtData} margin={{ top: 20, right: 30, left: 20, bottom: 20 }}>
+                <AreaChart data={debtData} margin={{ top: 20, right: 30, left: 20, bottom: 60 }}>
                   <CartesianGrid strokeDasharray="3 3" />
                   <XAxis 
                     dataKey="month" 
@@ -392,7 +392,7 @@ const DebtPayoffVisualization: React.FC<DebtPayoffVisualizationProps> = ({ debtD
             {/* Chart */}
             <div className="h-80">
               <ResponsiveContainer width="100%" height="100%">
-                <AreaChart data={mortgageData} margin={{ top: 20, right: 30, left: 20, bottom: 20 }}>
+                <AreaChart data={mortgageData} margin={{ top: 20, right: 30, left: 20, bottom: 60 }}>
                   <CartesianGrid strokeDasharray="3 3" />
                   <XAxis 
                     dataKey="month" 
