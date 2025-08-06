@@ -83,7 +83,7 @@ const AssessmentSummary: React.FC<AssessmentSummaryProps> = (props) => {
 
 
   return (
-    <div className="bg-gradient-to-br from-blue-50 to-white border border-blue-200 rounded-lg p-6">
+    <div className="bg-gradient-to-br from-blue-50 to-white border border-blue-200 rounded-lg p-6" data-export-section="stepper">
       <div className="space-y-8 text-sm">
       <Section title="Primary Goal">
         <SummaryItem label="Your Goal" value={goals.includes('Other') && otherGoal ? otherGoal : goals.join(', ')} />

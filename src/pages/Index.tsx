@@ -279,7 +279,7 @@ export default function Index() {
                         <BudgetPlanner expenseItems={assessment.expenseItems} totalMonthlyNetIncome={totalMonthlyNetIncome} />
                     )}
                     {assessment.goals.includes('Reduce debt') && assessment.debtDetails && assessment.debtDetails.length > 0 && (
-                        <>
+                        <div data-export-section="charts">
                           <EnhancedDebtCalculator 
                             debtDetails={assessment.debtDetails}
                             totalMonthlySurplus={monthlySurplus}
@@ -291,10 +291,10 @@ export default function Index() {
                           {chartData?.interestSavedData && chartData.interestSavedData.length > 0 && (
                             <InterestSavedChart data={chartData.interestSavedData} />
                           )}
-                        </>
+                        </div>
                     )}
                     {assessment.goals.includes('Grow investments') && (
-                        <>
+                        <div data-export-section="charts">
                           <InvestmentGrowthCalculator 
                             defaultInvestmentAmount={Math.max(monthlySurplus * 0.7, 100)}
                             currentAge={30}
@@ -303,7 +303,7 @@ export default function Index() {
                             debtDetails={assessment.debtDetails}
                             monthlyIncome={totalMonthlyNetIncome}
                           />
-                        </>
+                        </div>
                     )}
                     
                     
