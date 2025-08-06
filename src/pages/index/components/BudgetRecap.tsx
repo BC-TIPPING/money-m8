@@ -56,8 +56,15 @@ const BudgetRecap: React.FC<BudgetRecapProps> = ({
     const actualPercentage = totalMonthlyNetIncome > 0 ? (actualSpending / totalMonthlyNetIncome) * 100 : 0;
     
     let status: 'good' | 'warning' | 'over' | 'under' = 'good';
-    if (actualPercentage > guideline.max) status = 'over';
-    else if (actualPercentage < guideline.min) status = 'under';
+    
+    // Special handling for Savings & Investments - over is good, under is bad
+    if (category === 'Savings & Investments') {
+      if (actualPercentage > guideline.max) status = 'good'; // Over is good for savings
+      else if (actualPercentage < guideline.min) status = 'under'; // Under is bad for savings
+    } else {
+      if (actualPercentage > guideline.max) status = 'over';
+      else if (actualPercentage < guideline.min) status = 'under';
+    }
     
     return {
       category,
@@ -69,7 +76,9 @@ const BudgetRecap: React.FC<BudgetRecapProps> = ({
   });
 
   const surplus = totalMonthlyNetIncome - totalMonthlyExpenses;
-  const savingsRate = totalMonthlyNetIncome > 0 ? (surplus / totalMonthlyNetIncome) * 100 : 0;
+  const actualSavingsSpending = calculateCategorySpending('Savings & Investments');
+  const totalSavings = surplus + actualSavingsSpending;
+  const savingsRate = totalMonthlyNetIncome > 0 ? (totalSavings / totalMonthlyNetIncome) * 100 : 0;
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -141,7 +150,7 @@ const BudgetRecap: React.FC<BudgetRecapProps> = ({
                 </div>
                 <div className="text-right">
                   <Badge className={getStatusColor(item.status)}>
-                    {item.status === 'good' ? 'On Track' : 
+                    {item.status === 'good' ? (item.category === 'Savings & Investments' && item.actualPercentage > item.guideline.max ? 'Excellent' : 'On Track') : 
                      item.status === 'under' ? 'Under' : 'Over'}
                   </Badge>
                   <p className="text-xs text-muted-foreground mt-1">
