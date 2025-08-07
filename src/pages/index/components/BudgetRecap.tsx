@@ -79,8 +79,7 @@ const BudgetRecap: React.FC<BudgetRecapProps> = ({
   const actualSavingsSpending = calculateCategorySpending('Savings & Investments');
   const nonSavingsExpenses = totalMonthlyExpenses - actualSavingsSpending;
   const surplus = totalMonthlyNetIncome - nonSavingsExpenses;
-  const totalSavings = surplus + actualSavingsSpending;
-  const savingsRate = totalMonthlyNetIncome > 0 ? (totalSavings / totalMonthlyNetIncome) * 100 : 0;
+  const savingsRate = totalMonthlyNetIncome > 0 ? (surplus / totalMonthlyNetIncome) * 100 : 0;
 
   const getStatusColor = (status: string) => {
     switch (status) {
