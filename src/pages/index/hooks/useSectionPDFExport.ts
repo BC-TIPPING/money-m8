@@ -56,16 +56,26 @@ export const useSectionPDFExport = () => {
     let isFirstSection = true;
 
     for (const element of sections) {
-      // Set white background for PDF
+      // Ensure element is fully visible and has proper dimensions
+      element.scrollIntoView({ behavior: 'instant', block: 'start' });
+      
+      // Set white background and ensure proper layout for PDF
       const originalBg = element.style.backgroundColor;
       const originalBorder = element.style.border;
       const originalPadding = element.style.padding;
+      const originalWidth = element.style.width;
       
       element.style.backgroundColor = 'white';
       element.style.border = 'none';
       element.style.padding = '20px';
+      element.style.width = 'auto';
 
       try {
+        // Get the full dimensions of the element
+        const elementRect = element.getBoundingClientRect();
+        const fullWidth = Math.max(element.scrollWidth, element.offsetWidth, elementRect.width);
+        const fullHeight = Math.max(element.scrollHeight, element.offsetHeight, elementRect.height);
+
         const canvas = await html2canvas(element, { 
           scale: 2, 
           useCORS: true,
@@ -73,20 +83,25 @@ export const useSectionPDFExport = () => {
           logging: false,
           allowTaint: true,
           foreignObjectRendering: true,
-          width: element.scrollWidth,
-          height: element.scrollHeight
+          width: fullWidth,
+          height: fullHeight,
+          x: 0,
+          y: 0,
+          windowWidth: window.innerWidth,
+          windowHeight: window.innerHeight
         });
 
         // Restore original styles
         element.style.backgroundColor = originalBg;
         element.style.border = originalBorder;
         element.style.padding = originalPadding;
+        element.style.width = originalWidth;
 
         const imgData = canvas.toDataURL('image/png', 1.0);
         const canvasWidth = canvas.width;
         const canvasHeight = canvas.height;
         
-        // Calculate dimensions for 100% scale
+        // Calculate dimensions to fit the full width in PDF
         const imgWidth = contentWidth;
         const imgHeight = (canvasHeight * contentWidth) / canvasWidth;
 
