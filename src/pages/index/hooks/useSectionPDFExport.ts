@@ -67,12 +67,14 @@ export const useSectionPDFExport = () => {
 
       try {
         const canvas = await html2canvas(element, { 
-          scale: 1.5, 
+          scale: 2, 
           useCORS: true,
           backgroundColor: 'white',
           logging: false,
           allowTaint: true,
-          foreignObjectRendering: true
+          foreignObjectRendering: true,
+          width: element.scrollWidth,
+          height: element.scrollHeight
         });
 
         // Restore original styles
@@ -80,23 +82,13 @@ export const useSectionPDFExport = () => {
         element.style.border = originalBorder;
         element.style.padding = originalPadding;
 
-        const imgData = canvas.toDataURL('image/png', 0.95);
+        const imgData = canvas.toDataURL('image/png', 1.0);
         const canvasWidth = canvas.width;
         const canvasHeight = canvas.height;
         
-        const ratio = canvasWidth / canvasHeight;
-        const maxImgWidth = contentWidth;
-        const maxImgHeight = contentHeight;
-        
-        // Calculate dimensions to fit within page while maintaining aspect ratio
-        let imgWidth = maxImgWidth;
-        let imgHeight = imgWidth / ratio;
-        
-        // If height exceeds page, scale down based on height
-        if (imgHeight > maxImgHeight) {
-          imgHeight = maxImgHeight;
-          imgWidth = imgHeight * ratio;
-        }
+        // Calculate dimensions for 100% scale
+        const imgWidth = contentWidth;
+        const imgHeight = (canvasHeight * contentWidth) / canvasWidth;
 
         // Add new page for each section (except the very first one)
         if (!isFirstSection) {
@@ -104,12 +96,44 @@ export const useSectionPDFExport = () => {
         }
         isFirstSection = false;
 
-        // Center the content on the page
-        const xOffset = margin + (contentWidth - imgWidth) / 2;
-        const yOffset = margin + (contentHeight - imgHeight) / 2;
-
-        // Add the image to PDF - keep sections together, scale if needed
-        pdf.addImage(imgData, 'PNG', xOffset, yOffset, imgWidth, imgHeight);
+        // If content is too tall for one page, split it across multiple pages
+        if (imgHeight <= contentHeight) {
+          // Content fits on one page - add it normally
+          pdf.addImage(imgData, 'PNG', margin, margin, imgWidth, imgHeight);
+        } else {
+          // Content spans multiple pages
+          let remainingHeight = imgHeight;
+          let yPos = 0;
+          
+          while (remainingHeight > 0) {
+            const pageHeight = Math.min(remainingHeight, contentHeight);
+            const cropCanvas = document.createElement('canvas');
+            const cropCtx = cropCanvas.getContext('2d');
+            
+            cropCanvas.width = canvasWidth;
+            cropCanvas.height = (pageHeight * canvasWidth) / contentWidth;
+            
+            if (cropCtx) {
+              cropCtx.drawImage(
+                canvas,
+                0, (yPos * canvasWidth) / contentWidth,
+                canvasWidth, cropCanvas.height,
+                0, 0,
+                canvasWidth, cropCanvas.height
+              );
+              
+              const cropImgData = cropCanvas.toDataURL('image/png', 1.0);
+              pdf.addImage(cropImgData, 'PNG', margin, margin, imgWidth, pageHeight);
+              
+              remainingHeight -= pageHeight;
+              yPos += pageHeight;
+              
+              if (remainingHeight > 0) {
+                pdf.addPage();
+              }
+            }
+          }
+        }
 
       } catch (error) {
         console.error('Error capturing section:', error);
