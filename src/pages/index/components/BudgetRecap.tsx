@@ -113,7 +113,7 @@ const BudgetRecap: React.FC<BudgetRecapProps> = ({
           </div>
           <div className="text-center">
             <p className="text-sm text-muted-foreground">Monthly Expenses</p>
-            <p className="text-2xl font-bold">${totalMonthlyExpenses.toLocaleString()}</p>
+            <p className="text-2xl font-bold">${nonSavingsExpenses.toLocaleString()}</p>
           </div>
           <div className="text-center">
             <p className="text-sm text-muted-foreground">Monthly Surplus</p>
@@ -176,8 +176,11 @@ const BudgetRecap: React.FC<BudgetRecapProps> = ({
             {savingsRate < 10 && (
               <li>• Increase savings rate to at least 10% (${(totalMonthlyNetIncome * 0.1).toFixed(0)}/month)</li>
             )}
-            {budgetAnalysis.filter(item => item.status === 'over').length === 0 && savingsRate >= 10 && (
+            {budgetAnalysis.filter(item => item.status === 'over').length === 0 && savingsRate >= 10 && savingsRate < 20 && (
               <li>• Your budget is well-balanced! Consider increasing savings rate to 15-20%</li>
+            )}
+            {budgetAnalysis.filter(item => item.status === 'over').length === 0 && savingsRate >= 20 && (
+              <li>• Excellent budget management! Your savings rate is above 20%</li>
             )}
           </ul>
         </div>
