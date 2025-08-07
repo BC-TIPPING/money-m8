@@ -106,7 +106,7 @@ const IncomeComparisonChart: React.FC<IncomeComparisonChartProps> = ({ userIncom
             <div className="absolute right-0 text-xs text-gray-500">$225k</div>
           </div>
           
-          <div className="text-sm text-muted-foreground text-center px-2">
+          <div className="text-sm text-muted-foreground text-center px-4 py-2">
             Income comparison based on Australian full-time median wages
           </div>
         </CardContent>

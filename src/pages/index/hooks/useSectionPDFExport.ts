@@ -8,7 +8,7 @@ export const useSectionPDFExport = () => {
     const pdf = new jsPDF('p', 'mm', 'a4');
     const pdfWidth = pdf.internal.pageSize.getWidth();
     const pdfHeight = pdf.internal.pageSize.getHeight();
-    const margin = 10;
+    const margin = 15;
     const contentWidth = pdfWidth - (2 * margin);
     const contentHeight = pdfHeight - (2 * margin);
 
