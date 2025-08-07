@@ -75,8 +75,10 @@ const BudgetRecap: React.FC<BudgetRecapProps> = ({
     };
   });
 
-  const surplus = totalMonthlyNetIncome - totalMonthlyExpenses;
+  // Calculate expenses excluding savings/investments to get true surplus
   const actualSavingsSpending = calculateCategorySpending('Savings & Investments');
+  const nonSavingsExpenses = totalMonthlyExpenses - actualSavingsSpending;
+  const surplus = totalMonthlyNetIncome - nonSavingsExpenses;
   const totalSavings = surplus + actualSavingsSpending;
   const savingsRate = totalMonthlyNetIncome > 0 ? (totalSavings / totalMonthlyNetIncome) * 100 : 0;
 
