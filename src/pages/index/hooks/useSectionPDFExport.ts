@@ -8,7 +8,7 @@ export const useSectionPDFExport = () => {
     const pdf = new jsPDF('p', 'mm', 'a4');
     const pdfWidth = pdf.internal.pageSize.getWidth();
     const pdfHeight = pdf.internal.pageSize.getHeight();
-    const margin = 15;
+    const margin = 10;
     const contentWidth = pdfWidth - (2 * margin);
     const contentHeight = pdfHeight - (2 * margin);
 
@@ -53,42 +53,46 @@ export const useSectionPDFExport = () => {
 
     console.log(`Total sections found: ${sections.length}`);
 
-    let isFirstSection = true;
-
-    for (const element of sections) {
+    // Remove the default first page since we'll add pages as needed
+    pdf.deletePage(1);
+    
+    for (let i = 0; i < sections.length; i++) {
+      const element = sections[i];
+      
       // Ensure element is fully visible and has proper dimensions
       element.scrollIntoView({ behavior: 'instant', block: 'start' });
+      
+      // Wait a moment for rendering
+      await new Promise(resolve => setTimeout(resolve, 100));
       
       // Set white background and ensure proper layout for PDF
       const originalBg = element.style.backgroundColor;
       const originalBorder = element.style.border;
       const originalPadding = element.style.padding;
       const originalWidth = element.style.width;
+      const originalMargin = element.style.margin;
       
       element.style.backgroundColor = 'white';
       element.style.border = 'none';
-      element.style.padding = '20px';
+      element.style.padding = '15px';
       element.style.width = 'auto';
+      element.style.margin = '0';
 
       try {
-        // Get the full dimensions of the element
-        const elementRect = element.getBoundingClientRect();
-        const fullWidth = Math.max(element.scrollWidth, element.offsetWidth, elementRect.width);
-        const fullHeight = Math.max(element.scrollHeight, element.offsetHeight, elementRect.height);
-
+        // Wait for element to stabilize
+        await new Promise(resolve => setTimeout(resolve, 200));
+        
         const canvas = await html2canvas(element, { 
-          scale: 2, 
+          scale: 1.5, 
           useCORS: true,
           backgroundColor: 'white',
           logging: false,
           allowTaint: true,
           foreignObjectRendering: true,
-          width: fullWidth,
-          height: fullHeight,
-          x: 0,
-          y: 0,
-          windowWidth: window.innerWidth,
-          windowHeight: window.innerHeight
+          scrollX: 0,
+          scrollY: 0,
+          width: element.scrollWidth,
+          height: element.scrollHeight
         });
 
         // Restore original styles
@@ -96,56 +100,60 @@ export const useSectionPDFExport = () => {
         element.style.border = originalBorder;
         element.style.padding = originalPadding;
         element.style.width = originalWidth;
+        element.style.margin = originalMargin;
 
-        const imgData = canvas.toDataURL('image/png', 1.0);
+        const imgData = canvas.toDataURL('image/png', 0.95);
         const canvasWidth = canvas.width;
         const canvasHeight = canvas.height;
         
-        // Calculate dimensions to fit the full width in PDF
-        const imgWidth = contentWidth;
-        const imgHeight = (canvasHeight * contentWidth) / canvasWidth;
+        // Calculate dimensions to fit properly in PDF with margins
+        const availableWidth = contentWidth;
+        const scaleFactor = availableWidth / canvasWidth;
+        const imgWidth = availableWidth;
+        const imgHeight = canvasHeight * scaleFactor;
 
-        // Add new page for each section (except the very first one)
-        if (!isFirstSection) {
-          pdf.addPage();
-        }
-        isFirstSection = false;
+        // Add a new page for each section
+        pdf.addPage();
 
-        // If content is too tall for one page, split it across multiple pages
+        // If content fits on one page
         if (imgHeight <= contentHeight) {
-          // Content fits on one page - add it normally
           pdf.addImage(imgData, 'PNG', margin, margin, imgWidth, imgHeight);
         } else {
-          // Content spans multiple pages
+          // Split content across multiple pages
           let remainingHeight = imgHeight;
-          let yPos = 0;
+          let sourceY = 0;
+          let isFirstPage = true;
           
           while (remainingHeight > 0) {
+            if (!isFirstPage) {
+              pdf.addPage();
+            }
+            isFirstPage = false;
+            
             const pageHeight = Math.min(remainingHeight, contentHeight);
+            const sourceHeight = (pageHeight / scaleFactor);
+            
+            // Create a cropped canvas for this page
             const cropCanvas = document.createElement('canvas');
             const cropCtx = cropCanvas.getContext('2d');
             
-            cropCanvas.width = canvasWidth;
-            cropCanvas.height = (pageHeight * canvasWidth) / contentWidth;
-            
             if (cropCtx) {
+              cropCanvas.width = canvasWidth;
+              cropCanvas.height = sourceHeight;
+              
               cropCtx.drawImage(
                 canvas,
-                0, (yPos * canvasWidth) / contentWidth,
-                canvasWidth, cropCanvas.height,
+                0, sourceY,
+                canvasWidth, sourceHeight,
                 0, 0,
-                canvasWidth, cropCanvas.height
+                canvasWidth, sourceHeight
               );
               
-              const cropImgData = cropCanvas.toDataURL('image/png', 1.0);
+              const cropImgData = cropCanvas.toDataURL('image/png', 0.95);
               pdf.addImage(cropImgData, 'PNG', margin, margin, imgWidth, pageHeight);
               
               remainingHeight -= pageHeight;
-              yPos += pageHeight;
-              
-              if (remainingHeight > 0) {
-                pdf.addPage();
-              }
+              sourceY += sourceHeight;
             }
           }
         }
@@ -156,6 +164,8 @@ export const useSectionPDFExport = () => {
         element.style.backgroundColor = originalBg;
         element.style.border = originalBorder;
         element.style.padding = originalPadding;
+        element.style.width = originalWidth;
+        element.style.margin = originalMargin;
       }
     }
 
