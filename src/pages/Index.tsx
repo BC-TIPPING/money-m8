@@ -164,7 +164,7 @@ export default function Index() {
           )}
           
           <div id="export-content" className={`flex-grow ${isComplete ? 'pb-52' : ''}`}>
-            <div className="stepper-container">
+            <div className="stepper-container" data-export-section="stepper">
               <AssessmentStepper
               {...assessment} 
               generateSummary={() => generateSummary({})}
@@ -193,8 +193,8 @@ export default function Index() {
             {isComplete && (
               <>
                 {assessment.goals.includes('Full Financial Health Check') && isComplete && assessment.step >= questions.length && assessment.isFinished && (
-                  <div className="container mx-auto px-4 py-6 sm:px-6 lg:px-8 health-check-section">
-                    <FullFinancialHealthCheck 
+                  <div className="container mx-auto px-4 py-6 sm:px-6 lg:px-8 health-check-section" data-export-section="health-check">
+                    <FullFinancialHealthCheck
                       age={assessment.age}
                       postcode={assessment.postcode}
                       superBalance={assessment.superBalance}
@@ -276,7 +276,9 @@ export default function Index() {
                         </Card>
                     )}
                     {assessment.goals.includes('Set a budget') && (
-                        <BudgetPlanner expenseItems={assessment.expenseItems} totalMonthlyNetIncome={totalMonthlyNetIncome} />
+                        <div data-export-section="budget-analysis">
+                          <BudgetPlanner expenseItems={assessment.expenseItems} totalMonthlyNetIncome={totalMonthlyNetIncome} />
+                        </div>
                     )}
                     {assessment.goals.includes('Reduce debt') && assessment.debtDetails && assessment.debtDetails.length > 0 && (
                         <div data-export-section="charts">
@@ -307,8 +309,8 @@ export default function Index() {
                     )}
                     
                     
-                    <div className="action-items-section">
-                      <ActionItemsSection 
+                    <div className="action-items-section" data-export-section="action-items">
+                      <ActionItemsSection
                         assessmentData={assessment} 
                         onSetBudgetGoal={handleSetBudgetGoal}
                       />

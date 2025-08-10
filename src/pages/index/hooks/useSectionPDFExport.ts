@@ -15,6 +15,7 @@ export const useSectionPDFExport = () => {
     // Define section selectors in order - more specific and comprehensive
     const sectionSelectors = [
       '[data-export-section="stepper"]', // Assessment stepper/summary
+      '[data-export-section="budget-analysis"]', // Budget Analysis section
       '[data-export-section="health-check"]', // Full Financial Health Check  
       '[data-export-section="charts"]', // Charts section
       '[data-export-section="action-items"]', // Action items
@@ -52,9 +53,6 @@ export const useSectionPDFExport = () => {
     }
 
     console.log(`Total sections found: ${sections.length}`);
-
-    // Remove the default first page since we'll add pages as needed
-    pdf.deletePage(1);
     
     for (let i = 0; i < sections.length; i++) {
       const element = sections[i];
@@ -74,8 +72,8 @@ export const useSectionPDFExport = () => {
       
       element.style.backgroundColor = 'white';
       element.style.border = 'none';
-      element.style.padding = '15px';
-      element.style.width = 'auto';
+      element.style.padding = '20px';
+      element.style.width = '800px'; // Fixed width for consistent capture
       element.style.margin = '0';
 
       try {
@@ -83,7 +81,7 @@ export const useSectionPDFExport = () => {
         await new Promise(resolve => setTimeout(resolve, 200));
         
         const canvas = await html2canvas(element, { 
-          scale: 1.5, 
+          scale: 1.0, // Reduced scale to prevent cutoff
           useCORS: true,
           backgroundColor: 'white',
           logging: false,
@@ -91,7 +89,7 @@ export const useSectionPDFExport = () => {
           foreignObjectRendering: true,
           scrollX: 0,
           scrollY: 0,
-          width: element.scrollWidth,
+          width: 800, // Fixed width
           height: element.scrollHeight
         });
 
@@ -112,8 +110,10 @@ export const useSectionPDFExport = () => {
         const imgWidth = availableWidth;
         const imgHeight = canvasHeight * scaleFactor;
 
-        // Add a new page for each section
-        pdf.addPage();
+        // Add a new page for each section (don't add page for first section)
+        if (i > 0) {
+          pdf.addPage();
+        }
 
         // If content fits on one page
         if (imgHeight <= contentHeight) {
