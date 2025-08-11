@@ -154,7 +154,7 @@ const ActionItemsSection: React.FC<ActionItemsSectionProps> = ({
   };
 
   return (
-    <Card className="w-full lg:col-span-2" data-export-section="action-items">
+    <Card className="w-full lg:col-span-2">
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           <CheckCircle className="h-5 w-5" />

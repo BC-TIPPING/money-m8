@@ -301,7 +301,7 @@ const FullFinancialHealthCheck: React.FC<FullFinancialHealthCheckProps> = ({
   const nationalIncomeRatio = ((annualIncome / nationalMedian) * 100).toFixed(0);
 
   return (
-    <div className="space-y-8" data-export-section="health-check">
+    <div className="space-y-8">
       <div className="text-center mb-8">
         <h2 className="text-3xl font-bold bg-gradient-to-r from-emerald-600 to-blue-600 bg-clip-text text-transparent">
           Your Complete Financial Health Check

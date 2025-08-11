@@ -21,16 +21,18 @@ export const useSectionPDFExport = () => {
       '[data-export-section="action-items"]', // Action items
     ];
 
-    // Find all meaningful sections automatically
+    // Find all meaningful sections automatically (top-level only under #export-content)
     const sections: HTMLElement[] = [];
+    const exportRoot = document.getElementById('export-content');
     
-    // Try specific selectors first
+    // Try specific selectors first within export root to preserve order
     for (const selector of sectionSelectors) {
-      const elements = document.querySelectorAll(selector) as NodeListOf<HTMLElement>;
+      const elements = (exportRoot?.querySelectorAll(selector) ?? document.querySelectorAll(selector)) as NodeListOf<HTMLElement>;
       console.log(`Found ${elements.length} elements for selector: ${selector}`);
       elements.forEach(el => {
-        if (el.offsetHeight > 50 && !sections.includes(el)) {
-          console.log(`Adding section with height: ${el.offsetHeight}`);
+        const isNested = !!el.parentElement?.closest('[data-export-section]');
+        if (!isNested && el.offsetHeight > 50 && !sections.includes(el)) {
+          console.log(`Adding top-level section with height: ${el.offsetHeight}`);
           sections.push(el);
         }
       });
