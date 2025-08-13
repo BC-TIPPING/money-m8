@@ -66,7 +66,7 @@ export type Database = {
           postcode: string | null
           super_balance: number | null
           super_fund: string | null
-          user_id: string
+          user_id: string | null
         }
         Insert: {
           age?: number | null
@@ -92,7 +92,7 @@ export type Database = {
           postcode?: string | null
           super_balance?: number | null
           super_fund?: string | null
-          user_id: string
+          user_id?: string | null
         }
         Update: {
           age?: number | null
@@ -118,7 +118,7 @@ export type Database = {
           postcode?: string | null
           super_balance?: number | null
           super_fund?: string | null
-          user_id?: string
+          user_id?: string | null
         }
         Relationships: []
       }
