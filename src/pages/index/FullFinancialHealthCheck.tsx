@@ -585,7 +585,7 @@ const FullFinancialHealthCheck: React.FC<FullFinancialHealthCheckProps> = ({
             </div>
 
             <div className="bg-blue-50 p-4 rounded-lg">
-              <h4 className="font-semibold text-blue-900 mb-2">Coverage Gaps Identified</h4>
+              <h4 className="font-semibold text-blue-900 mb-2">Essential Insurance Types</h4>
               <p className="text-sm text-blue-800 mb-2">
                 These insurance types provide critical financial protection for you and your family.
               </p>
