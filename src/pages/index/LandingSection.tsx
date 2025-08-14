@@ -46,7 +46,7 @@ const LandingSection = ({ onStartAssessment, isLoading }: { onStartAssessment: (
         <div className="flex items-center justify-center gap-2 mb-12">
           <DollarSign className="h-8 w-8 md:h-10 md:w-10 text-emerald-400" />
           <h1 className="text-4xl md:text-5xl font-extrabold text-center tracking-tight text-white drop-shadow-2xl">
-            Money M8
+            Money Mate
           </h1>
           <TrendingUp className="h-8 w-8 md:h-10 md:w-10 text-emerald-400" />
         </div>
