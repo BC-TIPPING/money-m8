@@ -38,7 +38,7 @@ const DebtSummaryTable: React.FC<DebtSummaryTableProps> = ({ debtDetails, monthl
 
   const isRateUnfavorable = (userRate: number, debtType: string): boolean => {
     const industryRate = getIndustryAverage(debtType);
-    return userRate > industryRate + 1; // Flag if user's rate is more than 1% above industry average
+    return userRate > industryRate + 0.75; // Flag if user's rate is more than 0.75% above industry average
   };
 
   const validDebts = debtDetails.filter(debt => 
