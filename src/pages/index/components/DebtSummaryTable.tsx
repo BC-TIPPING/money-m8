@@ -2,7 +2,8 @@
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { AlertTriangle, TrendingDown } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { AlertTriangle, TrendingDown, Flag, ExternalLink } from "lucide-react";
 
 interface DebtDetail {
   type: string;
@@ -17,6 +18,29 @@ interface DebtSummaryTableProps {
 }
 
 const DebtSummaryTable: React.FC<DebtSummaryTableProps> = ({ debtDetails, monthlySurplus }) => {
+  // Industry average interest rates (Australian market 2024)
+  const industryAverages = {
+    'Credit Card': 20.5,
+    'Personal Loan': 12.5,
+    'Car Loan': 8.5,
+    'Mortgage': 6.2,
+    'Investment Loan': 6.5,
+    'BNPL (e.g. Afterpay)': 0, // Generally 0% but fees apply
+    'Store Card': 22.0,
+    'Line of Credit': 15.0,
+    'Payday Loan': 400, // Annual percentage rate can be extremely high
+    'Other': 15.0, // Generic average
+  };
+
+  const getIndustryAverage = (debtType: string): number => {
+    return industryAverages[debtType as keyof typeof industryAverages] || industryAverages['Other'];
+  };
+
+  const isRateUnfavorable = (userRate: number, debtType: string): boolean => {
+    const industryRate = getIndustryAverage(debtType);
+    return userRate > industryRate + 1; // Flag if user's rate is more than 1% above industry average
+  };
+
   const validDebts = debtDetails.filter(debt => 
     parseFloat(debt.balance) > 0 && 
     parseFloat(debt.repayments) > 0 && 
@@ -106,14 +130,18 @@ const DebtSummaryTable: React.FC<DebtSummaryTableProps> = ({ debtDetails, monthl
                   <th className="text-left p-2">Debt Type</th>
                   <th className="text-right p-2">Balance</th>
                   <th className="text-right p-2">Min Payment</th>
-                  <th className="text-right p-2">Interest Rate</th>
+                  <th className="text-right p-2">Your Rate</th>
+                  <th className="text-right p-2">Industry Avg</th>
                   <th className="text-center p-2">Risk Level</th>
+                  <th className="text-center p-2">Compare</th>
                 </tr>
               </thead>
               <tbody>
                 {sortedDebts.map((debt, index) => {
                   const rate = parseFloat(debt.interestRate);
+                  const industryAvg = getIndustryAverage(debt.type);
                   const riskLevel = getRiskLevel(rate);
+                  const showFlag = isRateUnfavorable(rate, debt.type);
                   
                   return (
                     <tr key={index} className="border-b">
@@ -122,14 +150,41 @@ const DebtSummaryTable: React.FC<DebtSummaryTableProps> = ({ debtDetails, monthl
                           {index + 1}
                         </Badge>
                       </td>
-                      <td className="p-2 font-medium">{debt.type}</td>
+                      <td className="p-2 font-medium">
+                        <div className="flex items-center gap-2">
+                          {debt.type}
+                           {showFlag && (
+                             <div title="Rate significantly above industry average">
+                               <Flag className="h-4 w-4 text-red-500" />
+                             </div>
+                           )}
+                        </div>
+                      </td>
                       <td className="text-right p-2">${parseFloat(debt.balance).toLocaleString()}</td>
                       <td className="text-right p-2">${parseFloat(debt.repayments).toLocaleString()}</td>
-                      <td className="text-right p-2 font-medium">{rate.toFixed(1)}%</td>
+                      <td className="text-right p-2 font-medium">
+                        <span className={showFlag ? 'text-red-600' : ''}>{rate.toFixed(1)}%</span>
+                      </td>
+                      <td className="text-right p-2 text-muted-foreground">
+                        {industryAvg > 0 ? `${industryAvg.toFixed(1)}%` : 'N/A'}
+                      </td>
                       <td className="text-center p-2">
                         <Badge className={riskLevel.color}>
                           {riskLevel.label}
                         </Badge>
+                      </td>
+                      <td className="text-center p-2">
+                        {showFlag && debt.type !== 'BNPL (e.g. Afterpay)' && (
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            className="h-6 px-2 text-xs"
+                            onClick={() => window.open('https://www.joust.com.au/', '_blank')}
+                          >
+                            <ExternalLink className="h-3 w-3 mr-1" />
+                            Compare
+                          </Button>
+                        )}
                       </td>
                     </tr>
                   );
