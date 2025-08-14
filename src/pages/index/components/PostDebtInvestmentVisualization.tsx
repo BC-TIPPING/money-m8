@@ -1,7 +1,8 @@
 import React from 'react';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from 'recharts';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { TrendingUp, Target, DollarSign, Calendar } from 'lucide-react';
+import { Button } from "@/components/ui/button";
+import { TrendingUp, Target, DollarSign, Calendar, ExternalLink } from 'lucide-react';
 
 interface PostDebtInvestmentVisualizationProps {
   debtDetails: any[];
@@ -350,9 +351,20 @@ const PostDebtInvestmentVisualization: React.FC<PostDebtInvestmentVisualizationP
 
   return (
     <Card className="w-full">
-      <CardHeader className="flex flex-row items-center gap-2">
-        <TrendingUp className="h-6 w-6 text-green-600" />
-        <CardTitle>Post-Debt Investment Growth Strategy</CardTitle>
+      <CardHeader className="flex flex-row items-center justify-between">
+        <div className="flex items-center gap-2">
+          <TrendingUp className="h-6 w-6 text-green-600" />
+          <CardTitle>Post-Debt Investment Growth Strategy</CardTitle>
+        </div>
+        <Button
+          variant="outline"
+          size="sm"
+          className="ml-auto"
+          onClick={() => window.open('https://www.vanguard.com.au/', '_blank')}
+        >
+          <ExternalLink className="h-4 w-4 mr-2" />
+          Vanguard
+        </Button>
       </CardHeader>
       <CardContent className="space-y-6">
         {/* Investment Metrics Summary */}

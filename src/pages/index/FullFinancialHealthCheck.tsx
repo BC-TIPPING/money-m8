@@ -4,7 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
-import { ArrowRight, TrendingUp, Shield, Home, PiggyBank, Target, BarChart3, DollarSign, Calendar, TrendingDown, Loader2 } from "lucide-react";
+import { ArrowRight, TrendingUp, Shield, Home, PiggyBank, Target, BarChart3, DollarSign, Calendar, TrendingDown, Loader2, ExternalLink } from "lucide-react";
 import { Link } from "react-router-dom";
 import IncomeComparisonChart from "./components/IncomeComparisonChart";
 import SuperBenchmarkChart from "./components/SuperBenchmarkChart";
@@ -600,7 +600,17 @@ const FullFinancialHealthCheck: React.FC<FullFinancialHealthCheckProps> = ({
 
             {insuranceAnalysis.recommendations.length > 0 && (
               <div className="bg-red-50 p-4 rounded-lg">
-                <h4 className="font-semibold text-red-900 mb-3">Coverage Gaps Identified</h4>
+                <div className="flex items-center justify-between mb-3">
+                  <h4 className="font-semibold text-red-900">Coverage Gaps Identified</h4>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => window.open('https://www.comparethemarket.com.au/insurance/', '_blank')}
+                  >
+                    <ExternalLink className="h-4 w-4 mr-2" />
+                    Compare
+                  </Button>
+                </div>
                 {insuranceAnalysis.recommendations.map((gap, index) => (
                   <div key={index} className="mb-2">
                     <p className="font-medium text-red-800">{gap.type}</p>
