@@ -3,6 +3,7 @@ import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContai
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { TrendingUp, Target, DollarSign, Calendar, ExternalLink } from 'lucide-react';
+import InvestmentPropertyComparison from './InvestmentPropertyComparison';
 
 interface PostDebtInvestmentVisualizationProps {
   debtDetails: any[];
@@ -13,6 +14,11 @@ const PostDebtInvestmentVisualization: React.FC<PostDebtInvestmentVisualizationP
   debtDetails, 
   monthlyIncome 
 }) => {
+  
+  // Check if user has a mortgage
+  const hasMortgage = debtDetails.some(debt => 
+    debt.type === 'Mortgage' && parseFloat(debt.balance) > 0
+  );
   
   // Filter high-interest debts (exclude mortgage)
   const highInterestDebts = debtDetails.filter(debt => 
@@ -323,6 +329,13 @@ const PostDebtInvestmentVisualization: React.FC<PostDebtInvestmentVisualizationP
               </p>
             </div>
           </div>
+          
+          {/* Investment Property Comparison - only show if user has mortgage */}
+          {hasMortgage && (
+            <div className="mt-8">
+              <InvestmentPropertyComparison monthlyInvestmentAmount={monthlyInvestmentAmount} />
+            </div>
+          )}
         </CardContent>
       </Card>
     );
