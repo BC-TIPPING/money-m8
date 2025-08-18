@@ -942,14 +942,288 @@ const FullFinancialHealthCheck: React.FC<FullFinancialHealthCheckProps> = ({
             debtDetails={debtDetails}
             monthlyIncome={monthlyIncome}
           />
+
+          {/* Debt Recycling Section - Only show if they have shares/ETFs */}
+          {(() => {
+            const hasSharesOrETFs = assets.some(asset => 
+              asset.type?.toLowerCase().includes('shares') || 
+              asset.type?.toLowerCase().includes('etf') ||
+              asset.type?.toLowerCase().includes('stock') ||
+              asset.type?.toLowerCase().includes('investment')
+            );
+            
+            if (hasSharesOrETFs) {
+              // Calculate 10-year portfolio value example
+              const monthlyInvestment = savingsAndInvestmentsAmount + Math.max(0, monthlySurplus);
+              const annualReturn = 0.07;
+              const years = 10;
+              const portfolioValue = monthlyInvestment * 12 * years + (monthlyInvestment * 12 * ((Math.pow(1 + annualReturn, years) - 1) / annualReturn));
+              
+              // Calculate potential debt recycling benefit
+              const loanAmount = Math.min(portfolioValue * 0.8, 500000); // 80% LVR, max $500k example
+              const interestRate = 0.065;
+              const annualInterest = loanAmount * interestRate;
+              const taxBracket = annualIncome > 120000 ? 0.37 : annualIncome > 45000 ? 0.30 : 0.19;
+              const annualTaxSaving = annualInterest * taxBracket;
+
+              return (
+                <div className="bg-purple-50 rounded-lg p-6 border border-purple-200">
+                  <h3 className="text-lg font-semibold text-purple-900 mb-3 flex items-center gap-2">
+                    <TrendingUp className="h-5 w-5" />
+                    Debt Recycling Strategy for Your Portfolio
+                  </h3>
+                  
+                  <div className="bg-white p-4 rounded-lg mb-4">
+                    <p className="text-sm text-purple-800 mb-3">
+                      <strong>What is debt recycling?</strong> It's converting non-deductible debt (like your mortgage) 
+                      into tax-deductible investment debt. You borrow against your existing investments to buy more 
+                      investments, making the interest tax-deductible while potentially accelerating wealth creation.
+                    </p>
+                  </div>
+
+                  <div className="grid md:grid-cols-2 gap-4 mb-4">
+                    <div className="bg-white p-4 rounded-lg">
+                      <h4 className="font-semibold text-purple-900 mb-2">Your Numbers</h4>
+                      <div className="space-y-2 text-sm">
+                        <div className="flex justify-between">
+                          <span>10-Year Portfolio Value:</span>
+                          <span className="font-semibold">${portfolioValue.toLocaleString('en-US', { maximumFractionDigits: 0 })}</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span>Potential Loan Amount (80% LVR):</span>
+                          <span className="font-semibold">${loanAmount.toLocaleString('en-US', { maximumFractionDigits: 0 })}</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span>Annual Interest Cost:</span>
+                          <span className="font-semibold">${annualInterest.toLocaleString('en-US', { maximumFractionDigits: 0 })}</span>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <div className="bg-green-50 p-4 rounded-lg border border-green-200">
+                      <h4 className="font-semibold text-green-900 mb-2">Tax Benefits</h4>
+                      <div className="space-y-2 text-sm">
+                        <div className="flex justify-between">
+                          <span>Your Tax Bracket:</span>
+                          <span className="font-semibold">{(taxBracket * 100).toFixed(0)}%</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span>Annual Tax Saving:</span>
+                          <span className="font-semibold text-green-700">${annualTaxSaving.toLocaleString('en-US', { maximumFractionDigits: 0 })}</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span>Effective Interest Rate:</span>
+                          <span className="font-semibold text-green-700">{((interestRate * (1 - taxBracket)) * 100).toFixed(1)}%</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="bg-amber-50 p-4 rounded-lg border border-amber-200">
+                    <h4 className="font-semibold text-amber-800 mb-2">⚠️ Important Considerations</h4>
+                    <ul className="text-sm text-amber-700 space-y-1">
+                      <li>• Investment returns are not guaranteed - you could lose money</li>
+                      <li>• Interest must still be paid regardless of investment performance</li>
+                      <li>• Seek professional tax and financial advice before implementing</li>
+                      <li>• Consider your risk tolerance and cash flow carefully</li>
+                    </ul>
+                  </div>
+                </div>
+              );
+            }
+            return null;
+          })()}
         </CardContent>
       </Card>
 
-      {/* Section 7: Financial Action Plan */}
+      {/* Section 7: Tailored Financial Resources */}
+      <Card className="border-orange-200 bg-gradient-to-br from-orange-50 to-white">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <span className="w-8 h-8 bg-orange-600 text-white rounded-full flex items-center justify-center text-sm font-bold">7</span>
+            📚 Your Personalized Learning Path
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="bg-orange-50 p-3 rounded-lg mb-4">
+            <p className="text-sm text-orange-800">
+              <strong>Knowledge is power, but the right knowledge at the right time is wealth.</strong> 
+              Based on your financial position, here are the most relevant resources to accelerate your progress.
+            </p>
+          </div>
+
+          {(() => {
+            const hasMortgage = debtDetails.some(debt => 
+              debt.type?.toLowerCase().includes('mortgage') || 
+              debt.type?.toLowerCase().includes('home loan')
+            );
+            const hasHighInterestDebt = debtDetails.some(debt => parseFloat(debt.interestRate || '0') > 8);
+            const isUnder35 = age && age < 35;
+            const isOver50 = age && age >= 50;
+            const hasInvestments = assets.some(asset => 
+              asset.type?.toLowerCase().includes('shares') || 
+              asset.type?.toLowerCase().includes('etf')
+            );
+
+            const resources = [];
+
+            // Debt-focused resources
+            if (hasHighInterestDebt) {
+              resources.push({
+                title: "The Barefoot Investor",
+                author: "Scott Pape",
+                type: "Book",
+                summary: "Australia's most trusted financial guide with a proven debt elimination strategy",
+                relevance: "Perfect for your high-interest debt situation - provides the 'debt domino' strategy that thousands of Australians have used successfully",
+                link: "https://www.booktopia.com.au/the-barefoot-investor-scott-pape/book/9780730324218.html"
+              });
+              
+              resources.push({
+                title: "National Debt Helpline",
+                author: "ASIC",
+                type: "Free Service",
+                summary: "Free, confidential financial counselling service",
+                relevance: "With ${Math.round(debtDetails.reduce((sum, debt) => sum + (parseFloat(debt.balance) || 0), 0) / 1000)}k in debt, professional guidance could save you thousands in interest",
+                link: "https://ndh.org.au/"
+              });
+            }
+
+            // Home buying resources  
+            if (!hasMortgage && isUnder35) {
+              resources.push({
+                title: "First Home Owner Grant Guide",
+                author: "Australian Government",
+                type: "Government Resource",
+                summary: "State-by-state breakdown of first home buyer incentives",
+                relevance: "You could be eligible for up to $10,000 in grants - free money towards your deposit",
+                link: "https://www.firsthome.gov.au/"
+              });
+              
+              resources.push({
+                title: "How to Save for a House Deposit",
+                author: "Canstar",
+                type: "Article",
+                summary: "Practical strategies for accelerating your deposit savings",
+                relevance: "Based on your current savings rate, this could help you buy ${Math.ceil(monthsToSave5Percent / 12)} years sooner",
+                link: "https://www.canstar.com.au/home-loans/how-to-save-for-a-house-deposit/"
+              });
+            }
+
+            // Mortgage payoff resources
+            if (hasMortgage) {
+              resources.push({
+                title: "Paying Off Your Mortgage Faster",
+                author: "MoneySmart (ASIC)",
+                type: "Article", 
+                summary: "Evidence-based strategies to cut years off your mortgage",
+                relevance: "Could potentially save you tens of thousands in interest on your current mortgage",
+                link: "https://moneysmart.gov.au/home-loans/paying-off-your-mortgage-faster"
+              });
+            }
+
+            // Investment resources
+            if (hasInvestments || (!hasHighInterestDebt && savingsRate > 15)) {
+              resources.push({
+                title: "The Little Book of Common Sense Investing",
+                author: "John C. Bogle",
+                type: "Book",
+                summary: "The definitive guide to low-cost index fund investing",
+                relevance: isOver50 ? "Perfect for conservative wealth building in your 50s+" : "Essential reading for building long-term wealth through index funds",
+                link: "https://www.booktopia.com.au/the-little-book-of-common-sense-investing-john-c-bogle/book/9781119404507.html"
+              });
+              
+              resources.push({
+                title: "Australian Finance Podcast - ETF Investing 101",
+                author: "Rask Australia",
+                type: "Podcast Series",
+                summary: "Free comprehensive course on Australian ETF investing",
+                relevance: "Specifically tailored to Australian tax and investment landscape - perfect for your situation",
+                link: "https://www.rask.com.au/podcasts/australian-finance-podcast/"
+              });
+            }
+
+            // Superannuation resources for older users
+            if (isOver50) {
+              resources.push({
+                title: "Superannuation Strategies for Over 50s",
+                author: "MoneySmart (ASIC)",
+                type: "Guide",
+                summary: "Catch-up contributions and pre-retirement planning strategies",
+                relevance: "With ${Math.round((superBalance || 0) / 1000)}k in super, you're in the crucial catch-up phase",
+                link: "https://moneysmart.gov.au/how-super-works/super-and-retirement"
+              });
+            }
+
+            // General financial literacy for younger users
+            if (isUnder35 && !hasHighInterestDebt) {
+              resources.push({
+                title: "She's on the Money Podcast",
+                author: "Victoria Devine",
+                type: "Podcast",
+                summary: "Financial tips presented in an accessible, relatable way",
+                relevance: "Perfect for building financial confidence in your 20s and 30s",
+                link: "https://open.spotify.com/show/5r41hB9aFE8d5z2bA9gQfF"
+              });
+            }
+
+            // Ensure we have 3-5 resources
+            if (resources.length < 3) {
+              resources.push({
+                title: "MoneySmart Website",
+                author: "ASIC",
+                type: "Website",
+                summary: "Australia's most trusted financial information source",
+                relevance: "Unbiased, government-backed financial guidance across all topics",
+                link: "https://moneysmart.gov.au/"
+              });
+            }
+
+            return (
+              <div className="space-y-4">
+                {resources.slice(0, 5).map((resource, index) => (
+                  <div key={index} className="bg-white p-4 rounded-lg border border-orange-200">
+                    <div className="flex items-start justify-between mb-2">
+                      <div className="flex-1">
+                        <h4 className="font-semibold text-orange-900 flex items-center gap-2">
+                          {resource.type === 'Book' && '📖'}
+                          {resource.type === 'Article' && '📄'}
+                          {resource.type === 'Podcast' || resource.type === 'Podcast Series' && '🎧'}
+                          {resource.type === 'Website' && '🌐'}
+                          {resource.type === 'Government Resource' || resource.type === 'Guide' || resource.type === 'Free Service' && '🏛️'}
+                          {resource.title}
+                        </h4>
+                        <p className="text-sm text-gray-600 mb-1">by {resource.author} • {resource.type}</p>
+                      </div>
+                      <Button 
+                        variant="outline" 
+                        size="sm"
+                        onClick={() => window.open(resource.link, '_blank')}
+                      >
+                        <ExternalLink className="h-4 w-4 mr-1" />
+                        Read
+                      </Button>
+                    </div>
+                    
+                    <p className="text-sm text-gray-700 mb-2">{resource.summary}</p>
+                    
+                    <div className="bg-orange-50 p-3 rounded border border-orange-200">
+                      <p className="text-sm text-orange-800">
+                        <strong>Why this matters for you:</strong> {resource.relevance}
+                      </p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            );
+          })()}
+        </CardContent>
+      </Card>
+
+      {/* Section 8: Financial Action Plan */}
       <Card className="border-emerald-200 bg-gradient-to-br from-emerald-50 to-white">
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            <span className="w-8 h-8 bg-emerald-600 text-white rounded-full flex items-center justify-center text-sm font-bold">7</span>
+            <span className="w-8 h-8 bg-emerald-600 text-white rounded-full flex items-center justify-center text-sm font-bold">8</span>
             Your Financial Action Plan
           </CardTitle>
         </CardHeader>
