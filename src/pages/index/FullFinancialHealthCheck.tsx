@@ -729,7 +729,133 @@ const FullFinancialHealthCheck: React.FC<FullFinancialHealthCheckProps> = ({
             </div>
           )}
           
-          <DebtPayoffVisualization debtDetails={debtDetails} monthlyIncome={monthlyIncome} />
+          {(() => {
+            // Check if user is under 50 and doesn't have a mortgage
+            const hasMortgage = debtDetails.some(debt => 
+              debt.type?.toLowerCase().includes('mortgage') || 
+              debt.type?.toLowerCase().includes('home loan')
+            );
+            const isUnder50 = age && age < 50;
+            
+            if (isUnder50 && !hasMortgage) {
+              // Show Home Buying section instead of mortgage payoff
+              const housingExpenses = calculateMonthlyAmount(
+                expenseItems.filter(item => 
+                  item.category === 'Housing' || 
+                  item.category === 'Rent' ||
+                  item.category === 'Utilities'
+                )
+              );
+              
+              // Calculate available for housing (current housing + surplus + savings)
+              const availableForHousing = housingExpenses + Math.max(0, monthlySurplus) + savingsAndInvestmentsAmount;
+              
+              // Calculate time to save 5% deposit based on budget surplus
+              const depositTarget = 50000; // 5% of roughly $1M house
+              const monthlySavingsPotential = Math.max(0, monthlySurplus) + savingsAndInvestmentsAmount;
+              const monthsToSave5Percent = monthlySavingsPotential > 0 ? depositTarget / monthlySavingsPotential : 0;
+              
+              return (
+                <Card className="w-full mt-4">
+                  <CardHeader className="flex flex-row items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <Home className="h-6 w-6 text-blue-600" />
+                      <CardTitle>Home Buying Calculator 🏠</CardTitle>
+                    </div>
+                    <Button variant="outline" size="sm" onClick={() => {
+                      const event = new CustomEvent('selectGoal', { detail: 'Buy a house' });
+                      window.dispatchEvent(event);
+                    }}>
+                      Full Calculator <ArrowRight className="h-4 w-4 ml-1" />
+                    </Button>
+                  </CardHeader>
+                  <CardContent className="space-y-6">
+                    {/* Borrowing Capacity Section */}
+                    <div className="bg-blue-50 rounded-lg p-4 space-y-3">
+                      <h3 className="font-semibold text-lg text-blue-900">Your Borrowing Capacity (30% Rule)</h3>
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div>
+                          <p className="text-sm text-gray-600">Maximum Monthly Payment:</p>
+                          <p className="text-2xl font-bold text-green-600">
+                            ${availableForHousing.toLocaleString('en-US', { maximumFractionDigits: 0 })}
+                          </p>
+                        </div>
+                        <div>
+                          <p className="text-sm text-gray-600">Maximum Purchase Price:</p>
+                          <p className="text-2xl font-bold text-blue-600">
+                            ${((availableForHousing * 300) + 100000).toLocaleString('en-US', { maximumFractionDigits: 0 })}
+                          </p>
+                          <p className="text-xs text-gray-500">Based on 30-year loan at 6.5%</p>
+                        </div>
+                        <div>
+                          <p className="text-sm text-gray-600">Amount Available for Housing:</p>
+                          <p className="text-2xl font-bold text-green-600">
+                            ${availableForHousing.toLocaleString('en-US', { maximumFractionDigits: 0 })}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Savings Timeline */}
+                    <div className="bg-green-50 rounded-lg p-4">
+                      <h3 className="font-semibold text-green-900 mb-3">Deposit Savings Timeline</h3>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                          <p className="text-sm text-gray-600">Time to Save 5% Deposit ($50k):</p>
+                          <p className="text-xl font-bold text-green-600">
+                            {monthsToSave5Percent > 0 ? `${Math.ceil(monthsToSave5Percent)} months` : 'Improve savings first'}
+                          </p>
+                        </div>
+                        <div>
+                          <p className="text-sm text-gray-600">Current Monthly Savings Potential:</p>
+                          <p className="text-xl font-bold text-green-600">
+                            ${monthlySavingsPotential.toLocaleString('en-US', { maximumFractionDigits: 0 })}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Tips to Improve Buying Power */}
+                    <div className="space-y-3">
+                      <h3 className="font-semibold text-lg">Tips to Improve Your Buying Power</h3>
+                      
+                      <div className="bg-yellow-50 border-l-4 border-yellow-400 p-4 rounded-r-lg">
+                        <p className="text-sm text-yellow-800">
+                          <strong>💡 Research first home buyer grants:</strong> You could be eligible for up to $10,000 in grants depending on your state.
+                        </p>
+                      </div>
+                      
+                      <div className="bg-blue-50 border-l-4 border-blue-400 p-4 rounded-r-lg">
+                        <p className="text-sm text-blue-800">
+                          <strong>🏘️ Consider suburbs 15-20km from city center:</strong> Property prices are typically 30-40% lower in these areas.
+                        </p>
+                      </div>
+                      
+                      <div className="bg-green-50 border-l-4 border-green-400 p-4 rounded-r-lg">
+                        <p className="text-sm text-green-800">
+                          <strong>📋 Get pre-approval before house hunting:</strong> This helps you know your exact budget and strengthens your offers.
+                        </p>
+                      </div>
+                    </div>
+
+                    {/* Next Steps */}
+                    <div className="bg-indigo-50 rounded-lg p-4">
+                      <h3 className="font-semibold text-indigo-900 mb-2">This Week's Action Items</h3>
+                      <ul className="space-y-1 text-sm text-indigo-800">
+                        <li>• Open a dedicated house deposit savings account</li>
+                        <li>• Set up automatic transfer of ${Math.max(500, Math.floor(monthlySavingsPotential)).toLocaleString()} per month</li>
+                        <li>• Research first home buyer grants in your state</li>
+                        <li>• Get pre-approval from multiple lenders to compare rates</li>
+                      </ul>
+                    </div>
+                  </CardContent>
+                </Card>
+              );
+            } else {
+              // Show regular debt payoff visualization
+              return <DebtPayoffVisualization debtDetails={debtDetails} monthlyIncome={monthlyIncome} />;
+            }
+          })()}
         </CardContent>
       </Card>
 
