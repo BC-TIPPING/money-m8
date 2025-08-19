@@ -952,6 +952,12 @@ const FullFinancialHealthCheck: React.FC<FullFinancialHealthCheckProps> = ({
               asset.type?.toLowerCase().includes('investment')
             );
             
+            console.log('Debt Recycling Debug:', {
+              assets,
+              hasSharesOrETFs,
+              assetTypes: assets.map(asset => asset.type)
+            });
+            
             if (hasSharesOrETFs) {
               // Calculate 10-year portfolio value example
               const monthlyInvestment = savingsAndInvestmentsAmount + Math.max(0, monthlySurplus);

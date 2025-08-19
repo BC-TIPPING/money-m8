@@ -20,6 +20,13 @@ const PostDebtInvestmentVisualization: React.FC<PostDebtInvestmentVisualizationP
     debt.type === 'Mortgage' && parseFloat(debt.balance) > 0
   );
   
+  console.log('Mortgage Detection Debug:', {
+    debtDetails,
+    hasMortgage,
+    debtTypes: debtDetails.map(debt => debt.type),
+    mortgageDebts: debtDetails.filter(debt => debt.type === 'Mortgage')
+  });
+  
   // Filter high-interest debts (exclude mortgage)
   const highInterestDebts = debtDetails.filter(debt => 
     debt.type !== 'Mortgage' && 
