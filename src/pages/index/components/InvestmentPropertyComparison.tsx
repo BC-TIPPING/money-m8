@@ -1,3 +1,4 @@
+
 import React, { useMemo } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
@@ -12,14 +13,18 @@ const InvestmentPropertyComparison: React.FC<InvestmentPropertyComparisonProps> 
 }) => {
   
   const calculations = useMemo(() => {
+    console.log('InvestmentPropertyComparison - monthlyInvestmentAmount:', monthlyInvestmentAmount);
+    
     // Investment Property Assumptions
     const propertyValue = 600000;
     const depositPercent = 20;
+    const deposit = propertyValue * (depositPercent / 100);
     const loanAmount = propertyValue * (1 - depositPercent / 100);
     const interestRate = 6.5;
     const monthlyInterest = (interestRate / 100) / 12;
-    const monthlyRepayment = (loanAmount * monthlyInterest * Math.pow(1 + monthlyInterest, 360)) / 
-                            (Math.pow(1 + monthlyInterest, 360) - 1);
+    const loanTermMonths = 360; // 30 years
+    const monthlyRepayment = (loanAmount * monthlyInterest * Math.pow(1 + monthlyInterest, loanTermMonths)) / 
+                            (Math.pow(1 + monthlyInterest, loanTermMonths) - 1);
     
     const weeklyRent = 550;
     const yearlyRent = weeklyRent * 52;
@@ -47,6 +52,7 @@ const InvestmentPropertyComparison: React.FC<InvestmentPropertyComparisonProps> 
     let totalPropertyExpenses = 0;
     let cumulativeOutOfPocket = 0;
     let stockPortfolioValue = 0;
+    let remainingLoanBalance = loanAmount;
     
     for (let year = 0; year <= 20; year++) {
       if (year > 0) {
@@ -54,7 +60,11 @@ const InvestmentPropertyComparison: React.FC<InvestmentPropertyComparisonProps> 
         propertyCurrentValue *= (1 + expectedYearlyReturn / 100);
         totalRentReceived += yearlyRent;
         totalPropertyExpenses += yearlyExpenses;
-        cumulativeOutOfPocket += netMonthlyOutOfPocket * 12;
+        cumulativeOutOfPocket += Math.abs(netMonthlyOutOfPocket) * 12;
+        
+        // Loan paydown calculation (simplified)
+        const yearlyPrincipalPayment = monthlyRepayment * 12 * 0.3; // Rough estimate of principal portion
+        remainingLoanBalance = Math.max(0, remainingLoanBalance - yearlyPrincipalPayment);
         
         // Stock investment calculation
         // Assuming they invest the same net out-of-pocket amount in stocks
@@ -63,20 +73,23 @@ const InvestmentPropertyComparison: React.FC<InvestmentPropertyComparisonProps> 
         }
       }
       
-      const propertyEquity = propertyCurrentValue - loanAmount; // Simplified - not accounting for loan paydown
-      const propertyNetPosition = propertyEquity + totalRentReceived - totalPropertyExpenses;
+      const propertyEquity = propertyCurrentValue - remainingLoanBalance;
+      const propertyNetPosition = propertyEquity - deposit; // Net position after initial deposit
       
       projectionData.push({
         year,
         propertyValue: Math.round(propertyCurrentValue),
         propertyNetPosition: Math.round(propertyNetPosition),
         stockPortfolio: Math.round(stockPortfolioValue),
-        outOfPocket: Math.round(Math.abs(cumulativeOutOfPocket))
+        outOfPocket: Math.round(cumulativeOutOfPocket)
       });
     }
     
+    console.log('InvestmentPropertyComparison - projectionData sample:', projectionData.slice(0, 3));
+    
     return {
       propertyValue,
+      deposit,
       monthlyOutOfPocket,
       netMonthlyOutOfPocket,
       yearlyRent,
@@ -85,7 +98,8 @@ const InvestmentPropertyComparison: React.FC<InvestmentPropertyComparisonProps> 
       expectedYearlyReturn,
       projectionData,
       finalPropertyNet: projectionData[20].propertyNetPosition,
-      finalStockValue: projectionData[20].stockPortfolio
+      finalStockValue: projectionData[20].stockPortfolio,
+      monthlyRepayment
     };
   }, [monthlyInvestmentAmount]);
 
@@ -121,7 +135,7 @@ const InvestmentPropertyComparison: React.FC<InvestmentPropertyComparisonProps> 
             The Power of Leverage
           </h4>
           <p className="text-sm text-blue-800">
-            Property investment uses leverage - you control a ${calculations.propertyValue.toLocaleString()} asset with just a 20% deposit. 
+            Property investment uses leverage - you control a ${calculations.propertyValue.toLocaleString()} asset with just a ${calculations.deposit.toLocaleString()} deposit (20%). 
             This amplifies both gains and risks. Your ${Math.abs(calculations.netMonthlyOutOfPocket).toLocaleString()}/month 
             out-of-pocket controls a much larger asset that can appreciate in value.
           </p>
@@ -188,28 +202,28 @@ const InvestmentPropertyComparison: React.FC<InvestmentPropertyComparisonProps> 
               <Line 
                 type="monotone" 
                 dataKey="propertyValue" 
-                stroke="hsl(var(--chart-1))" 
+                stroke="#22c55e" 
                 strokeWidth={3}
                 name="Property Value"
               />
               <Line 
                 type="monotone" 
                 dataKey="propertyNetPosition" 
-                stroke="hsl(var(--chart-2))" 
+                stroke="#3b82f6" 
                 strokeWidth={2}
                 name="Property Net Position"
               />
               <Line 
                 type="monotone" 
                 dataKey="stockPortfolio" 
-                stroke="hsl(var(--chart-3))" 
+                stroke="#f59e0b" 
                 strokeWidth={2}
                 name="Stock Portfolio"
               />
               <Line 
                 type="monotone" 
                 dataKey="outOfPocket" 
-                stroke="hsl(var(--chart-4))" 
+                stroke="#ef4444" 
                 strokeWidth={2}
                 strokeDasharray="5 5"
                 name="Cumulative Investment"
@@ -227,7 +241,7 @@ const InvestmentPropertyComparison: React.FC<InvestmentPropertyComparisonProps> 
             </h4>
             <div className="space-y-2 text-sm">
               <p><strong>Net Position:</strong> ${calculations.finalPropertyNet.toLocaleString()}</p>
-              <p><strong>Total Invested:</strong> ${(Math.abs(calculations.netMonthlyOutOfPocket) * 12 * 20).toLocaleString()}</p>
+              <p><strong>Total Invested:</strong> ${(Math.abs(calculations.netMonthlyOutOfPocket) * 12 * 20 + calculations.deposit).toLocaleString()}</p>
               <p><strong>Leverage Benefit:</strong> Control large appreciating asset</p>
               <p><strong>Tax Benefits:</strong> Depreciation, negative gearing</p>
             </div>
@@ -254,7 +268,7 @@ const InvestmentPropertyComparison: React.FC<InvestmentPropertyComparisonProps> 
             Important Considerations
           </h4>
           <ul className="text-sm text-yellow-800 space-y-1">
-            <li>• Property requires larger upfront deposit and ongoing management</li>
+            <li>• Property requires larger upfront deposit (${calculations.deposit.toLocaleString()}) and ongoing management</li>
             <li>• Vacancy periods, maintenance costs, and interest rate changes affect returns</li>
             <li>• Stock investments offer better liquidity and diversification</li>
             <li>• Property provides inflation hedge and potential tax benefits</li>
