@@ -1184,41 +1184,61 @@ const FullFinancialHealthCheck: React.FC<FullFinancialHealthCheckProps> = ({
               });
             }
 
+            // Simplified recommendations based on financial situation
+            const getRecommendations = () => {
+              if (hasHighInterestDebt) {
+                return [
+                  { type: "📖", title: "The Barefoot Investor", author: "Scott Pape", note: "Debt elimination strategy" },
+                  { type: "🏛️", title: "National Debt Helpline", author: "Free counselling", note: "Professional debt guidance" },
+                  { type: "📄", title: "Managing Debt Guide", author: "MoneySmart", note: "Government strategies" }
+                ];
+              } else if (savingsRate < 15) {
+                return [
+                  { type: "🎧", title: "My Millennial Money", author: "Glen James", note: "Budget tools included" },
+                  { type: "📊", title: "MoneySmart Budget Planner", author: "Excel tool", note: "Government planner" },
+                  { type: "🌐", title: "Passive Investing Australia", author: "Community", note: "ETF education" }
+                ];
+              } else if (!hasMortgage && isUnder35) {
+                return [
+                  { type: "🏛️", title: "First Home Owner Grant", author: "Government", note: "Up to $10k grants" },
+                  { type: "📖", title: "Barefoot Investor for Families", author: "Scott Pape", note: "Home deposit strategies" },
+                  { type: "🎧", title: "She's On The Money", author: "Victoria Devine", note: "Young adult focus" }
+                ];
+              } else {
+                return [
+                  { type: "🌐", title: "Passive Investing Australia", author: "Community", note: "Index fund bible" },
+                  { type: "📖", title: "Psychology of Money", author: "Morgan Housel", note: "Investment mindset" },
+                  { type: "🎧", title: "Australian Finance Podcast", author: "Rask", note: "ETF course included" }
+                ];
+              }
+            };
+
+            const recommendations = getRecommendations();
+
             return (
               <div className="space-y-4">
-                {resources.slice(0, 5).map((resource, index) => (
-                  <div key={index} className="bg-white p-4 rounded-lg border border-orange-200">
-                    <div className="flex items-start justify-between mb-2">
-                      <div className="flex-1">
-                        <h4 className="font-semibold text-orange-900 flex items-center gap-2">
-                          {resource.type === 'Book' && '📖'}
-                          {resource.type === 'Article' && '📄'}
-                          {resource.type === 'Podcast' || resource.type === 'Podcast Series' && '🎧'}
-                          {resource.type === 'Website' && '🌐'}
-                          {resource.type === 'Government Resource' || resource.type === 'Guide' || resource.type === 'Free Service' && '🏛️'}
-                          {resource.title}
-                        </h4>
-                        <p className="text-sm text-gray-600 mb-1">by {resource.author} • {resource.type}</p>
+                <div className="grid gap-3">
+                  {recommendations.map((item, idx) => (
+                    <div key={idx} className="bg-white p-3 rounded-lg border border-orange-200">
+                      <div className="flex items-center gap-2">
+                        <span className="text-lg">{item.type}</span>
+                        <div className="flex-1">
+                          <p className="font-medium text-gray-900">{item.title}</p>
+                          <p className="text-sm text-gray-600">{item.author} • {item.note}</p>
+                        </div>
                       </div>
-                      <Button 
-                        variant="outline" 
-                        size="sm"
-                        onClick={() => window.open(resource.link, '_blank')}
-                      >
-                        <ExternalLink className="h-4 w-4 mr-1" />
-                        Read
-                      </Button>
                     </div>
-                    
-                    <p className="text-sm text-gray-700 mb-2">{resource.summary}</p>
-                    
-                    <div className="bg-orange-50 p-3 rounded border border-orange-200">
-                      <p className="text-sm text-orange-800">
-                        <strong>Why this matters for you:</strong> {resource.relevance}
-                      </p>
-                    </div>
-                  </div>
-                ))}
+                  ))}
+                </div>
+                
+                <div className="bg-orange-50 p-3 rounded-lg">
+                  <h4 className="font-semibold text-orange-900 mb-2">💡 Reddit Community Tips</h4>
+                  <ul className="text-sm text-orange-800 space-y-1">
+                    <li>• "Small goal setting is addictive" - track weekly progress</li>
+                    <li>• "Excel changed my life" - create your own spreadsheet</li>
+                    <li>• "Barefoot + Passive Investing Australia = success"</li>
+                  </ul>
+                </div>
               </div>
             );
           })()}
