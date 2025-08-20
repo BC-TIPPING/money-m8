@@ -504,6 +504,13 @@ const PostDebtInvestmentVisualization: React.FC<PostDebtInvestmentVisualizationP
             </p>
           </div>
         </div>
+        
+        {/* Investment Property Comparison - show if user has mortgage */}
+        {hasMortgage && (
+          <div className="mt-8">
+            <InvestmentPropertyComparison monthlyInvestmentAmount={metrics.monthlyInvestmentAmount} />
+          </div>
+        )}
       </CardContent>
     </Card>
   );
