@@ -67,9 +67,9 @@ const InvestmentPropertyComparison: React.FC<InvestmentPropertyComparisonProps> 
         remainingLoanBalance = Math.max(0, remainingLoanBalance - yearlyPrincipalPayment);
         
         // Stock investment calculation
-        // Assuming they invest the same net out-of-pocket amount in stocks
+        // Using the same monthly investment amount for fair comparison
         for (let month = 0; month < 12; month++) {
-          stockPortfolioValue = stockPortfolioValue * (1 + monthlyStockReturn) + Math.abs(netMonthlyOutOfPocket);
+          stockPortfolioValue = stockPortfolioValue * (1 + monthlyStockReturn) + monthlyInvestmentAmount;
         }
       }
       
@@ -177,7 +177,7 @@ const InvestmentPropertyComparison: React.FC<InvestmentPropertyComparisonProps> 
             your net cost is ${Math.abs(calculations.netMonthlyOutOfPocket).toLocaleString()}/month.
           </p>
           <p>
-            <strong>📈 Direct Investment Alternative:</strong> Invest the same ${Math.abs(calculations.netMonthlyOutOfPocket).toLocaleString()}/month 
+            <strong>📈 Direct Investment Alternative:</strong> Invest ${monthlyInvestmentAmount.toLocaleString()}/month 
             directly into a diversified stock portfolio earning 7.5% annually.
           </p>
           <p>
@@ -254,7 +254,7 @@ const InvestmentPropertyComparison: React.FC<InvestmentPropertyComparisonProps> 
             </h4>
             <div className="space-y-2 text-sm">
               <p><strong>Portfolio Value:</strong> ${calculations.finalStockValue.toLocaleString()}</p>
-              <p><strong>Total Invested:</strong> ${(Math.abs(calculations.netMonthlyOutOfPocket) * 12 * 20).toLocaleString()}</p>
+              <p><strong>Total Invested:</strong> ${(monthlyInvestmentAmount * 12 * 20).toLocaleString()}</p>
               <p><strong>Liquidity:</strong> Easy to buy/sell</p>
               <p><strong>Diversification:</strong> Spread across many assets</p>
             </div>
