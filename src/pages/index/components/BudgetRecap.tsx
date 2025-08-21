@@ -75,11 +75,12 @@ const BudgetRecap: React.FC<BudgetRecapProps> = ({
     };
   });
 
-  // Calculate expenses excluding savings/investments to get true surplus
+  // Calculate savings rate based on Savings & Investments category
   const actualSavingsSpending = calculateCategorySpending('Savings & Investments');
-  const nonSavingsExpenses = totalMonthlyExpenses - actualSavingsSpending;
-  const surplus = totalMonthlyNetIncome - nonSavingsExpenses;
-  const savingsRate = totalMonthlyNetIncome > 0 ? (surplus / totalMonthlyNetIncome) * 100 : 0;
+  const savingsRate = totalMonthlyNetIncome > 0 ? (actualSavingsSpending / totalMonthlyNetIncome) * 100 : 0;
+  
+  // Calculate true surplus (income minus all expenses)
+  const surplus = totalMonthlyNetIncome - totalMonthlyExpenses;
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -112,7 +113,7 @@ const BudgetRecap: React.FC<BudgetRecapProps> = ({
           </div>
           <div className="text-center">
             <p className="text-sm text-muted-foreground">Monthly Expenses</p>
-            <p className="text-2xl font-bold">${nonSavingsExpenses.toLocaleString()}</p>
+            <p className="text-2xl font-bold">${totalMonthlyExpenses.toLocaleString()}</p>
           </div>
           <div className="text-center">
             <p className="text-sm text-muted-foreground">Monthly Surplus</p>
