@@ -241,7 +241,7 @@ const InvestmentPropertyComparison: React.FC<InvestmentPropertyComparisonProps> 
             </h4>
             <div className="space-y-2 text-sm">
               <p><strong>Net Position:</strong> ${calculations.finalPropertyNet.toLocaleString()}</p>
-              <p><strong>Total Invested:</strong> ${(Math.abs(calculations.netMonthlyOutOfPocket) * 12 * 20 + calculations.deposit).toLocaleString()}</p>
+              <p><strong>Total Invested:</strong> ${(monthlyInvestmentAmount * 12 * 20).toLocaleString()}</p>
               <p><strong>Leverage Benefit:</strong> Control large appreciating asset</p>
               <p><strong>Tax Benefits:</strong> Depreciation, negative gearing</p>
             </div>

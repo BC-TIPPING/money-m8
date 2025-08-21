@@ -75,12 +75,10 @@ const BudgetRecap: React.FC<BudgetRecapProps> = ({
     };
   });
 
-  // Calculate savings rate based on Savings & Investments category
+  // Calculate savings rate: (surplus + Savings & Investments) / income
   const actualSavingsSpending = calculateCategorySpending('Savings & Investments');
-  const savingsRate = totalMonthlyNetIncome > 0 ? (actualSavingsSpending / totalMonthlyNetIncome) * 100 : 0;
-  
-  // Calculate true surplus (income minus all expenses)
   const surplus = totalMonthlyNetIncome - totalMonthlyExpenses;
+  const savingsRate = totalMonthlyNetIncome > 0 ? ((surplus + actualSavingsSpending) / totalMonthlyNetIncome) * 100 : 0;
 
   const getStatusColor = (status: string) => {
     switch (status) {

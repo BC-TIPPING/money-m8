@@ -1080,14 +1080,28 @@ const FullFinancialHealthCheck: React.FC<FullFinancialHealthCheckProps> = ({
             const getResourcesByFocus = () => {
               switch (focusArea) {
                 case "debt":
+                  // Calculate total monthly debt payments
+                  const totalDebtPayments = debtDetails.reduce((total, debt) => {
+                    return total + (parseFloat(debt.repayments) || 0);
+                  }, 0);
+                  
+                  // Only show National Debt Helpline if debt repayments are 20%+ of income
+                  const debtPercentage = monthlyIncome > 0 ? (totalDebtPayments / monthlyIncome) * 100 : 0;
+                  const shouldShowDebtHelpline = debtPercentage >= 20;
+                  
+                  const baseResources = [
+                    { type: "📖", title: "The Barefoot Investor", author: "Scott Pape", description: "Australia's #1 debt elimination strategy", url: "#" },
+                    { type: "🎧", title: "My Millennial Money", author: "Glen James", description: "Practical budgeting and debt payoff tips", url: "#" },
+                    { type: "📊", title: "MoneySmart Budget Planner", author: "Government Tool", description: "Excel-based debt tracking", url: "#" }
+                  ];
+                  
+                  if (shouldShowDebtHelpline) {
+                    baseResources.splice(2, 0, { type: "🏛️", title: "National Debt Helpline", author: "Free Service", description: "Professional financial counselling", url: "https://ndh.org.au" });
+                  }
+                  
                   return {
                     title: "🚨 Priority: Eliminate High-Interest Debt",
-                    resources: [
-                      { type: "📖", title: "The Barefoot Investor", author: "Scott Pape", description: "Australia's #1 debt elimination strategy", url: "#" },
-                      { type: "🎧", title: "My Millennial Money", author: "Glen James", description: "Practical budgeting and debt payoff tips", url: "#" },
-                      { type: "🏛️", title: "National Debt Helpline", author: "Free Service", description: "Professional financial counselling", url: "https://ndh.org.au" },
-                      { type: "📊", title: "MoneySmart Budget Planner", author: "Government Tool", description: "Excel-based debt tracking", url: "#" }
-                    ]
+                    resources: baseResources
                   };
                 case "budget":
                   return {
