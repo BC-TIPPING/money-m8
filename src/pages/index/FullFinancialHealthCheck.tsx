@@ -1065,179 +1065,119 @@ const FullFinancialHealthCheck: React.FC<FullFinancialHealthCheckProps> = ({
             );
             const hasHighInterestDebt = debtDetails.some(debt => parseFloat(debt.interestRate || '0') > 8);
             const isUnder35 = age && age < 35;
-            const isOver50 = age && age >= 50;
-            const hasInvestments = assets.some(asset => 
-              asset.type?.toLowerCase().includes('shares') || 
-              asset.type?.toLowerCase().includes('etf')
-            );
 
-            const resources = [];
+            // Determine focus area and get tailored resources
+            const getFocusArea = () => {
+              if (hasHighInterestDebt) return "debt";
+              if (savingsRate < 10) return "budget";
+              if (!hasMortgage && isUnder35) return "home";
+              if (hasMortgage) return "mortgage";
+              return "invest";
+            };
 
-            // Debt-focused resources
-            if (hasHighInterestDebt) {
-              resources.push({
-                title: "The Barefoot Investor",
-                author: "Scott Pape",
-                type: "Book",
-                summary: "Australia's most trusted financial guide with a proven debt elimination strategy",
-                relevance: "Perfect for your high-interest debt situation - provides the 'debt domino' strategy that thousands of Australians have used successfully",
-                link: "https://www.booktopia.com.au/the-barefoot-investor-scott-pape/book/9780730324218.html"
-              });
-              
-              resources.push({
-                title: "National Debt Helpline",
-                author: "ASIC",
-                type: "Free Service",
-                summary: "Free, confidential financial counselling service",
-                relevance: "With ${Math.round(debtDetails.reduce((sum, debt) => sum + (parseFloat(debt.balance) || 0), 0) / 1000)}k in debt, professional guidance could save you thousands in interest",
-                link: "https://ndh.org.au/"
-              });
-            }
+            const focusArea = getFocusArea();
 
-            // Home buying resources  
-            if (!hasMortgage && isUnder35) {
-              resources.push({
-                title: "First Home Owner Grant Guide",
-                author: "Australian Government",
-                type: "Government Resource",
-                summary: "State-by-state breakdown of first home buyer incentives",
-                relevance: "You could be eligible for up to $10,000 in grants - free money towards your deposit",
-                link: "https://www.firsthome.gov.au/"
-              });
-              
-              resources.push({
-                title: "How to Save for a House Deposit",
-                author: "Canstar",
-                type: "Article",
-                summary: "Practical strategies for accelerating your deposit savings",
-                relevance: "Based on your current savings rate, this could help you buy ${Math.ceil(monthsToSave5Percent / 12)} years sooner",
-                link: "https://www.canstar.com.au/home-loans/how-to-save-for-a-house-deposit/"
-              });
-            }
-
-            // Mortgage payoff resources
-            if (hasMortgage) {
-              resources.push({
-                title: "Paying Off Your Mortgage Faster",
-                author: "MoneySmart (ASIC)",
-                type: "Article", 
-                summary: "Evidence-based strategies to cut years off your mortgage",
-                relevance: "Could potentially save you tens of thousands in interest on your current mortgage",
-                link: "https://moneysmart.gov.au/home-loans/paying-off-your-mortgage-faster"
-              });
-            }
-
-            // Investment resources
-            if (hasInvestments || (!hasHighInterestDebt && savingsRate > 15)) {
-              resources.push({
-                title: "The Little Book of Common Sense Investing",
-                author: "John C. Bogle",
-                type: "Book",
-                summary: "The definitive guide to low-cost index fund investing",
-                relevance: isOver50 ? "Perfect for conservative wealth building in your 50s+" : "Essential reading for building long-term wealth through index funds",
-                link: "https://www.booktopia.com.au/the-little-book-of-common-sense-investing-john-c-bogle/book/9781119404507.html"
-              });
-              
-              resources.push({
-                title: "Australian Finance Podcast - ETF Investing 101",
-                author: "Rask Australia",
-                type: "Podcast Series",
-                summary: "Free comprehensive course on Australian ETF investing",
-                relevance: "Specifically tailored to Australian tax and investment landscape - perfect for your situation",
-                link: "https://www.rask.com.au/podcasts/australian-finance-podcast/"
-              });
-            }
-
-            // Superannuation resources for older users
-            if (isOver50) {
-              resources.push({
-                title: "Superannuation Strategies for Over 50s",
-                author: "MoneySmart (ASIC)",
-                type: "Guide",
-                summary: "Catch-up contributions and pre-retirement planning strategies",
-                relevance: "With ${Math.round((superBalance || 0) / 1000)}k in super, you're in the crucial catch-up phase",
-                link: "https://moneysmart.gov.au/how-super-works/super-and-retirement"
-              });
-            }
-
-            // General financial literacy for younger users
-            if (isUnder35 && !hasHighInterestDebt) {
-              resources.push({
-                title: "She's on the Money Podcast",
-                author: "Victoria Devine",
-                type: "Podcast",
-                summary: "Financial tips presented in an accessible, relatable way",
-                relevance: "Perfect for building financial confidence in your 20s and 30s",
-                link: "https://open.spotify.com/show/5r41hB9aFE8d5z2bA9gQfF"
-              });
-            }
-
-            // Ensure we have 3-5 resources
-            if (resources.length < 3) {
-              resources.push({
-                title: "MoneySmart Website",
-                author: "ASIC",
-                type: "Website",
-                summary: "Australia's most trusted financial information source",
-                relevance: "Unbiased, government-backed financial guidance across all topics",
-                link: "https://moneysmart.gov.au/"
-              });
-            }
-
-            // Simplified recommendations based on financial situation
-            const getRecommendations = () => {
-              if (hasHighInterestDebt) {
-                return [
-                  { type: "📖", title: "The Barefoot Investor", author: "Scott Pape", note: "Debt elimination strategy" },
-                  { type: "🏛️", title: "National Debt Helpline", author: "Free counselling", note: "Professional debt guidance" },
-                  { type: "📄", title: "Managing Debt Guide", author: "MoneySmart", note: "Government strategies" }
-                ];
-              } else if (savingsRate < 15) {
-                return [
-                  { type: "🎧", title: "My Millennial Money", author: "Glen James", note: "Budget tools included" },
-                  { type: "📊", title: "MoneySmart Budget Planner", author: "Excel tool", note: "Government planner" },
-                  { type: "🌐", title: "Passive Investing Australia", author: "Community", note: "ETF education" }
-                ];
-              } else if (!hasMortgage && isUnder35) {
-                return [
-                  { type: "🏛️", title: "First Home Owner Grant", author: "Government", note: "Up to $10k grants" },
-                  { type: "📖", title: "Barefoot Investor for Families", author: "Scott Pape", note: "Home deposit strategies" },
-                  { type: "🎧", title: "She's On The Money", author: "Victoria Devine", note: "Young adult focus" }
-                ];
-              } else {
-                return [
-                  { type: "🌐", title: "Passive Investing Australia", author: "Community", note: "Index fund bible" },
-                  { type: "📖", title: "Psychology of Money", author: "Morgan Housel", note: "Investment mindset" },
-                  { type: "🎧", title: "Australian Finance Podcast", author: "Rask", note: "ETF course included" }
-                ];
+            const getResourcesByFocus = () => {
+              switch (focusArea) {
+                case "debt":
+                  return {
+                    title: "🚨 Priority: Eliminate High-Interest Debt",
+                    resources: [
+                      { type: "📖", title: "The Barefoot Investor", author: "Scott Pape", description: "Australia's #1 debt elimination strategy", url: "#" },
+                      { type: "🎧", title: "My Millennial Money", author: "Glen James", description: "Practical budgeting and debt payoff tips", url: "#" },
+                      { type: "🏛️", title: "National Debt Helpline", author: "Free Service", description: "Professional financial counselling", url: "https://ndh.org.au" },
+                      { type: "📊", title: "MoneySmart Budget Planner", author: "Government Tool", description: "Excel-based debt tracking", url: "#" }
+                    ]
+                  };
+                case "budget":
+                  return {
+                    title: "💰 Focus: Budget Mastery & Savings",
+                    resources: [
+                      { type: "📖", title: "The Barefoot Investor", author: "Scott Pape", description: "Simple bucket budgeting system", url: "#" },
+                      { type: "🎧", title: "My Millennial Money", author: "Glen James", description: "Includes budget tools and net worth tracker", url: "#" },
+                      { type: "📊", title: "MoneySmart Budget Planner", author: "Government Excel", description: "Free, effective planning tool", url: "#" },
+                      { type: "🎧", title: "She's On The Money", author: "Victoria Devine", description: "Financial empowerment for young Australians", url: "#" }
+                    ]
+                  };
+                case "home":
+                  return {
+                    title: "🏠 Goal: Home Ownership",
+                    resources: [
+                      { type: "📖", title: "The Psychology of Money", author: "Morgan Housel", description: "Right mindset for long-term saving", url: "#" },
+                      { type: "🌐", title: "First Home Owner Grants", author: "Government", description: "State-by-state grant eligibility", url: "https://www.firsthome.gov.au" },
+                      { type: "📄", title: "House Deposit Saving Guide", author: "Canstar", description: "Proven deposit acceleration strategies", url: "#" },
+                      { type: "🎧", title: "She's On The Money", author: "Victoria Devine", description: "Young adult financial guidance", url: "#" }
+                    ]
+                  };
+                case "mortgage":
+                  return {
+                    title: "🏡 Priority: Mortgage Optimization",
+                    resources: [
+                      { type: "📄", title: "Paying Off Your Mortgage Faster", author: "MoneySmart", description: "Government-backed strategies", url: "https://moneysmart.gov.au/home-loans/paying-off-your-mortgage-faster" },
+                      { type: "🎧", title: "My Millennial Money", author: "Glen James", description: "Practical mortgage strategy episodes", url: "#" },
+                      { type: "🌐", title: "Strong Money Australia", author: "Dave Gow", description: "Early retirement via mortgage payoff", url: "#" },
+                      { type: "📊", title: "Bank Repayment Calculator", author: "CommBank", description: "Calculate extra payment impact", url: "https://www.commbank.com.au/digital/home-buying/calculator/property-repayment" }
+                    ]
+                  };
+                case "invest":
+                  return {
+                    title: "📈 Focus: Investment Growth",
+                    resources: [
+                      { type: "🌐", title: "Passive Investing Australia", author: "Community", description: "ETFs and index funds for Aussies", url: "#" },
+                      { type: "📖", title: "The Psychology of Money", author: "Morgan Housel", description: "Investment mindset fundamentals", url: "#" },
+                      { type: "🎧", title: "FIRE & Chill Podcast", author: "Archives", description: "Deep dives into financial independence", url: "#" },
+                      { type: "🎓", title: "Robert Shiller's Financial Markets", author: "Yale via YouTube", description: "Academic but digestible theory", url: "https://www.youtube.com/playlist?list=PLEDC55106E0BA18FC" }
+                    ]
+                  };
+                default:
+                  return {
+                    title: "📚 General Financial Education",
+                    resources: [
+                      { type: "📖", title: "The Barefoot Investor", author: "Scott Pape", description: "Best starting point for any goal", url: "#" },
+                      { type: "🌐", title: "MoneySmart Website", author: "ASIC", description: "Trustworthy, unbiased guidance", url: "https://moneysmart.gov.au" },
+                      { type: "🎧", title: "She's On The Money", author: "Victoria Devine", description: "Accessible financial tips", url: "#" }
+                    ]
+                  };
               }
             };
 
-            const recommendations = getRecommendations();
+            const resourceSet = getResourcesByFocus();
 
             return (
               <div className="space-y-4">
-                <div className="grid gap-3">
-                  {recommendations.map((item, idx) => (
-                    <div key={idx} className="bg-white p-3 rounded-lg border border-orange-200">
-                      <div className="flex items-center gap-2">
-                        <span className="text-lg">{item.type}</span>
-                        <div className="flex-1">
-                          <p className="font-medium text-gray-900">{item.title}</p>
-                          <p className="text-sm text-gray-600">{item.author} • {item.note}</p>
+                <div className="bg-gradient-to-r from-orange-100 to-amber-50 p-4 rounded-lg border border-orange-200">
+                  <h4 className="font-semibold text-orange-900 mb-3">{resourceSet.title}</h4>
+                  <div className="grid gap-3">
+                    {resourceSet.resources.map((item, idx) => (
+                      <div key={idx} className="bg-white p-3 rounded-lg border border-orange-200 hover:shadow-sm transition-shadow">
+                        <div className="flex items-start gap-3">
+                          <span className="text-lg flex-shrink-0">{item.type}</span>
+                          <div className="flex-1">
+                            <div className="flex items-center justify-between">
+                              <p className="font-medium text-gray-900">{item.title}</p>
+                              {item.url !== "#" && (
+                                <Button variant="ghost" size="sm" className="h-6 px-2 text-xs">
+                                  View
+                                </Button>
+                              )}
+                            </div>
+                            <p className="text-sm text-gray-600 mb-1">{item.author}</p>
+                            <p className="text-xs text-gray-500">{item.description}</p>
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  ))}
+                    ))}
+                  </div>
                 </div>
                 
-                <div className="bg-orange-50 p-3 rounded-lg">
-                  <h4 className="font-semibold text-orange-900 mb-2">💡 Reddit Community Tips</h4>
-                  <ul className="text-sm text-orange-800 space-y-1">
-                    <li>• "Small goal setting is addictive" - track weekly progress</li>
-                    <li>• "Excel changed my life" - create your own spreadsheet</li>
-                    <li>• "Barefoot + Passive Investing Australia = success"</li>
-                  </ul>
+                <div className="bg-amber-50 p-3 rounded-lg border border-amber-200">
+                  <h4 className="font-semibold text-amber-900 mb-2">💡 Key Success Habits</h4>
+                  <div className="text-sm text-amber-800 space-y-1">
+                    <p>• <strong>"Small goal setting is addictive"</strong> - Track weekly progress for momentum</p>
+                    <p>• <strong>"Excel changed my life"</strong> - Create your own financial spreadsheet</p>
+                    <p>• <strong>"Feeling improvement is motivating"</strong> - Focus on progress, not perfection</p>
+                    <p>• <strong>"Barefoot + Passive Investing Australia"</strong> - Proven combo for Aussies</p>
+                  </div>
                 </div>
               </div>
             );
