@@ -1176,16 +1176,6 @@ const FullFinancialHealthCheck: React.FC<FullFinancialHealthCheckProps> = ({
                     ))}
                   </div>
                 </div>
-                
-                <div className="bg-amber-50 p-3 rounded-lg border border-amber-200">
-                  <h4 className="font-semibold text-amber-900 mb-2">💡 Key Success Habits</h4>
-                  <div className="text-sm text-amber-800 space-y-1">
-                    <p>• <strong>"Small goal setting is addictive"</strong> - Track weekly progress for momentum</p>
-                    <p>• <strong>"Excel changed my life"</strong> - Create your own financial spreadsheet</p>
-                    <p>• <strong>"Feeling improvement is motivating"</strong> - Focus on progress, not perfection</p>
-                    <p>• <strong>"Barefoot + Passive Investing Australia"</strong> - Proven combo for Aussies</p>
-                  </div>
-                </div>
               </div>
             );
           })()}
