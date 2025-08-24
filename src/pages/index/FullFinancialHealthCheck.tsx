@@ -491,17 +491,10 @@ const FullFinancialHealthCheck: React.FC<FullFinancialHealthCheckProps> = ({
             </div>
           </div>
 
-          <div className="bg-blue-50 p-4 rounded-lg">
+            <div className="bg-blue-50 p-4 rounded-lg">
             <h4 className="font-semibold text-blue-900 mb-2">Savings Rate Analysis</h4>
             <div className="text-sm text-blue-800 space-y-1">
-              <p>• <strong>Current Rate:</strong> {(() => {
-                const savingsAndInvestmentsAmount = expenseItems
-                  .filter(item => item.category === 'Savings & Investments')
-                  .reduce((sum, item) => sum + parseFloat(item.amount || '0'), 0);
-                const totalSavingsRate = monthlyNetIncome > 0 ? 
-                  ((savingsAndInvestmentsAmount + Math.max(0, monthlySurplus)) / monthlyNetIncome) * 100 : 0;
-                return totalSavingsRate.toFixed(1);
-              })()}%</p>
+              <p>• <strong>Current Rate:</strong> {savingsRate.toFixed(1)}%</p>
               <p>• <strong>Target Rate:</strong> 10-20% (Financial experts recommend)</p>
               <p>• <strong>Australian Average:</strong> 8.6% (ABS data)</p>
               {monthlySurplus < 0 && (
