@@ -33,7 +33,7 @@ const InvestmentPropertyComparison: React.FC<InvestmentPropertyComparisonProps> 
     const yearlyRepairs = 3000;
     const yearlyExpenses = yearlyRates + yearlyInsurance + yearlyRepairs + (monthlyRepayment * 12);
     const monthlyOutOfPocket = (yearlyExpenses - yearlyRent) / 12;
-    const expectedYearlyReturn = 7.2; // Property growth
+    const expectedYearlyReturn = 5.0; // Property growth
     
     // Tax benefits
     const taxWriteOff = Math.max(0, yearlyExpenses - yearlyRent);
@@ -181,7 +181,7 @@ const InvestmentPropertyComparison: React.FC<InvestmentPropertyComparisonProps> 
             directly into a diversified stock portfolio earning 7.5% annually.
           </p>
           <p>
-            <strong>🔍 Key Difference:</strong> Property leverage means your returns are amplified - a 7.2% property growth 
+            <strong>🔍 Key Difference:</strong> Property leverage means your returns are amplified - a 5.0% property growth 
             on ${calculations.propertyValue.toLocaleString()} vs 7.5% growth on your accumulated contributions.
           </p>
         </div>
