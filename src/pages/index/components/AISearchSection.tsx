@@ -86,7 +86,7 @@ const AISearchSection: React.FC<AISearchSectionProps> = ({ onGoalSuggested }) =>
 
   return (
     <div className="w-full mb-4">
-      <form onSubmit={handleSubmit} className="space-y-2">
+      <form onSubmit={handleSubmit} className="space-y-2 max-w-xl mx-auto">
         <div className="flex gap-2">
           <Input
             placeholder="Ask me anything"
@@ -120,12 +120,12 @@ const AISearchSection: React.FC<AISearchSectionProps> = ({ onGoalSuggested }) =>
         </Select>
       </form>
       
-      <p className="text-center text-xs text-white/60 italic mb-1 px-2">
+      <p className="text-center text-xs text-white/60 italic mb-1 px-2 max-w-xl mx-auto">
         Concise expert advice with practical examples
       </p>
 
       {isLoading && (
-        <Card className="bg-white/10 backdrop-blur-md border-white/20">
+        <Card className="bg-white/10 backdrop-blur-md border-white/20 max-w-xl mx-auto">
           <CardContent className="p-4">
             <div className="flex items-center gap-2 text-white">
               <Loader2 className="h-4 w-4 animate-spin" />
@@ -136,26 +136,26 @@ const AISearchSection: React.FC<AISearchSectionProps> = ({ onGoalSuggested }) =>
       )}
 
       {answer && (
-        <div className="w-full flex justify-center mb-4">
-          <Card className="bg-white/10 backdrop-blur-md border-white/20 max-w-none">
-            <CardContent className="p-4">
-              <div className="text-white space-y-3">
-                {answer.split('\n\n').map((paragraph, index) => (
-                  <p key={index} className="text-white/95 leading-relaxed text-sm">
-                    {paragraph}
-                  </p>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
-        </div>
+        <Card className="bg-white/10 backdrop-blur-md border-white/20 mx-auto mt-4 inline-block">
+          <CardContent className="p-4">
+            <div className="text-white space-y-3">
+              {answer.split('\n\n').map((paragraph, index) => (
+                <p key={index} className="text-white/95 leading-relaxed text-sm whitespace-pre-wrap">
+                  {paragraph}
+                </p>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
       )}
 
       {suggestedGoal && (
-        <GoalSuggestion 
-          goal={suggestedGoal} 
-          onSelectGoal={handleGoalSuggestion}
-        />
+        <div className="max-w-xl mx-auto">
+          <GoalSuggestion 
+            goal={suggestedGoal} 
+            onSelectGoal={handleGoalSuggestion}
+          />
+        </div>
       )}
     </div>
   );
