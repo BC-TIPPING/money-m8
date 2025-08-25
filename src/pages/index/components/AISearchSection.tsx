@@ -136,11 +136,11 @@ const AISearchSection: React.FC<AISearchSectionProps> = ({ onGoalSuggested }) =>
       )}
 
       {answer && (
-        <Card className="bg-white/10 backdrop-blur-md border-white/20 mb-4 w-full">
-          <CardContent className="p-6">
-            <div className="text-white space-y-4">
+        <Card className="bg-white/10 backdrop-blur-md border-white/20 mb-4 w-fit min-w-72 max-w-2xl">
+          <CardContent className="p-4">
+            <div className="text-white space-y-3">
               {answer.split('\n\n').map((paragraph, index) => (
-                <p key={index} className="text-white/95 leading-relaxed">
+                <p key={index} className="text-white/95 leading-relaxed text-sm">
                   {paragraph}
                 </p>
               ))}
