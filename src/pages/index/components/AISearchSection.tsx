@@ -119,10 +119,6 @@ const AISearchSection: React.FC<AISearchSectionProps> = ({ onGoalSuggested }) =>
           </SelectContent>
         </Select>
       </form>
-      
-      <p className="text-center text-xs text-white/60 italic mb-1 px-2 max-w-xl mx-auto">
-        Concise expert advice with practical examples
-      </p>
 
       {isLoading && (
         <Card className="bg-white/10 backdrop-blur-md border-white/20 max-w-xl mx-auto">
@@ -139,6 +135,9 @@ const AISearchSection: React.FC<AISearchSectionProps> = ({ onGoalSuggested }) =>
         <div className="w-full max-w-2xl mx-auto mt-4">
           <Card className="bg-white/10 backdrop-blur-md border-white/20">
             <CardContent className="p-4">
+              <p className="text-center text-xs text-white/60 italic mb-3">
+                Concise expert advice with practical examples
+              </p>
               <div className="text-white space-y-3">
                 {answer.split('\n\n').map((paragraph, index) => (
                   <p key={index} className="text-white/95 leading-relaxed text-sm">
