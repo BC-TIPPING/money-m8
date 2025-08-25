@@ -85,7 +85,7 @@ const AISearchSection: React.FC<AISearchSectionProps> = ({ onGoalSuggested }) =>
   };
 
   return (
-    <div className="w-full max-w-xl mb-4">
+    <div className="w-full mb-4">
       <form onSubmit={handleSubmit} className="space-y-2">
         <div className="flex gap-2">
           <Input
@@ -136,11 +136,11 @@ const AISearchSection: React.FC<AISearchSectionProps> = ({ onGoalSuggested }) =>
       )}
 
       {answer && (
-        <Card className="bg-white/10 backdrop-blur-md border-white/20 mb-4 w-full max-w-xl">
+        <Card className="bg-white/10 backdrop-blur-md border-white/20 mb-4 w-full">
           <CardContent className="p-6">
             <div className="text-white space-y-4">
               {answer.split('\n\n').map((paragraph, index) => (
-                <p key={index} className="text-white/95 leading-7 text-sm">
+                <p key={index} className="text-white/95 leading-relaxed">
                   {paragraph}
                 </p>
               ))}
