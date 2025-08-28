@@ -52,28 +52,30 @@ const LandingSection = ({ onStartAssessment, isLoading }: { onStartAssessment: (
           <AISearchSection onGoalSuggested={handleGoalSuggestion} />
         </div>
 
-        <section id="goals-section" className="w-full max-w-3xl mb-4 sm:mb-6 px-4 sm:px-8 md:px-14">
+        <section id="goals-section" className="w-full max-w-5xl mb-4 sm:mb-6 px-4 sm:px-8 md:px-14">
           <div className="text-center mb-3 sm:mb-4 bg-white/10 backdrop-blur-sm rounded-2xl py-4">
             <h2 className="text-lg sm:text-xl font-bold text-white mb-2">Choose Your Goal</h2>
           </div>
           
-          <Carousel opts={{ align: "center", loop: false }} className="w-full overflow-hidden">
-            <CarouselContent>
-              {goalPanels.map((panel, i) => (
-                <CarouselItem key={i} className="py-2 sm:py-3 cursor-pointer basis-full xs:basis-1/2 md:basis-1/2 lg:basis-1/3 self-stretch" onClick={() => setSelectedGoal(panel.title)}>
-                  <div className="p-1 h-full">
-                    <div className={`bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl shadow-xl p-3 sm:p-4 h-full flex flex-col items-center gap-1 sm:gap-2 transition-all hover:scale-105 hover:bg-white/15 ${selectedGoal === panel.title ? 'ring-4 ring-emerald-500 bg-white/20' : 'ring-transparent'}`}>
-                      <span className="text-2xl sm:text-3xl">{panel.emoji}</span>
-                      <span className="font-bold text-sm sm:text-lg text-white text-center leading-tight">{panel.title}</span>
-                      <span className="text-xs sm:text-sm text-white/80 text-center leading-tight">{panel.description}</span>
+          <div className="relative px-12 md:px-16">
+            <Carousel opts={{ align: "center", loop: false }} className="w-full overflow-hidden">
+              <CarouselContent className="px-2">
+                {goalPanels.map((panel, i) => (
+                  <CarouselItem key={i} className="py-2 sm:py-3 cursor-pointer basis-full xs:basis-1/2 md:basis-1/2 lg:basis-1/3 self-stretch" onClick={() => setSelectedGoal(panel.title)}>
+                    <div className="p-2 h-full">
+                      <div className={`bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl shadow-xl p-3 sm:p-4 h-full flex flex-col items-center gap-1 sm:gap-2 transition-all hover:scale-105 hover:bg-white/15 ${selectedGoal === panel.title ? 'ring-4 ring-emerald-500 bg-white/20' : 'ring-transparent'}`}>
+                        <span className="text-2xl sm:text-3xl">{panel.emoji}</span>
+                        <span className="font-bold text-sm sm:text-lg text-white text-center leading-tight">{panel.title}</span>
+                        <span className="text-xs sm:text-sm text-white/80 text-center leading-tight">{panel.description}</span>
+                      </div>
                     </div>
-                  </div>
-                </CarouselItem>
-              ))}
-            </CarouselContent>
-            <CarouselPrevious className="bg-white/20 border-white/30 text-white hover:bg-white/30 left-2 md:left-4" />
-            <CarouselNext className="bg-white/20 border-white/30 text-white hover:bg-white/30 right-2 md:right-4" />
-          </Carousel>
+                  </CarouselItem>
+                ))}
+              </CarouselContent>
+              <CarouselPrevious className="bg-white/20 border-white/30 text-white hover:bg-white/30 -left-4 md:-left-6" />
+              <CarouselNext className="bg-white/20 border-white/30 text-white hover:bg-white/30 -right-4 md:-right-6" />
+            </Carousel>
+          </div>
         </section>
         
         <Button 
