@@ -78,10 +78,10 @@ const LandingSection = ({ onStartAssessment, isLoading }: { onStartAssessment: (
           </div>
         </section>
         
-        <div className="flex justify-center">
+        <div className="flex justify-center px-8">
           <Button 
             size="lg" 
-            className="text-sm sm:text-lg px-4 sm:px-6 py-3 sm:py-4 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-semibold shadow-2xl transform hover:scale-105 transition-all disabled:bg-gray-400 disabled:cursor-not-allowed disabled:transform-none w-4/5 sm:w-2/3 max-w-md"
+            className="text-sm sm:text-lg px-8 sm:px-12 py-3 sm:py-4 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-semibold shadow-2xl transform hover:scale-105 transition-all disabled:bg-gray-400 disabled:cursor-not-allowed disabled:transform-none max-w-xs"
             onClick={() => {
               if (selectedGoal) {
                 onStartAssessment(selectedGoal);
