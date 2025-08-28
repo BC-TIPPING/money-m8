@@ -57,8 +57,8 @@ const LandingSection = ({ onStartAssessment, isLoading }: { onStartAssessment: (
             <h2 className="text-lg sm:text-xl font-bold text-white mb-2">Choose Your Goal</h2>
           </div>
           
-          <div className="relative px-12 md:px-16">
-            <Carousel opts={{ align: "center", loop: false }} className="w-full overflow-hidden">
+          <div className="relative">
+            <Carousel opts={{ align: "center", loop: false }} className="w-full overflow-hidden mx-12 md:mx-16">
               <CarouselContent className="px-2">
                 {goalPanels.map((panel, i) => (
                   <CarouselItem key={i} className="py-2 sm:py-3 cursor-pointer basis-full xs:basis-1/2 md:basis-1/2 lg:basis-1/3 self-stretch" onClick={() => setSelectedGoal(panel.title)}>
@@ -72,8 +72,8 @@ const LandingSection = ({ onStartAssessment, isLoading }: { onStartAssessment: (
                   </CarouselItem>
                 ))}
               </CarouselContent>
-              <CarouselPrevious className="bg-white/20 border-white/30 text-white hover:bg-white/30 -left-4 md:-left-6" />
-              <CarouselNext className="bg-white/20 border-white/30 text-white hover:bg-white/30 -right-4 md:-right-6" />
+              <CarouselPrevious className="bg-white/20 border-white/30 text-white hover:bg-white/30 absolute -left-12 md:-left-16 top-1/2 -translate-y-1/2" />
+              <CarouselNext className="bg-white/20 border-white/30 text-white hover:bg-white/30 absolute -right-12 md:-right-16 top-1/2 -translate-y-1/2" />
             </Carousel>
           </div>
         </section>
