@@ -151,7 +151,7 @@ const AssessmentSummary: React.FC<AssessmentSummaryProps> = (props) => {
         </Section>
       )}
 
-      <Section title="Financial Summary">
+      <Section title="Net Position Summary">
           <SummaryItem label="Total Monthly Expenses" value={`$${totalMonthlyExpenses.toFixed(2)}`} />
           <SummaryItem 
             label="Potential Monthly Savings" 

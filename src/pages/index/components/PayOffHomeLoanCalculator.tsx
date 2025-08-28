@@ -88,6 +88,7 @@ const PayOffHomeLoanCalculator: React.FC<PayOffHomeLoanCalculatorProps> = ({
         balance -= paymentAmount;
         months++;
 
+        // Add data points every 12 months for chart display
         if (months % 12 === 0) {
           amortizationData.push({ year: months / 12, balance: Math.max(0, balance) });
         }

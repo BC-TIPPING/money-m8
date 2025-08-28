@@ -245,7 +245,7 @@ const FullFinancialHealthCheck: React.FC<FullFinancialHealthCheckProps> = ({
     
     // Income requirements
     const incomeData = getIncomePercentile();
-    if (incomeData.percentile < 80) {
+    if (incomeData.percentile < 80 && annualIncome < nationalAverage) {
       requirements.push(`Increase income to top 20% (${nationalAverage.toLocaleString()}+ annually)`);
     }
     

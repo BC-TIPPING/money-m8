@@ -5,7 +5,6 @@ export function getGoalSpecificResources(primaryGoal: string) {
             return `
 - **Book:** "The Barefoot Investor" by Scott Pape. It has a great, simple strategy for getting out of debt. Find it on [Booktopia](https://www.booktopia.com.au/the-barefoot-investor-scott-pape/book/9780730324218.html).
 - **Article:** ASIC's MoneySmart guide on [Managing Debt](https://moneysmart.gov.au/managing-debt).
-- **Tool:** The [National Debt Helpline](https://ndh.org.au/) offers free, confidential financial counselling.
 `;
         case 'Buy a house':
             return `
