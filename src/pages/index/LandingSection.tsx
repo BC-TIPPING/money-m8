@@ -39,11 +39,8 @@ const LandingSection = ({ onStartAssessment, isLoading }: { onStartAssessment: (
         }}
       />
       
-      {/* White transparent curved background for text readability */}
-      <div className="absolute inset-x-4 top-1/2 -translate-y-1/2 z-5 bg-white/10 backdrop-blur-sm rounded-3xl max-w-4xl mx-auto min-h-fit p-4 md:p-6 lg:p-8" />
-      
-      <main className="relative z-10 w-full max-w-4xl mx-auto flex flex-col items-center mt-4 md:mt-6">
-        <div className="flex items-center justify-center gap-2 mb-12">
+      <main className="relative z-10 w-full flex flex-col items-center mt-4 md:mt-6 px-2">
+        <div className="flex items-center justify-center gap-2 mb-12 bg-white/10 backdrop-blur-sm rounded-3xl px-8 py-6">
           <DollarSign className="h-8 w-8 md:h-10 md:w-10 text-emerald-400" />
           <h1 className="text-4xl md:text-5xl font-extrabold text-center tracking-tight text-white drop-shadow-2xl">
             Money Mate
@@ -51,12 +48,12 @@ const LandingSection = ({ onStartAssessment, isLoading }: { onStartAssessment: (
           <TrendingUp className="h-8 w-8 md:h-10 md:w-10 text-emerald-400" />
         </div>
 
-        <div className="mb-2 w-full">
+        <div className="mb-2 max-w-3xl w-full px-4 sm:px-8 md:px-14">
           <AISearchSection onGoalSuggested={handleGoalSuggestion} />
         </div>
 
-        <section id="goals-section" className="w-full mb-4 sm:mb-6">
-          <div className="text-center mb-3 sm:mb-4">
+        <section id="goals-section" className="w-full max-w-3xl mb-4 sm:mb-6 px-4 sm:px-8 md:px-14">
+          <div className="text-center mb-3 sm:mb-4 bg-white/10 backdrop-blur-sm rounded-2xl py-4">
             <h2 className="text-lg sm:text-xl font-bold text-white mb-2">Choose Your Goal</h2>
           </div>
           
