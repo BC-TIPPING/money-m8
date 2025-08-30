@@ -2,7 +2,9 @@
 import React from 'react';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from 'recharts';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { CreditCard, Scissors, Car, Home, DollarSign } from 'lucide-react';
+import { Button } from "@/components/ui/button";
+import { CreditCard, Scissors, Car, Home, DollarSign, ArrowRight } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 interface DebtPayoffVisualizationProps {
   debtDetails: any[];
@@ -390,6 +392,16 @@ const DebtPayoffVisualization: React.FC<DebtPayoffVisualizationProps> = ({ debtD
                 you could pay off your home <strong>{mortgageMetrics?.yearsSaved} years earlier</strong> and save over 
                 <strong> ${mortgageMetrics?.interestSaved.toLocaleString()}</strong> in interest.
               </p>
+            </div>
+
+            {/* Link to PayOffHomeLoan Goal */}
+            <div className="flex justify-center">
+              <Button asChild variant="outline" className="w-fit">
+                <Link to="/pay-off-home-loan" className="flex items-center gap-2">
+                  Explore PayOff Home Loan Goal
+                  <ArrowRight className="h-4 w-4" />
+                </Link>
+              </Button>
             </div>
 
             {/* Chart */}
