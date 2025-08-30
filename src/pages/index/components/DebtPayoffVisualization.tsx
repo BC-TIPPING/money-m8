@@ -177,12 +177,15 @@ const DebtPayoffVisualization: React.FC<DebtPayoffVisualizationProps> = ({ debtD
     let currentRegBalance = balance;
     let currentExtraBalance = balance;
 
-    for (let month = 0; month <= Math.min(regMonths, 120); month++) {
-      data.push({
-        month,
-        regularPayment: Math.max(0, currentRegBalance),
-        extraPayment: Math.max(0, currentExtraBalance)
-      });
+    for (let month = 0; month <= Math.max(regMonths, extraMonths); month++) {
+      // Add data points every 12 months for chart display using years
+      if (month % 12 === 0) {
+        data.push({
+          year: month / 12,
+          regularPayment: Math.max(0, currentRegBalance),
+          extraPayment: Math.max(0, currentExtraBalance)
+        });
+      }
 
       if (month > 0) {
         // Regular payment
@@ -226,7 +229,7 @@ const DebtPayoffVisualization: React.FC<DebtPayoffVisualizationProps> = ({ debtD
     if (active && payload && payload.length) {
       return (
         <div className="bg-background p-3 border rounded shadow-lg">
-          <p className="font-semibold">{`Month: ${label}`}</p>
+          <p className="font-semibold">{`Year: ${label}`}</p>
           {payload.map((entry: any, index: number) => (
             <p key={index} style={{ color: entry.color }}>
               {`${entry.name}: $${entry.value.toLocaleString()}`}
@@ -395,8 +398,8 @@ const DebtPayoffVisualization: React.FC<DebtPayoffVisualizationProps> = ({ debtD
                 <AreaChart data={mortgageData} margin={{ top: 20, right: 30, left: 20, bottom: 60 }}>
                   <CartesianGrid strokeDasharray="3 3" />
                   <XAxis 
-                    dataKey="month" 
-                    label={{ value: 'Months', position: 'insideBottom', offset: -5 }}
+                    dataKey="year" 
+                    label={{ value: 'Years', position: 'insideBottom', offset: -5 }}
                   />
                   <YAxis tickFormatter={(value) => `$${(value / 1000).toFixed(0)}k`} />
                   <Tooltip content={<CustomTooltip />} />
