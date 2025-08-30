@@ -77,8 +77,8 @@ const BudgetRecap: React.FC<BudgetRecapProps> = ({
 
   // Calculate savings rate: (surplus + Savings & Investments) / income
   const actualSavingsSpending = calculateCategorySpending('Savings & Investments');
-  const surplus = totalMonthlyNetIncome - totalMonthlyExpenses;
-  const savingsRate = totalMonthlyNetIncome > 0 ? ((surplus + actualSavingsSpending) / totalMonthlyNetIncome) * 100 : 0;
+  const monthlySurplus = totalMonthlyNetIncome - totalMonthlyExpenses;
+  const savingsRate = totalMonthlyNetIncome > 0 ? ((monthlySurplus + actualSavingsSpending) / totalMonthlyNetIncome) * 100 : 0;
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -105,17 +105,34 @@ const BudgetRecap: React.FC<BudgetRecapProps> = ({
       </CardHeader>
       <CardContent className="space-y-6">
 
+        {/* Monthly Budget Summary */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="text-center p-4 bg-green-50 rounded-lg">
+            <p className="text-sm text-muted-foreground">Monthly Net Income</p>
+            <p className="text-xl font-bold text-green-600">${totalMonthlyNetIncome.toLocaleString()}</p>
+          </div>
+          <div className="text-center p-4 bg-red-50 rounded-lg">
+            <p className="text-sm text-muted-foreground">Monthly Expenses</p>
+            <p className="text-xl font-bold text-red-600">${totalMonthlyExpenses.toLocaleString()}</p>
+          </div>
+          <div className="text-center p-4 bg-blue-50 rounded-lg">
+            <p className="text-sm text-muted-foreground">Monthly Surplus</p>
+            <p className={`text-xl font-bold ${monthlySurplus >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+              ${monthlySurplus.toLocaleString()}
+            </p>
+          </div>
+        </div>
+
         <div className="bg-blue-50 p-4 rounded-lg">
           <h4 className="font-semibold text-blue-900 mb-2">Savings Rate Analysis</h4>
-          <div className="flex items-center gap-2">
-            <span className="text-sm text-blue-800">Current Savings Rate: </span>
-            <Badge className={savingsRate >= 10 ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}>
-              {savingsRate.toFixed(1)}%
-            </Badge>
+          <div className="text-sm text-blue-800 space-y-1">
+            <p>• <strong>Current Rate:</strong> {savingsRate.toFixed(1)}%</p>
+            <p>• <strong>Target Rate:</strong> 10-20% (Financial experts recommend)</p>
+            <p>• <strong>Australian Average:</strong> 8.6% (ABS data)</p>
+            {monthlySurplus < 0 && (
+              <p className="text-red-600 font-medium">⚠️ You're spending more than you earn. Consider reviewing expenses.</p>
+            )}
           </div>
-          <p className="text-sm text-blue-800 mt-2">
-            Target: 10-20% • Australian Average: 8.6%
-          </p>
         </div>
 
         <div className="space-y-3">
