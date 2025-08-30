@@ -104,22 +104,6 @@ const BudgetRecap: React.FC<BudgetRecapProps> = ({
         <CardTitle>Budget Analysis</CardTitle>
       </CardHeader>
       <CardContent className="space-y-6">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div className="text-center">
-            <p className="text-sm text-muted-foreground">Monthly Net Income</p>
-            <p className="text-2xl font-bold">${totalMonthlyNetIncome.toLocaleString()}</p>
-          </div>
-          <div className="text-center">
-            <p className="text-sm text-muted-foreground">Monthly Expenses</p>
-            <p className="text-2xl font-bold">${totalMonthlyExpenses.toLocaleString()}</p>
-          </div>
-          <div className="text-center">
-            <p className="text-sm text-muted-foreground">Monthly Surplus</p>
-            <p className={`text-2xl font-bold ${surplus >= 0 ? 'text-green-600' : 'text-red-600'}`}>
-              ${surplus.toLocaleString()}
-            </p>
-          </div>
-        </div>
 
         <div className="bg-blue-50 p-4 rounded-lg">
           <h4 className="font-semibold text-blue-900 mb-2">Savings Rate Analysis</h4>
