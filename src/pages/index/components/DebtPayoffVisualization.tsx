@@ -352,9 +352,17 @@ const DebtPayoffVisualization: React.FC<DebtPayoffVisualizationProps> = ({ debtD
       {/* Mortgage Section */}
       {mortgage && mortgageData.length > 0 && (
         <Card className="w-full">
-          <CardHeader className="flex flex-row items-center gap-2">
-            <Home className="h-6 w-6 text-green-600" />
-            <CardTitle>Mortgage Payoff Acceleration</CardTitle>
+          <CardHeader className="flex flex-row items-center justify-between">
+            <div className="flex items-center gap-2">
+              <Home className="h-6 w-6 text-green-600" />
+              <CardTitle>Mortgage Payoff Acceleration</CardTitle>
+            </div>
+            <Button asChild variant="outline" size="sm">
+              <Link to="/pay-off-home-loan" className="flex items-center gap-2">
+                Payoff Home Loan Calculator
+                <ArrowRight className="h-4 w-4" />
+              </Link>
+            </Button>
           </CardHeader>
           <CardContent className="space-y-6">
             {/* Mortgage Metrics Summary */}
@@ -392,16 +400,6 @@ const DebtPayoffVisualization: React.FC<DebtPayoffVisualizationProps> = ({ debtD
                 you could pay off your home <strong>{mortgageMetrics?.yearsSaved} years earlier</strong> and save over 
                 <strong> ${mortgageMetrics?.interestSaved.toLocaleString()}</strong> in interest.
               </p>
-            </div>
-
-            {/* Link to PayOffHomeLoan Goal */}
-            <div className="flex justify-center">
-              <Button asChild variant="outline" className="w-fit">
-                <Link to="/pay-off-home-loan" className="flex items-center gap-2">
-                  Explore PayOff Home Loan Goal
-                  <ArrowRight className="h-4 w-4" />
-                </Link>
-              </Button>
             </div>
 
             {/* Chart */}
