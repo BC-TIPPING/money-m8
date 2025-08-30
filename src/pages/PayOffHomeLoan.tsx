@@ -326,7 +326,7 @@ export default function PayOffHomeLoanPage() {
                                                         labelFormatter={(label) => `Year ${label}`}
                                                     />}
                                                 />
-                                                <Legend />
+                                                <Legend wrapperStyle={{ paddingTop: '3px' }} />
                                                 <Line dataKey="originalLoan" type="monotone" stroke="var(--color-originalLoan)" strokeWidth={2} dot={false} />
                                                 <Line dataKey="withExtraRepayments" type="monotone" stroke="var(--color-withExtraRepayments)" strokeWidth={2} dot={false} />
                                             </LineChart>

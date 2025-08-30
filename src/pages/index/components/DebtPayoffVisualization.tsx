@@ -318,7 +318,7 @@ const DebtPayoffVisualization: React.FC<DebtPayoffVisualizationProps> = ({ debtD
                   />
                   <YAxis tickFormatter={(value) => `$${(value / 1000).toFixed(0)}k`} />
                   <Tooltip content={<CustomTooltip />} />
-                  <Legend />
+                  <Legend wrapperStyle={{ paddingTop: '3px' }} />
                   <Area 
                     type="monotone" 
                     dataKey="minimumPayment" 
@@ -400,7 +400,7 @@ const DebtPayoffVisualization: React.FC<DebtPayoffVisualizationProps> = ({ debtD
                   />
                   <YAxis tickFormatter={(value) => `$${(value / 1000).toFixed(0)}k`} />
                   <Tooltip content={<CustomTooltip />} />
-                  <Legend />
+                  <Legend wrapperStyle={{ paddingTop: '3px' }} />
                   <Area 
                     type="monotone" 
                     dataKey="regularPayment" 

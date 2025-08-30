@@ -254,7 +254,7 @@ const InvestmentPropertyCalculator = () => {
                 ]}
                 labelFormatter={(year) => `Year ${year}`}
               />
-              <Legend />
+              <Legend wrapperStyle={{ paddingTop: '3px' }} />
               <Line 
                 type="monotone" 
                 dataKey="propertyValue" 

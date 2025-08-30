@@ -80,7 +80,7 @@ const DebtReductionChart: React.FC<DebtReductionChartProps> = ({ data }) => {
                 cursor={false}
                 content={<ChartTooltipContent indicator="line" />}
             />
-            <ChartLegend content={<ChartLegendContent />} />
+            <ChartLegend content={<ChartLegendContent />} wrapperStyle={{ paddingTop: '3px' }} />
             {Object.keys(chartConfig).map((key) => (
               <Line
                 key={key}

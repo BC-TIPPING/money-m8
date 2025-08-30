@@ -197,7 +197,7 @@ const InvestmentPropertyComparison: React.FC<InvestmentPropertyComparisonProps> 
               />
               <YAxis tickFormatter={(value) => `$${(value / 1000).toFixed(0)}k`} />
               <Tooltip content={<CustomTooltip />} />
-              <Legend />
+              <Legend wrapperStyle={{ paddingTop: '3px' }} />
               
               <Line 
                 type="monotone" 

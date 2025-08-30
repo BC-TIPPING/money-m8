@@ -440,7 +440,7 @@ const EnhancedDebtCalculator: React.FC<EnhancedDebtCalculatorProps> = ({
                     ]}
                     labelFormatter={(label) => `Month ${label}`}
                   />
-                  <Legend />
+                  <Legend wrapperStyle={{ paddingTop: '3px' }} />
                   <Line 
                     dataKey="currentPlan" 
                     stroke="#9CA3AF" 

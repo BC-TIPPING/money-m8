@@ -90,7 +90,7 @@ const SuperannuationChart: React.FC<SuperannuationChartProps> = ({
             label={{ value: 'Super Balance', angle: -90, position: 'insideLeft' }}
           />
           <Tooltip content={<CustomTooltip />} />
-          <Legend />
+          <Legend wrapperStyle={{ paddingTop: '3px' }} />
           <Line 
             type="monotone" 
             dataKey="withoutExtra" 
