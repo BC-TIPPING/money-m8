@@ -474,22 +474,6 @@ const FullFinancialHealthCheck: React.FC<FullFinancialHealthCheckProps> = ({
             expenseItems={expenseItems}
           />
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
-            <div className="text-center p-4 bg-green-50 rounded-lg">
-              <p className="text-sm text-muted-foreground">Monthly Net Income</p>
-              <p className="text-xl font-bold text-green-600">${monthlyNetIncome.toLocaleString()}</p>
-            </div>
-            <div className="text-center p-4 bg-red-50 rounded-lg">
-              <p className="text-sm text-muted-foreground">Monthly Expenses</p>
-              <p className="text-xl font-bold text-red-600">${monthlyExpenses.toLocaleString()}</p>
-            </div>
-            <div className="text-center p-4 bg-blue-50 rounded-lg">
-              <p className="text-sm text-muted-foreground">Monthly Surplus</p>
-              <p className={`text-xl font-bold ${monthlySurplus >= 0 ? 'text-green-600' : 'text-red-600'}`}>
-                ${monthlySurplus.toLocaleString()}
-              </p>
-            </div>
-          </div>
 
         </CardContent>
       </Card>
