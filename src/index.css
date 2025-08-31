@@ -126,4 +126,138 @@
     padding-top: env(safe-area-inset-top);
     padding-bottom: env(safe-area-inset-bottom);
   }
+
+  /* Enhanced Mobile Optimizations */
+  
+  /* Better touch targets for all interactive elements */
+  @media (max-width: 768px) {
+    button, .btn, [role="button"] {
+      @apply min-h-[44px] min-w-[44px];
+    }
+    
+    /* Larger text inputs for mobile */
+    input, select, textarea {
+      @apply text-base min-h-[44px];
+    }
+    
+    /* Better spacing in cards on mobile */
+    .card-mobile {
+      @apply p-3 sm:p-6;
+    }
+    
+    /* Improved mobile typography */
+    h1 {
+      @apply text-xl sm:text-2xl lg:text-3xl;
+    }
+    
+    h2 {
+      @apply text-lg sm:text-xl lg:text-2xl;
+    }
+    
+    h3 {
+      @apply text-base sm:text-lg lg:text-xl;
+    }
+    
+    /* Better mobile navigation */
+    .mobile-nav {
+      @apply fixed bottom-0 left-0 right-0 bg-background border-t z-50;
+      padding-bottom: env(safe-area-inset-bottom);
+    }
+    
+    /* Improved form layouts on mobile */
+    .form-mobile {
+      @apply space-y-4;
+    }
+    
+    .form-mobile input,
+    .form-mobile select,
+    .form-mobile textarea {
+      @apply w-full text-base;
+    }
+    
+    /* Better mobile table handling */
+    .table-mobile {
+      @apply block overflow-x-auto whitespace-nowrap;
+    }
+    
+    /* Mobile-optimized grid layouts */
+    .grid-mobile-single {
+      @apply grid-cols-1 sm:grid-cols-2 lg:grid-cols-3;
+    }
+    
+    .grid-mobile-responsive {
+      @apply grid-cols-1 md:grid-cols-2;
+    }
+    
+    /* Better mobile dialogs and modals */
+    .dialog-mobile {
+      @apply max-h-[90vh] w-[95vw] max-w-lg;
+    }
+    
+    /* Improved mobile floating elements */
+    .floating-mobile {
+      @apply fixed bottom-4 right-4 z-50;
+      margin-bottom: env(safe-area-inset-bottom);
+    }
+    
+    /* Better mobile chart containers */
+    .chart-mobile {
+      @apply overflow-x-auto;
+    }
+    
+    .chart-mobile > * {
+      @apply min-w-[300px];
+    }
+    
+    /* Enhanced mobile padding and margins */
+    .container-mobile {
+      @apply px-3 sm:px-6 lg:px-8;
+    }
+    
+    .section-mobile {
+      @apply py-4 sm:py-6 lg:py-8;
+    }
+    
+    /* Better mobile scrolling */
+    .scroll-mobile {
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: thin;
+    }
+    
+    /* Mobile-optimized sticky elements */
+    .sticky-mobile {
+      @apply sticky top-0 z-30 bg-background/80 backdrop-blur-sm;
+    }
+    
+    /* Better mobile focus states */
+    .focus-mobile:focus {
+      @apply ring-2 ring-primary ring-offset-2;
+    }
+  }
+  
+  /* Tablet-specific optimizations */
+  @media (min-width: 768px) and (max-width: 1024px) {
+    .tablet-optimized {
+      @apply px-4 py-3;
+    }
+  }
+  
+  /* High DPI display optimizations */
+  @media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+    .high-dpi {
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+  }
+  
+  /* Landscape mobile optimizations */
+  @media (max-height: 500px) and (orientation: landscape) {
+    .landscape-mobile {
+      @apply py-2;
+    }
+    
+    .landscape-mobile .floating-mobile {
+      @apply bottom-2 right-2;
+    }
+  }
 }

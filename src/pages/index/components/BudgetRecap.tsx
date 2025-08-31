@@ -99,14 +99,14 @@ const BudgetRecap: React.FC<BudgetRecapProps> = ({
   };
 
   return (
-    <Card className="w-full">
+    <Card className="w-full card-mobile">
       <CardHeader>
-        <CardTitle>Budget Analysis</CardTitle>
+        <CardTitle className="text-responsive-xl">Budget Analysis</CardTitle>
       </CardHeader>
-      <CardContent className="space-y-6">
+      <CardContent className="space-y-6 form-mobile">
 
         {/* Monthly Budget Summary */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div className="grid grid-mobile-single gap-4">
           <div className="text-center p-4 bg-green-50 rounded-lg">
             <p className="text-sm text-muted-foreground">Monthly Net Income</p>
             <p className="text-xl font-bold text-green-600">${totalMonthlyNetIncome.toLocaleString()}</p>
@@ -124,14 +124,14 @@ const BudgetRecap: React.FC<BudgetRecapProps> = ({
         </div>
 
         <div className="space-y-3">
-          <h4 className="font-semibold">Budget Category Analysis</h4>
+          <h4 className="font-semibold text-responsive-lg">Budget Category Analysis</h4>
           <div className="space-y-2">
             {budgetAnalysis.map((item, index) => (
               <div key={index} className="flex items-center justify-between p-3 border rounded-lg">
                 <div className="flex items-center gap-3">
                   {getStatusIcon(item.status)}
                   <div>
-                    <p className="font-medium">{item.category}</p>
+                    <p className="font-medium text-responsive">{item.category}</p>
                     <p className="text-sm text-muted-foreground">
                       ${item.actualSpending.toFixed(0)} ({item.actualPercentage.toFixed(1)}%)
                     </p>
@@ -152,7 +152,7 @@ const BudgetRecap: React.FC<BudgetRecapProps> = ({
         </div>
 
         <div className="bg-yellow-50 p-4 rounded-lg">
-          <h4 className="font-semibold text-yellow-900 mb-2">Budget Recommendations</h4>
+          <h4 className="font-semibold text-yellow-900 mb-2 text-responsive-lg">Budget Recommendations</h4>
           <ul className="text-sm text-yellow-800 space-y-1">
             {budgetAnalysis.filter(item => item.status === 'over').map((item, index) => (
               <li key={index}>• {item.category} is over-indexed by ${((item.actualPercentage - item.guideline.max) * totalMonthlyNetIncome / 100).toFixed(0)}/month</li>
@@ -173,7 +173,7 @@ const BudgetRecap: React.FC<BudgetRecapProps> = ({
         </div>
 
         <div className="bg-blue-50 p-4 rounded-lg">
-          <h4 className="font-semibold text-blue-900 mb-2">Savings Rate Analysis</h4>
+          <h4 className="font-semibold text-blue-900 mb-2 text-responsive-lg">Savings Rate Analysis</h4>
           <div className="text-sm text-blue-800 space-y-1">
             <p>• <strong>Current Rate:</strong> {savingsRate.toFixed(1)}%</p>
             <p>• <strong>Target Rate:</strong> 10-20% (Financial experts recommend)</p>

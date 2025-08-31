@@ -157,7 +157,7 @@ export default function Index() {
   const monthlySurplus = totalMonthlyNetIncome - totalMonthlyExpenses;
 
   return (
-    <div className="relative min-h-screen">
+    <div className="relative min-h-screen landscape-mobile">
 
       {!assessment.showAssessment ? (
         <LandingSection onStartAssessment={handleStartAssessment} isLoading={isLoadingAssessment} />
@@ -173,7 +173,7 @@ export default function Index() {
             <EditAssessmentButton onEdit={handleEditAssessment} />
           )}
           
-          <div id="export-content" className={`flex-grow ${isComplete ? 'pb-52' : ''}`}>
+          <div id="export-content" className={`flex-grow container-mobile section-mobile scroll-mobile ${isComplete ? 'pb-52' : ''}`}>
             <div className="stepper-container" data-export-section="stepper">
               <AssessmentStepper
               {...assessment} 
@@ -252,7 +252,7 @@ export default function Index() {
                 
                 {/* Other goal-specific components */}
                 {!assessment.goals.includes('Full Financial Health Check') && (
-          <div className="container mx-auto grid gap-6 px-4 py-6 sm:px-6 lg:grid-cols-2 lg:px-8 goal-specific-section"
+          <div className="container mx-auto grid gap-6 container-mobile section-mobile grid-mobile-responsive goal-specific-section"
              style={{ paddingBottom: "120px" }} // Extra space for floating buttons
           >
                     {showBackToHealthCheck && (

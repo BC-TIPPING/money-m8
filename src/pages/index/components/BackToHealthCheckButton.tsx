@@ -19,11 +19,12 @@ const BackToHealthCheckButton: React.FC<BackToHealthCheckButtonProps> = ({
         variant="outline" 
         size="sm"
         onClick={onBackToHealthCheck}
-        className="flex items-center gap-2 hover:bg-blue-50"
+        className="flex items-center gap-2 hover:bg-blue-50 btn-touch focus-mobile"
       >
         <ArrowLeft className="h-4 w-4" />
         <Activity className="h-4 w-4" />
-        Back to Health Check
+        <span className="hidden sm:inline">Back to Health Check</span>
+        <span className="sm:hidden">Back</span>
       </Button>
     </div>
   );
