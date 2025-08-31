@@ -29,6 +29,7 @@ import InvestmentGrowthCalculator from "./index/InvestmentGrowthCalculator";
 import PostDebtInvestmentVisualization from "./index/components/PostDebtInvestmentVisualization";
 import PayOffHomeLoanCalculator from "./index/components/PayOffHomeLoanCalculator";
 import EditAssessmentButton from "./index/components/EditAssessmentButton";
+import BackToHealthCheckButton from "./index/components/BackToHealthCheckButton";
 import { useSectionPDFExport } from "./index/hooks/useSectionPDFExport";
 
 const DEBT_GOALS = ['Pay off home loan sooner', 'Reduce debt'];
@@ -137,7 +138,16 @@ export default function Index() {
     assessment.setStep(0);
   };
 
+  const handleBackToHealthCheck = () => {
+    // Return to Full Financial Health Check view
+    assessment.setGoals(['Full Financial Health Check']);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
   const hasDebtGoal = assessment.goals.some(g => DEBT_GOALS.includes(g));
+  
+  // Determine when to show back to health check button
+  const showBackToHealthCheck = isComplete && hasCompletedAssessment && !assessment.goals.includes('Full Financial Health Check');
 
   const totalMonthlyGrossIncome = calculateMonthlyAmount(assessment.incomeSources);
   const totalAnnualGrossIncome = totalMonthlyGrossIncome * 12;
@@ -245,6 +255,15 @@ export default function Index() {
           <div className="container mx-auto grid gap-6 px-4 py-6 sm:px-6 lg:grid-cols-2 lg:px-8 goal-specific-section"
              style={{ paddingBottom: "120px" }} // Extra space for floating buttons
           >
+                    {showBackToHealthCheck && (
+                      <div className="lg:col-span-2">
+                        <BackToHealthCheckButton 
+                          onBackToHealthCheck={handleBackToHealthCheck}
+                          showButton={showBackToHealthCheck}
+                        />
+                      </div>
+                    )}
+                    
                     {assessment.goals.includes('Buy a house') && (
                         <HouseBuyingCalculator 
                           assessmentData={assessment}
