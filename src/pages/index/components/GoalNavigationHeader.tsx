@@ -6,13 +6,17 @@ import { ArrowLeft, Target } from 'lucide-react';
 interface GoalNavigationHeaderProps {
   currentGoals: string[];
   onBackToGoals: () => void;
+  onBackToHealthCheck?: () => void;
   showBackButton?: boolean;
+  showBackToHealthCheck?: boolean;
 }
 
 const GoalNavigationHeader: React.FC<GoalNavigationHeaderProps> = ({
   currentGoals,
   onBackToGoals,
-  showBackButton = true
+  onBackToHealthCheck,
+  showBackButton = true,
+  showBackToHealthCheck = false
 }) => {
   if (!showBackButton || currentGoals.length === 0) return null;
 
@@ -32,12 +36,21 @@ const GoalNavigationHeader: React.FC<GoalNavigationHeaderProps> = ({
         <Button 
           variant="outline" 
           size="sm"
-          onClick={onBackToGoals}
+          onClick={showBackToHealthCheck ? onBackToHealthCheck : onBackToGoals}
           className="flex items-center gap-2 btn-touch focus-mobile"
         >
           <ArrowLeft className="h-4 w-4" />
-          <span className="hidden sm:inline">Change Goal</span>
-          <span className="sm:hidden">Change</span>
+          {showBackToHealthCheck ? (
+            <>
+              <span className="hidden sm:inline">Back to Health Check</span>
+              <span className="sm:hidden">Back</span>
+            </>
+          ) : (
+            <>
+              <span className="hidden sm:inline">Change Goal</span>
+              <span className="sm:hidden">Change</span>
+            </>
+          )}
         </Button>
       </div>
     </div>

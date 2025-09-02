@@ -179,7 +179,9 @@ export default function Index() {
           <GoalNavigationHeader 
             currentGoals={assessment.goals}
             onBackToGoals={handleChangeGoal}
+            onBackToHealthCheck={handleBackToHealthCheck}
             showBackButton={assessment.showAssessment}
+            showBackToHealthCheck={isComplete && !assessment.goals.includes('Full Financial Health Check') && hasCompletedAssessment}
           />
           
           {isComplete && (
