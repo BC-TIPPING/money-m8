@@ -139,26 +139,20 @@ export default function Index() {
   };
 
   const handleBackToHealthCheck = () => {
-    console.log('Back to health check clicked');
-    console.log('Before - showAssessment:', assessment.showAssessment);
-    console.log('Before - isComplete:', isComplete);
-    console.log('Before - step:', assessment.step);
-    console.log('Before - isFinished:', assessment.isFinished);
-    
-    // Return to Full Financial Health Check summary view
-    assessment.setGoals(['Full Financial Health Check']);
-    // Ensure we're on the completed assessment state
+    // Directly navigate to Full Financial Health Check without triggering goal change logic
+    // that might reset showAssessment
     assessment.setStep(questions.length);
     assessment.setIsFinished(true);
-    assessment.setShowAssessment(true); // Ensure assessment view stays active
     
+    // Only update goals if not already set to Full Financial Health Check
+    if (!assessment.goals.includes('Full Financial Health Check')) {
+      assessment.setGoals(['Full Financial Health Check']);
+    }
+    
+    // Force showAssessment to true after a brief delay to ensure it overrides any resets
     setTimeout(() => {
-      console.log('After - showAssessment:', assessment.showAssessment);
-      console.log('After - isComplete:', isComplete);
-      console.log('After - step:', assessment.step);
-      console.log('After - isFinished:', assessment.isFinished);
-      console.log('After - goals:', assessment.goals);
-    }, 100);
+      assessment.setShowAssessment(true);
+    }, 10);
     
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
