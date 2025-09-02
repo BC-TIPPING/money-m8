@@ -139,8 +139,11 @@ export default function Index() {
   };
 
   const handleBackToHealthCheck = () => {
-    // Return to Full Financial Health Check view
+    // Return to Full Financial Health Check summary view
     assessment.setGoals(['Full Financial Health Check']);
+    // Ensure we're on the completed assessment state
+    assessment.setStep(questions.length);
+    assessment.setIsFinished(true);
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
