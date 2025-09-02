@@ -144,6 +144,7 @@ export default function Index() {
     // Ensure we're on the completed assessment state
     assessment.setStep(questions.length);
     assessment.setIsFinished(true);
+    assessment.setShowAssessment(true); // Ensure assessment view stays active
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
