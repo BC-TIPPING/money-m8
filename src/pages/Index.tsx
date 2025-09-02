@@ -139,12 +139,27 @@ export default function Index() {
   };
 
   const handleBackToHealthCheck = () => {
+    console.log('Back to health check clicked');
+    console.log('Before - showAssessment:', assessment.showAssessment);
+    console.log('Before - isComplete:', isComplete);
+    console.log('Before - step:', assessment.step);
+    console.log('Before - isFinished:', assessment.isFinished);
+    
     // Return to Full Financial Health Check summary view
     assessment.setGoals(['Full Financial Health Check']);
     // Ensure we're on the completed assessment state
     assessment.setStep(questions.length);
     assessment.setIsFinished(true);
     assessment.setShowAssessment(true); // Ensure assessment view stays active
+    
+    setTimeout(() => {
+      console.log('After - showAssessment:', assessment.showAssessment);
+      console.log('After - isComplete:', isComplete);
+      console.log('After - step:', assessment.step);
+      console.log('After - isFinished:', assessment.isFinished);
+      console.log('After - goals:', assessment.goals);
+    }, 100);
+    
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
