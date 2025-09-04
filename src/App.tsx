@@ -13,7 +13,17 @@ import MaximiseSuperPage from "./pages/MaximiseSuper";
 import { AuthProvider } from "./contexts/AuthContext";
 import AuthPage from "./pages/AuthPage";
 
-const queryClient = new QueryClient();
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      staleTime: 0, // Data is immediately stale
+      gcTime: 1000 * 60 * 5, // Keep unused data in cache for 5 minutes
+      refetchOnWindowFocus: true, // Refetch when window gains focus
+      refetchOnMount: true, // Always refetch when component mounts
+      retry: 1, // Only retry failed requests once
+    },
+  },
+});
 
 const AppRoutes = () => {
     return (
