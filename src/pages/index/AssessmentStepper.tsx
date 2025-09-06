@@ -825,45 +825,20 @@ const AssessmentStepper: React.FC<AssessmentStepperProps> = (props) => {
             <AssessmentSummary {...props} />
           </div>
 
-          {aiSummary ? (
-            <>
-              <div className="mt-8 p-6 bg-blue-50 rounded-lg border border-blue-200">
-                <h3 className="text-xl font-bold text-blue-900 mb-4">Your Personalized Summary</h3>
-                <div className="text-sm text-gray-800 space-y-4">
-                  <ReactMarkdown
-                    remarkPlugins={[remarkGfm]}
-                    components={{
-                      p: ({node, ...props}) => <p className="leading-relaxed" {...props} />,
-                      ul: ({node, ...props}) => <ul className="list-disc list-inside space-y-1" {...props} />,
-                      strong: ({node, ...props}) => <strong className="font-semibold text-blue-900" {...props} />,
-                    }}
-                  >
-                    {aiSummary}
-                  </ReactMarkdown>
-                </div>
-              </div>
-              {chartData && chartData.debtReductionData && (
-                 <div className="mt-8">
-                    <DebtReductionChart data={chartData.debtReductionData} />
-                 </div>
-              )}
-            </>
-          ) : (
-            <div className="bg-blue-50 rounded-lg p-6 my-8 text-sm text-gray-700 text-left">
-              <strong className="text-blue-900 block mb-2">What's next?</strong>
-              <p>Get a personalized summary of your financial goals and a comparison to what you've entered.</p> 
-              <div className="text-center mt-6">
-                 <Button onClick={generateSummary} disabled={isGeneratingSummary}>
-                  {isGeneratingSummary ? (
-                    <>
-                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                      Generating...
-                    </>
-                  ) : "Generate My Financial Summary"}
-                </Button>
-              </div>
+          <div className="bg-blue-50 rounded-lg p-6 my-8 text-sm text-gray-700 text-left">
+            <strong className="text-blue-900 block mb-2">What's next?</strong>
+            <p>Get a personalized summary of your financial goals and a comparison to what you've entered.</p> 
+            <div className="text-center mt-6">
+               <Button onClick={generateSummary} disabled={isGeneratingSummary}>
+                {isGeneratingSummary ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Generating...
+                  </>
+                ) : "Generate My Financial Summary"}
+              </Button>
             </div>
-          )}
+          </div>
 
           <div className="text-center mt-8">
            <Button variant="outline" onClick={() => {
