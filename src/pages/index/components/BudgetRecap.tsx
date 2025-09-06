@@ -102,6 +102,9 @@ const BudgetRecap: React.FC<BudgetRecapProps> = ({
     <Card className="w-full card-mobile">
       <CardHeader>
         <CardTitle className="text-responsive-xl">Budget Analysis</CardTitle>
+        <p className="text-sm text-muted-foreground mt-2">
+          A personal budget analysis is important because it gives you a clear picture of where your money is going and how effectively you're managing it. By reviewing your income, expenses, and spending patterns, you can identify areas where you may be overspending, uncover opportunities to save, and set realistic financial goals. It also helps you prepare for unexpected expenses, avoid unnecessary debt, and build long-term stability. Ultimately, a budget analysis empowers you to take control of your finances, make informed decisions, and work toward the lifestyle and financial future you want with confidence.
+        </p>
       </CardHeader>
       <CardContent className="space-y-6 form-mobile">
 
