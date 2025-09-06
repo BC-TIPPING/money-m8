@@ -102,6 +102,24 @@ const BudgetRecap: React.FC<BudgetRecapProps> = ({
     <Card className="w-full card-mobile">
       <CardHeader>
         <CardTitle className="text-responsive-xl">Budget Overview</CardTitle>
+        <div className="bg-blue-50 p-4 rounded-lg mt-4">
+          <h4 className="font-semibold text-blue-900 mb-2 text-responsive-lg">Savings Rate Analysis</h4>
+          <p className="text-sm text-blue-800 mb-3">
+            Your savings rate is one of the most critical indicators of financial health and future wealth-building potential. 
+            A healthy savings rate of 10-20% creates the foundation for financial security by building an emergency fund, 
+            funding retirement goals, and providing capital for investments. It acts as a buffer against unexpected expenses 
+            and economic downturns while enabling you to take advantage of investment opportunities. The higher your savings rate, 
+            the faster you can achieve financial independence and the more resilient you become to financial shocks.
+          </p>
+          <div className="text-sm text-blue-800 space-y-1">
+            <p>• <strong>Current Rate:</strong> {savingsRate.toFixed(1)}%</p>
+            <p>• <strong>Target Rate:</strong> 10-20% (Financial experts recommend)</p>
+            <p>• <strong>Australian Average:</strong> 8.6% (ABS data)</p>
+            {monthlySurplus < 0 && (
+              <p className="text-red-600 font-medium">⚠️ You're spending more than you earn. Consider reviewing expenses.</p>
+            )}
+          </div>
+        </div>
       </CardHeader>
       <CardContent className="space-y-6 form-mobile">
 
@@ -142,25 +160,6 @@ const BudgetRecap: React.FC<BudgetRecapProps> = ({
               <li>• Excellent budget management! Your savings rate is above 20%</li>
             )}
           </ul>
-        </div>
-
-        <div className="bg-blue-50 p-4 rounded-lg">
-          <h4 className="font-semibold text-blue-900 mb-2 text-responsive-lg">Savings Rate Analysis</h4>
-          <p className="text-sm text-blue-800 mb-3">
-            Your savings rate is one of the most critical indicators of financial health and future wealth-building potential. 
-            A healthy savings rate of 10-20% creates the foundation for financial security by building an emergency fund, 
-            funding retirement goals, and providing capital for investments. It acts as a buffer against unexpected expenses 
-            and economic downturns while enabling you to take advantage of investment opportunities. The higher your savings rate, 
-            the faster you can achieve financial independence and the more resilient you become to financial shocks.
-          </p>
-          <div className="text-sm text-blue-800 space-y-1">
-            <p>• <strong>Current Rate:</strong> {savingsRate.toFixed(1)}%</p>
-            <p>• <strong>Target Rate:</strong> 10-20% (Financial experts recommend)</p>
-            <p>• <strong>Australian Average:</strong> 8.6% (ABS data)</p>
-            {monthlySurplus < 0 && (
-              <p className="text-red-600 font-medium">⚠️ You're spending more than you earn. Consider reviewing expenses.</p>
-            )}
-          </div>
         </div>
 
         <div className="space-y-3">
