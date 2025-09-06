@@ -105,6 +105,17 @@ const BudgetRecap: React.FC<BudgetRecapProps> = ({
         <p className="text-sm text-muted-foreground mt-2">
           A personal budget analysis is important because it gives you a clear picture of where your money is going and how effectively you're managing it. By reviewing your income, expenses, and spending patterns, you can identify areas where you may be overspending, uncover opportunities to save, and set realistic financial goals. It also helps you prepare for unexpected expenses, avoid unnecessary debt, and build long-term stability. Ultimately, a budget analysis empowers you to take control of your finances, make informed decisions, and work toward the lifestyle and financial future you want with confidence.
         </p>
+        <div className="mt-4 p-3 bg-purple-50 rounded-lg">
+          <p className="text-sm font-medium text-purple-900">
+            A healthy budget with 10-20% savings rate creates the foundation for wealth building and financial security.
+          </p>
+          <p className="text-sm text-purple-700 mt-1">
+            <strong>Current Savings Rate:</strong> {savingsRate.toFixed(1)}% • <strong>Target:</strong> 10-20% • <strong>Australian Average:</strong> 8.6%
+          </p>
+          {monthlySurplus < 0 && (
+            <p className="text-red-600 font-medium text-sm mt-2">⚠️ You're spending more than you earn. Consider reviewing expenses.</p>
+          )}
+        </div>
       </CardHeader>
       <CardContent className="space-y-6 form-mobile">
 
@@ -148,21 +159,6 @@ const BudgetRecap: React.FC<BudgetRecapProps> = ({
               <li>• Excellent budget management! Your savings rate is above 20%</li>
             )}
           </ul>
-        </div>
-
-        <div className="bg-blue-50 p-4 rounded-lg">
-          <h4 className="font-semibold text-blue-900 mb-2 text-responsive-lg">Savings Rate Analysis</h4>
-          <p className="text-sm text-blue-700 mb-3">
-            Your savings rate is one of the most important indicators of financial health and your ability to build wealth over time. It represents the percentage of your income that you're able to set aside for future goals, emergencies, and investments. A healthy savings rate provides financial security, creates opportunities for growth, and gives you flexibility to handle life's unexpected challenges. Monitoring this metric helps ensure you're on track to achieve your long-term financial objectives.
-          </p>
-          <div className="text-sm text-blue-800 space-y-1">
-            <p>• <strong>Current Rate:</strong> {savingsRate.toFixed(1)}%</p>
-            <p>• <strong>Target Rate:</strong> 10-20% (Financial experts recommend)</p>
-            <p>• <strong>Australian Average:</strong> 8.6% (ABS data)</p>
-            {monthlySurplus < 0 && (
-              <p className="text-red-600 font-medium">⚠️ You're spending more than you earn. Consider reviewing expenses.</p>
-            )}
-          </div>
         </div>
 
         <div className="space-y-3">
