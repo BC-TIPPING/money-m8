@@ -467,11 +467,6 @@ const FullFinancialHealthCheck: React.FC<FullFinancialHealthCheckProps> = ({
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
-          <div className="bg-purple-50 p-3 rounded-lg mb-4">
-             <p className="text-sm text-purple-800">
-               <strong>A healthy budget with 10-20% savings rate creates the foundation for wealth building and financial security.</strong> Current Savings Rate: {savingsRate.toFixed(1)}% • Target: 10-20% • Australian Average: 8.6%
-             </p>
-          </div>
           
           <BudgetRecap 
             totalMonthlyNetIncome={monthlyNetIncome}
