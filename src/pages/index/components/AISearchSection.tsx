@@ -105,7 +105,7 @@ const AISearchSection: React.FC<AISearchSectionProps> = ({ onGoalSuggested, asse
           Ask Your Personal Financial Assistant
         </h2>
         <p className="text-gray-600 text-lg mb-4">
-          Get instant Australian financial advice powered by AI
+          Get instant Australian financial recommendations powered by AI
         </p>
         {assessmentData && (
           <div className="bg-blue-50 rounded-lg p-4 border border-blue-200 max-w-2xl mx-auto">
