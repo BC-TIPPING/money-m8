@@ -102,6 +102,9 @@ const BudgetRecap: React.FC<BudgetRecapProps> = ({
     <Card className="w-full card-mobile">
       <CardHeader>
         <CardTitle className="text-responsive-xl">Budget Analysis</CardTitle>
+        <p className="text-sm text-muted-foreground mt-2">
+          A personal budget analysis is important because it gives you a clear picture of where your money is going and how effectively you're managing it. By reviewing your income, expenses, and spending patterns, you can identify areas where you may be overspending, uncover opportunities to save, and set realistic financial goals. It also helps you prepare for unexpected expenses, avoid unnecessary debt, and build long-term stability. Ultimately, a budget analysis empowers you to take control of your finances, make informed decisions, and work toward the lifestyle and financial future you want with confidence.
+        </p>
       </CardHeader>
       <CardContent className="space-y-6 form-mobile">
 
@@ -125,6 +128,9 @@ const BudgetRecap: React.FC<BudgetRecapProps> = ({
 
         <div className="bg-yellow-50 p-4 rounded-lg">
           <h4 className="font-semibold text-yellow-900 mb-2 text-responsive-lg">Budget Recommendations</h4>
+          <p className="text-sm text-yellow-700 mb-3">
+            These personalized recommendations are designed to help you optimize your spending and improve your financial health. By comparing your current spending patterns against established Australian budget guidelines, we can identify specific areas where small adjustments could lead to significant improvements in your overall financial position. These actionable insights help you prioritize which changes will have the biggest impact on your financial well-being.
+          </p>
           <ul className="text-sm text-yellow-800 space-y-1">
             {budgetAnalysis.filter(item => item.status === 'over').map((item, index) => (
               <li key={index}>• {item.category} is over-indexed by ${((item.actualPercentage - item.guideline.max) * totalMonthlyNetIncome / 100).toFixed(0)}/month</li>
@@ -146,6 +152,9 @@ const BudgetRecap: React.FC<BudgetRecapProps> = ({
 
         <div className="bg-blue-50 p-4 rounded-lg">
           <h4 className="font-semibold text-blue-900 mb-2 text-responsive-lg">Savings Rate Analysis</h4>
+          <p className="text-sm text-blue-700 mb-3">
+            Your savings rate is one of the most important indicators of financial health and your ability to build wealth over time. It represents the percentage of your income that you're able to set aside for future goals, emergencies, and investments. A healthy savings rate provides financial security, creates opportunities for growth, and gives you flexibility to handle life's unexpected challenges. Monitoring this metric helps ensure you're on track to achieve your long-term financial objectives.
+          </p>
           <div className="text-sm text-blue-800 space-y-1">
             <p>• <strong>Current Rate:</strong> {savingsRate.toFixed(1)}%</p>
             <p>• <strong>Target Rate:</strong> 10-20% (Financial experts recommend)</p>
@@ -158,6 +167,9 @@ const BudgetRecap: React.FC<BudgetRecapProps> = ({
 
         <div className="space-y-3">
           <h4 className="font-semibold text-responsive-lg">Budget Category Analysis</h4>
+          <p className="text-sm text-muted-foreground mb-4">
+            This detailed breakdown compares your spending in each category against recommended Australian budget guidelines. Understanding how your spending aligns with these benchmarks helps you identify which areas of your budget are well-managed and which might benefit from adjustment. Each category is evaluated to show whether you're spending within, above, or below the typical recommended range, giving you clear insight into your spending patterns and opportunities for optimization.
+          </p>
           <div className="space-y-2">
             {budgetAnalysis.map((item, index) => (
               <div key={index} className="flex items-center justify-between p-3 border rounded-lg">
