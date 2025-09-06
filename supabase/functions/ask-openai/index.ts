@@ -125,7 +125,7 @@ serve(async (req) => {
   }
 
   try {
-    const { question } = await req.json();
+    const { question, assessmentData } = await req.json();
 
     if (!question) {
       return new Response(JSON.stringify({ error: 'Question is required' }), {
@@ -136,6 +136,62 @@ serve(async (req) => {
 
     console.log(`Received Australian money question: ${question}`);
 
+    // Build personalized system prompt if assessment data is provided
+    let systemPrompt = australianFinancialPrompt;
+    let userQuestion = question.replace(' with assessment data', ''); // Clean the question
+    
+    if (assessmentData) {
+      // Calculate key financial metrics from assessment data
+      const monthlyIncome = assessmentData.incomeSources?.reduce((total, source) => {
+        const amount = parseFloat(source.amount) || 0;
+        const frequency = source.frequency?.toLowerCase();
+        let monthlyAmount = amount;
+        
+        if (frequency === 'yearly') monthlyAmount = amount / 12;
+        else if (frequency === 'fortnightly') monthlyAmount = amount * 26 / 12;
+        else if (frequency === 'weekly') monthlyAmount = amount * 52 / 12;
+        
+        return total + monthlyAmount;
+      }, 0) || 0;
+
+      const monthlyExpenses = assessmentData.expenseItems?.reduce((total, expense) => {
+        const amount = parseFloat(expense.amount) || 0;
+        const frequency = expense.frequency?.toLowerCase();
+        let monthlyAmount = amount;
+        
+        if (frequency === 'yearly') monthlyAmount = amount / 12;
+        else if (frequency === 'fortnightly') monthlyAmount = amount * 26 / 12;
+        else if (frequency === 'weekly') monthlyAmount = amount * 52 / 12;
+        
+        return total + monthlyAmount;
+      }, 0) || 0;
+
+      const totalDebt = assessmentData.debtDetails?.reduce((total, debt) => {
+        return total + (parseFloat(debt.balance) || 0);
+      }, 0) || 0;
+
+      const monthlySurplus = monthlyIncome - monthlyExpenses;
+      
+      // Add personalized context to system prompt
+      systemPrompt += `\n\nPersonalized Context for this user:
+- Age: ${assessmentData.age || 'Not specified'}
+- Location: Postcode ${assessmentData.postcode || 'Not specified'}
+- Monthly Income: $${monthlyIncome.toLocaleString()} (${monthlyIncome > 0 ? 'Good income level' : 'No income specified'})
+- Monthly Expenses: $${monthlyExpenses.toLocaleString()}
+- Monthly Surplus/Deficit: $${monthlySurplus.toLocaleString()} ${monthlySurplus > 0 ? '(Positive - good for savings/investments)' : '(Deficit - needs budget review)'}
+- Super Balance: $${assessmentData.superBalance?.toLocaleString() || 'Not specified'}
+- Total Debt: $${totalDebt.toLocaleString()} ${totalDebt > 0 ? '(Focus on debt management)' : '(Debt-free - great position)'}
+- Current Goals: ${assessmentData.goals?.join(', ') || 'Not specified'}
+- Insurance Coverage: ${assessmentData.insurances?.join(', ') || 'Not specified'}
+
+Key Financial Insights:
+${monthlySurplus > 0 ? `- You have a monthly surplus of $${monthlySurplus.toLocaleString()} which is excellent for building wealth` : '- Your expenses exceed income by $' + Math.abs(monthlySurplus).toLocaleString() + ' - budgeting should be your first priority'}
+${totalDebt > 0 ? `- You have $${totalDebt.toLocaleString()} in debt that needs consideration` : '- You\'re debt-free which puts you in a strong position'}
+${assessmentData.superBalance && assessmentData.age ? `- Your super balance of $${assessmentData.superBalance.toLocaleString()} at age ${assessmentData.age} ${assessmentData.superBalance < assessmentData.age * 5000 ? 'is below the recommended benchmark' : 'looks good for your age'}` : ''}
+
+Use this specific financial information to provide highly personalized, practical advice. Reference their actual numbers, surplus/deficit, and current situation directly in your response.`;
+    }
+
     const response = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
       headers: {
@@ -143,12 +199,12 @@ serve(async (req) => {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: 'gpt-4o-mini',
+        model: 'gpt-4o-mini', 
         messages: [
-          { role: 'system', content: australianFinancialPrompt },
-          { role: 'user', content: question }
+          { role: 'system', content: systemPrompt },
+          { role: 'user', content: userQuestion }
         ],
-        max_tokens: 400,
+        max_tokens: 500, // Increased for more detailed personalized responses
         temperature: 0.7,
       }),
     });
@@ -171,7 +227,7 @@ serve(async (req) => {
     answer += '\n\nRemember mate, this is just AI-generated guidance to get you thinking. It\'s not personal advice, so chat with a qualified professional before making any big money moves.';
     
     // Analyze the question to suggest a relevant goal
-    const suggestedGoal = analyzeQuestionForGoal(question);
+    const suggestedGoal = analyzeQuestionForGoal(userQuestion);
 
     return new Response(JSON.stringify({ 
       answer, 
