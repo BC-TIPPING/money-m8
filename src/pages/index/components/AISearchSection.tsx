@@ -137,17 +137,6 @@ const AISearchSection: React.FC<AISearchSectionProps> = ({ onGoalSuggested, asse
             )}
           </Button>
         </div>
-        
-        <Select onValueChange={(value) => setQuestion(value)}>
-          <SelectTrigger className="bg-white border-gray-300 text-gray-900 w-full h-9 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
-            <SelectValue placeholder="Common financial questions..." />
-          </SelectTrigger>
-          <SelectContent className="bg-white z-50">
-            {australianQuestions.map((q, index) => (
-              <SelectItem key={index} value={q} className="text-xs sm:text-sm">{q}</SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
       </form>
 
       {isLoading && (
