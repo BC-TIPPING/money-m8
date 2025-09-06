@@ -36,7 +36,6 @@ const AISearchSection: React.FC<AISearchSectionProps> = ({ onGoalSuggested, asse
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log('Form submitted with question:', question);
     if (!question.trim()) return;
 
     setIsLoading(true);
@@ -44,11 +43,6 @@ const AISearchSection: React.FC<AISearchSectionProps> = ({ onGoalSuggested, asse
     setSuggestedGoal(null);
 
     try {
-      console.log('Calling ask-openai function with:', { 
-        question,
-        assessmentData: assessmentData ? 'present' : 'not present'
-      });
-      
       const { data, error } = await supabase.functions.invoke('ask-openai', {
         body: { 
           question,
@@ -65,17 +59,22 @@ const AISearchSection: React.FC<AISearchSectionProps> = ({ onGoalSuggested, asse
         }
       });
 
-      console.log('Supabase function response:', { data, error });
-
       if (error) throw error;
 
       const answerText = data?.answer || 'Sorry, I couldn\'t process your question.';
-      console.log('Setting answer:', answerText);
       setAnswer(answerText);
       
       if (data?.suggestedGoal) {
         setSuggestedGoal(data.suggestedGoal);
       }
+
+      // Scroll to answer when it appears
+      setTimeout(() => {
+        const answerElement = document.querySelector('[data-answer-section]');
+        if (answerElement) {
+          answerElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      }, 100);
 
       // Save the question and answer to the database
       try {
@@ -149,26 +148,26 @@ const AISearchSection: React.FC<AISearchSectionProps> = ({ onGoalSuggested, asse
       </form>
 
       {isLoading && (
-        <Card className="bg-white/10 backdrop-blur-md border-white/20 max-w-xl mx-auto">
+        <Card className="bg-white border-gray-200 shadow-lg max-w-xl mx-auto mt-4">
           <CardContent className="p-4">
-            <div className="flex items-center gap-2 text-white">
+            <div className="flex items-center gap-2 text-gray-600">
               <Loader2 className="h-4 w-4 animate-spin" />
-              <span className="text-sm">Getting Australian financial knowledge...</span>
+              <span className="text-sm">Getting personalized financial recommendations...</span>
             </div>
           </CardContent>
         </Card>
       )}
 
       {answer && (
-        <div className="w-full max-w-2xl mx-auto mt-6 mb-8">
-          <Card className="bg-white/10 backdrop-blur-md border-white/20 min-h-fit">
+        <div className="w-full max-w-2xl mx-auto mt-6 mb-8" data-answer-section>
+          <Card className="bg-white border-gray-200 shadow-lg">
             <CardContent className="p-6">
-              <p className="text-center text-xs text-white/60 italic mb-4">
-                Concise expert advice with practical examples
+              <p className="text-center text-xs text-gray-500 italic mb-4">
+                Personalized financial recommendations
               </p>
-              <div className="text-white space-y-4">
+              <div className="text-gray-800 space-y-4">
                 {answer.split('\n\n').map((paragraph, index) => (
-                  <p key={index} className="text-white/95 leading-relaxed text-sm whitespace-pre-wrap">
+                  <p key={index} className="text-gray-700 leading-relaxed text-sm whitespace-pre-wrap">
                     {paragraph}
                   </p>
                 ))}
