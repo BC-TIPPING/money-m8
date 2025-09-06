@@ -814,17 +814,6 @@ const AssessmentStepper: React.FC<AssessmentStepperProps> = (props) => {
     return (
       <div className="w-full min-h-screen bg-gray-50 flex items-center justify-center py-12">
         <CenteredCard>
-          <div className="text-center pb-8">
-            <h2 className="text-3xl font-bold mb-2 text-gray-900">Thank You!</h2>
-            <p className="text-gray-600 mb-6">
-              Your financial assessment is complete. Here is a summary of your responses.
-            </p>
-          </div>
-
-          <div className="max-h-[40vh] overflow-y-auto p-4 bg-white rounded-lg border border-gray-200">
-            <AssessmentSummary {...props} />
-          </div>
-
           <div className="bg-blue-50 rounded-lg p-6 my-8 text-sm text-gray-700 text-left">
             <strong className="text-blue-900 block mb-2">What's next?</strong>
             <p>Get a personalized summary of your financial goals and a comparison to what you've entered.</p> 
