@@ -14,6 +14,7 @@ import BudgetRecap from "./components/BudgetRecap";
 import DebtSummaryTable from "./components/DebtSummaryTable";
 import SuperKPICards from "./components/SuperKPICards";
 import PostDebtInvestmentVisualization from "./components/PostDebtInvestmentVisualization";
+import HealthCheckAISearchSection from "./components/HealthCheckAISearchSection";
 import { calculateMonthlyAmount, calculateAustralianIncomeTax } from "@/lib/financialCalculations";
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
@@ -1256,6 +1257,30 @@ const FullFinancialHealthCheck: React.FC<FullFinancialHealthCheckProps> = ({
               </div>
             </div>
           </div>
+        </CardContent>
+      </Card>
+
+      {/* AI Financial Assistant */}
+      <Card>
+        <CardContent className="p-8">
+          <HealthCheckAISearchSection 
+            assessmentData={{
+              age,
+              postcode,
+              superBalance,
+              debtTypes,
+              debtDetails,
+              incomeSources,
+              expenseItems,
+              goals,
+              insurances,
+              assets
+            }}
+            onGoalSuggested={(goal) => {
+              const event = new CustomEvent('selectGoal', { detail: goal });
+              window.dispatchEvent(event);
+            }}
+          />
         </CardContent>
       </Card>
     </div>
