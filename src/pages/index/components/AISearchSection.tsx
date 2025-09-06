@@ -135,9 +135,6 @@ const AISearchSection: React.FC<AISearchSectionProps> = ({ onGoalSuggested }) =>
         <div className="w-full max-w-2xl mx-auto mt-6 mb-8">
           <Card className="bg-white/10 backdrop-blur-md border-white/20 min-h-fit">
             <CardContent className="p-6">
-              <p className="text-center text-xs text-white/60 italic mb-4">
-                Concise expert advice with practical examples
-              </p>
               <div className="text-white space-y-4">
                 {answer.split('\n\n').map((paragraph, index) => (
                   <p key={index} className="text-white/95 leading-relaxed text-sm whitespace-pre-wrap">
