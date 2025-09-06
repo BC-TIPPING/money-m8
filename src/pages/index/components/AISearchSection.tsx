@@ -99,6 +99,23 @@ const AISearchSection: React.FC<AISearchSectionProps> = ({ onGoalSuggested, asse
 
   return (
     <div className="w-full mb-4">
+      {/* Section Header */}
+      <div className="max-w-4xl mx-auto text-center mb-8">
+        <h2 className="text-3xl font-bold text-gray-900 mb-4">
+          Ask Your Personal Financial Assistant
+        </h2>
+        <p className="text-gray-600 text-lg mb-4">
+          Get instant Australian financial advice powered by AI
+        </p>
+        {assessmentData && (
+          <div className="bg-blue-50 rounded-lg p-4 border border-blue-200 max-w-2xl mx-auto">
+            <p className="text-sm text-blue-800">
+              💡 <strong>Personalized for You:</strong> This AI assistant has access to your assessment responses and will provide tailored advice based on your income, expenses, debts, goals, and financial situation.
+            </p>
+          </div>
+        )}
+      </div>
+      
       <form onSubmit={handleSubmit} className="space-y-2 max-w-xl mx-auto">
         <div className="flex gap-2">
           <Input
