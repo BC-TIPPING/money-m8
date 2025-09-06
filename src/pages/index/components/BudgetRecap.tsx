@@ -123,34 +123,6 @@ const BudgetRecap: React.FC<BudgetRecapProps> = ({
           </div>
         </div>
 
-        <div className="space-y-3">
-          <h4 className="font-semibold text-responsive-lg">Budget Category Analysis</h4>
-          <div className="space-y-2">
-            {budgetAnalysis.map((item, index) => (
-              <div key={index} className="flex items-center justify-between p-3 border rounded-lg">
-                <div className="flex items-center gap-3">
-                  {getStatusIcon(item.status)}
-                  <div>
-                    <p className="font-medium text-responsive">{item.category}</p>
-                    <p className="text-sm text-muted-foreground">
-                      ${item.actualSpending.toFixed(0)} ({item.actualPercentage.toFixed(1)}%)
-                    </p>
-                  </div>
-                </div>
-                <div className="text-right">
-                  <Badge className={getStatusColor(item.status)}>
-                    {item.status === 'good' ? (item.category === 'Savings & Investments' && item.actualPercentage > item.guideline.max ? 'Excellent' : 'On Track') : 
-                     item.status === 'under' ? 'Under' : 'Over'}
-                  </Badge>
-                  <p className="text-xs text-muted-foreground mt-1">
-                    Target: {item.guideline.min}-{item.guideline.max}%
-                  </p>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-
         <div className="bg-yellow-50 p-4 rounded-lg">
           <h4 className="font-semibold text-yellow-900 mb-2 text-responsive-lg">Budget Recommendations</h4>
           <ul className="text-sm text-yellow-800 space-y-1">
@@ -181,6 +153,34 @@ const BudgetRecap: React.FC<BudgetRecapProps> = ({
             {monthlySurplus < 0 && (
               <p className="text-red-600 font-medium">⚠️ You're spending more than you earn. Consider reviewing expenses.</p>
             )}
+          </div>
+        </div>
+
+        <div className="space-y-3">
+          <h4 className="font-semibold text-responsive-lg">Budget Category Analysis</h4>
+          <div className="space-y-2">
+            {budgetAnalysis.map((item, index) => (
+              <div key={index} className="flex items-center justify-between p-3 border rounded-lg">
+                <div className="flex items-center gap-3">
+                  {getStatusIcon(item.status)}
+                  <div>
+                    <p className="font-medium text-responsive">{item.category}</p>
+                    <p className="text-sm text-muted-foreground">
+                      ${item.actualSpending.toFixed(0)} ({item.actualPercentage.toFixed(1)}%)
+                    </p>
+                  </div>
+                </div>
+                <div className="text-right">
+                  <Badge className={getStatusColor(item.status)}>
+                    {item.status === 'good' ? (item.category === 'Savings & Investments' && item.actualPercentage > item.guideline.max ? 'Excellent' : 'On Track') : 
+                     item.status === 'under' ? 'Under' : 'Over'}
+                  </Badge>
+                  <p className="text-xs text-muted-foreground mt-1">
+                    Target: {item.guideline.min}-{item.guideline.max}%
+                  </p>
+                </div>
+              </div>
+            ))}
           </div>
         </div>
       </CardContent>
