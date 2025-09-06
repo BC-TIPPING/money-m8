@@ -531,24 +531,55 @@ const FullFinancialHealthCheck: React.FC<FullFinancialHealthCheckProps> = ({
                 <strong>The 4% rule is a time-tested retirement withdrawal strategy.</strong> It suggests you can safely withdraw 4% of your investment portfolio annually in retirement without running out of money over a 30-year period. This rule is based on historical market performance and inflation data.
               </p>
               
-              {superBalance && superBalance > 0 ? (
-                <div className="bg-white p-3 rounded-lg border border-blue-200">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                      <p className="text-xs text-blue-600 font-medium">Your Current Super Balance</p>
-                      <p className="text-xl font-bold text-blue-900">${superBalance.toLocaleString()}</p>
+              {superBalance && superBalance > 0 && age ? (() => {
+                // Calculate projections using same logic as SuperKPICards
+                const retirementYears = Math.max(67 - age, 0);
+                const monthlyGrowthRate = 0.07 / 12;
+                const months = retirementYears * 12;
+                const annualEmployerContrib = annualIncome * 0.115;
+                
+                const currentGrowthFactor = superBalance > 0 ? Math.pow(1 + monthlyGrowthRate, months) : 1;
+                const annuityFactor = months > 0 ? ((Math.pow(1 + monthlyGrowthRate, months) - 1) / monthlyGrowthRate) : 0;
+                
+                const futureValueCurrent = superBalance * currentGrowthFactor + (annualEmployerContrib / 12) * annuityFactor;
+                const additionalContrib = annualIncome * 0.10;
+                const totalAnnualContrib = annualEmployerContrib + additionalContrib;
+                const futureValueExtra = superBalance * currentGrowthFactor + (totalAnnualContrib / 12) * annuityFactor;
+                
+                const currentAnnualIncome = superBalance * 0.04;
+                const projectedAnnualIncome = futureValueCurrent * 0.04;
+                const projectedAnnualIncomeExtra = futureValueExtra * 0.04;
+                
+                return (
+                  <div className="bg-white p-3 rounded-lg border border-blue-200">
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                      <div>
+                        <p className="text-xs text-blue-600 font-medium">Current Balance (4% Rule)</p>
+                        <p className="text-lg font-bold text-blue-900">${currentAnnualIncome.toLocaleString()}/year</p>
+                        <p className="text-xs text-blue-600">≈ ${Math.round(currentAnnualIncome / 12).toLocaleString()}/month</p>
+                      </div>
+                      <div>
+                        <p className="text-xs text-blue-600 font-medium">At Retirement (Age 67)</p>
+                        <p className="text-lg font-bold text-emerald-600">${projectedAnnualIncome.toLocaleString()}/year</p>
+                        <p className="text-xs text-blue-600">≈ ${Math.round(projectedAnnualIncome / 12).toLocaleString()}/month</p>
+                      </div>
+                      <div>
+                        <p className="text-xs text-blue-600 font-medium">With +10% Salary Sacrifice</p>
+                        <p className="text-lg font-bold text-purple-600">${projectedAnnualIncomeExtra.toLocaleString()}/year</p>
+                        <p className="text-xs text-blue-600">≈ ${Math.round(projectedAnnualIncomeExtra / 12).toLocaleString()}/month</p>
+                      </div>
                     </div>
-                    <div>
-                      <p className="text-xs text-blue-600 font-medium">Annual Income at 4% Rule</p>
-                      <p className="text-xl font-bold text-emerald-600">${(superBalance * 0.04).toLocaleString()}</p>
-                      <p className="text-xs text-blue-600">≈ ${Math.round((superBalance * 0.04) / 12).toLocaleString()}/month</p>
+                    <div className="mt-3 pt-3 border-t border-blue-200">
+                      <p className="text-xs text-blue-700">
+                        <strong>Additional income from +10% contributions:</strong> ${(projectedAnnualIncomeExtra - projectedAnnualIncome).toLocaleString()}/year more in retirement
+                      </p>
                     </div>
                   </div>
-                </div>
-              ) : (
+                );
+              })() : (
                 <div className="bg-white p-3 rounded-lg border border-blue-200">
                   <p className="text-sm text-blue-700 italic">
-                    Enter your super balance in the assessment to see your potential annual retirement income using the 4% rule.
+                    Enter your super balance and age in the assessment to see your potential annual retirement income using the 4% rule.
                   </p>
                 </div>
               )}
