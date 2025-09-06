@@ -101,7 +101,6 @@ const BudgetRecap: React.FC<BudgetRecapProps> = ({
   return (
     <Card className="w-full card-mobile">
       <CardHeader>
-        <CardTitle className="text-responsive-xl">Budget Overview</CardTitle>
         <div className="bg-blue-50 p-4 rounded-lg mt-4">
           <h4 className="font-semibold text-blue-900 mb-2 text-responsive-lg">Savings Rate Analysis</h4>
           <p className="text-sm text-blue-800 mb-3">
