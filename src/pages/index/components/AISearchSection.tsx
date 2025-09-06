@@ -36,6 +36,7 @@ const AISearchSection: React.FC<AISearchSectionProps> = ({ onGoalSuggested, asse
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    console.log('Form submitted with question:', question);
     if (!question.trim()) return;
 
     setIsLoading(true);
@@ -43,6 +44,11 @@ const AISearchSection: React.FC<AISearchSectionProps> = ({ onGoalSuggested, asse
     setSuggestedGoal(null);
 
     try {
+      console.log('Calling ask-openai function with:', { 
+        question,
+        assessmentData: assessmentData ? 'present' : 'not present'
+      });
+      
       const { data, error } = await supabase.functions.invoke('ask-openai', {
         body: { 
           question,
@@ -59,12 +65,15 @@ const AISearchSection: React.FC<AISearchSectionProps> = ({ onGoalSuggested, asse
         }
       });
 
+      console.log('Supabase function response:', { data, error });
+
       if (error) throw error;
 
-      const answerText = data.answer || 'Sorry, I couldn\'t process your question.';
+      const answerText = data?.answer || 'Sorry, I couldn\'t process your question.';
+      console.log('Setting answer:', answerText);
       setAnswer(answerText);
       
-      if (data.suggestedGoal) {
+      if (data?.suggestedGoal) {
         setSuggestedGoal(data.suggestedGoal);
       }
 
