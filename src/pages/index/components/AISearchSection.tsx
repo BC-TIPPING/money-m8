@@ -122,7 +122,7 @@ const AISearchSection: React.FC<AISearchSectionProps> = ({ onGoalSuggested, asse
             placeholder="Ask me anything"
             value={question}
             onChange={(e) => setQuestion(e.target.value)}
-            className="bg-white/10 border-white/20 text-white placeholder:text-white/50 backdrop-blur-md flex-1 h-9 text-sm"
+            className="bg-white border-gray-300 text-gray-900 placeholder:text-gray-500 flex-1 h-9 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
             disabled={isLoading}
           />
           <Button 
@@ -139,7 +139,7 @@ const AISearchSection: React.FC<AISearchSectionProps> = ({ onGoalSuggested, asse
         </div>
         
         <Select onValueChange={(value) => setQuestion(value)}>
-          <SelectTrigger className="bg-white/10 border-white/20 text-white backdrop-blur-md w-full h-9 text-sm">
+          <SelectTrigger className="bg-white border-gray-300 text-gray-900 w-full h-9 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
             <SelectValue placeholder="Common financial questions..." />
           </SelectTrigger>
           <SelectContent className="bg-white z-50">
