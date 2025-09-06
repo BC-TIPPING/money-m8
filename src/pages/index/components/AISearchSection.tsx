@@ -11,10 +11,9 @@ import GoalSuggestion from "./GoalSuggestion";
 
 interface AISearchSectionProps {
   onGoalSuggested: (goal: string) => void;
-  assessmentData?: any;
 }
 
-const AISearchSection: React.FC<AISearchSectionProps> = ({ onGoalSuggested, assessmentData }) => {
+const AISearchSection: React.FC<AISearchSectionProps> = ({ onGoalSuggested }) => {
   const { user } = useAuth();
   const [question, setQuestion] = useState('');
   const [answer, setAnswer] = useState('');
@@ -44,37 +43,17 @@ const AISearchSection: React.FC<AISearchSectionProps> = ({ onGoalSuggested, asse
 
     try {
       const { data, error } = await supabase.functions.invoke('ask-openai', {
-        body: { 
-          question,
-          assessmentData: assessmentData ? {
-            incomeSources: assessmentData.incomeSources,
-            expenseItems: assessmentData.expenseItems,
-            debtDetails: assessmentData.debtDetails,
-            goals: assessmentData.goals,
-            age: assessmentData.age,
-            superBalance: assessmentData.superBalance,
-            assets: assessmentData.assets,
-            postcode: assessmentData.postcode
-          } : null
-        }
+        body: { question }
       });
 
       if (error) throw error;
 
-      const answerText = data?.answer || 'Sorry, I couldn\'t process your question.';
+      const answerText = data.answer || 'Sorry, I couldn\'t process your question.';
       setAnswer(answerText);
       
-      if (data?.suggestedGoal) {
+      if (data.suggestedGoal) {
         setSuggestedGoal(data.suggestedGoal);
       }
-
-      // Scroll to answer when it appears
-      setTimeout(() => {
-        const answerElement = document.querySelector('[data-answer-section]');
-        if (answerElement) {
-          answerElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        }
-      }, 100);
 
       // Save the question and answer to the database
       try {
@@ -107,30 +86,13 @@ const AISearchSection: React.FC<AISearchSectionProps> = ({ onGoalSuggested, asse
 
   return (
     <div className="w-full mb-4">
-      {/* Section Header */}
-      <div className="max-w-4xl mx-auto text-center mb-8">
-        <h2 className="text-3xl font-bold text-gray-900 mb-4">
-          Ask Your Personal Financial Assistant
-        </h2>
-        <p className="text-gray-600 text-lg mb-4">
-          Get instant Australian financial recommendations powered by AI
-        </p>
-        {assessmentData && (
-          <div className="bg-blue-50 rounded-lg p-4 border border-blue-200 max-w-2xl mx-auto">
-            <p className="text-sm text-blue-800">
-              💡 <strong>Personalized for You:</strong> This AI assistant has access to your assessment responses and will provide tailored advice based on your income, expenses, debts, goals, and financial situation.
-            </p>
-          </div>
-        )}
-      </div>
-      
       <form onSubmit={handleSubmit} className="space-y-2 max-w-xl mx-auto">
         <div className="flex gap-2">
           <Input
             placeholder="Ask me anything"
             value={question}
             onChange={(e) => setQuestion(e.target.value)}
-            className="bg-white border-gray-300 text-gray-900 placeholder:text-gray-500 flex-1 h-9 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            className="bg-white/10 border-white/20 text-white placeholder:text-white/50 backdrop-blur-md flex-1 h-9 text-sm"
             disabled={isLoading}
           />
           <Button 
@@ -145,29 +107,40 @@ const AISearchSection: React.FC<AISearchSectionProps> = ({ onGoalSuggested, asse
             )}
           </Button>
         </div>
+        
+        <Select onValueChange={(value) => setQuestion(value)}>
+          <SelectTrigger className="bg-white/10 border-white/20 text-white backdrop-blur-md w-full h-9 text-sm">
+            <SelectValue placeholder="Common financial questions..." />
+          </SelectTrigger>
+          <SelectContent className="bg-white z-50">
+            {australianQuestions.map((q, index) => (
+              <SelectItem key={index} value={q} className="text-xs sm:text-sm">{q}</SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
       </form>
 
       {isLoading && (
-        <Card className="bg-white border-gray-200 shadow-lg max-w-xl mx-auto mt-4">
+        <Card className="bg-white/10 backdrop-blur-md border-white/20 max-w-xl mx-auto">
           <CardContent className="p-4">
-            <div className="flex items-center gap-2 text-gray-600">
+            <div className="flex items-center gap-2 text-white">
               <Loader2 className="h-4 w-4 animate-spin" />
-              <span className="text-sm">Getting personalized financial recommendations...</span>
+              <span className="text-sm">Getting Australian financial knowledge...</span>
             </div>
           </CardContent>
         </Card>
       )}
 
       {answer && (
-        <div className="w-full max-w-2xl mx-auto mt-6 mb-8" data-answer-section>
-          <Card className="bg-white border-gray-200 shadow-lg">
+        <div className="w-full max-w-2xl mx-auto mt-6 mb-8">
+          <Card className="bg-white/10 backdrop-blur-md border-white/20 min-h-fit">
             <CardContent className="p-6">
-              <p className="text-center text-xs text-gray-500 italic mb-4">
-                Personalized financial recommendations
+              <p className="text-center text-xs text-white/60 italic mb-4">
+                Concise expert advice with practical examples
               </p>
-              <div className="text-gray-800 space-y-4">
+              <div className="text-white space-y-4">
                 {answer.split('\n\n').map((paragraph, index) => (
-                  <p key={index} className="text-gray-700 leading-relaxed text-sm whitespace-pre-wrap">
+                  <p key={index} className="text-white/95 leading-relaxed text-sm whitespace-pre-wrap">
                     {paragraph}
                   </p>
                 ))}
