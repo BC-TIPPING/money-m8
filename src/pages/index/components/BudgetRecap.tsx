@@ -102,20 +102,15 @@ const BudgetRecap: React.FC<BudgetRecapProps> = ({
     <Card className="w-full card-mobile">
       <CardHeader>
         <CardTitle className="text-responsive-xl">Budget Analysis</CardTitle>
+        <p className="text-sm text-purple-700 mt-2">
+          A healthy budget with 10-20% savings rate creates the foundation for wealth building and financial security. <strong>Current Savings Rate:</strong> {savingsRate.toFixed(1)}% • <strong>Target:</strong> 10-20% • <strong>Australian Average:</strong> 8.6%
+          {monthlySurplus < 0 && (
+            <span className="text-red-600 font-medium ml-2">⚠️ You're spending more than you earn. Consider reviewing expenses.</span>
+          )}
+        </p>
         <p className="text-sm text-muted-foreground mt-2">
           A personal budget analysis is important because it gives you a clear picture of where your money is going and how effectively you're managing it. By reviewing your income, expenses, and spending patterns, you can identify areas where you may be overspending, uncover opportunities to save, and set realistic financial goals. It also helps you prepare for unexpected expenses, avoid unnecessary debt, and build long-term stability. Ultimately, a budget analysis empowers you to take control of your finances, make informed decisions, and work toward the lifestyle and financial future you want with confidence.
         </p>
-        <div className="mt-4 p-3 bg-purple-50 rounded-lg">
-          <p className="text-sm font-medium text-purple-900">
-            A healthy budget with 10-20% savings rate creates the foundation for wealth building and financial security.
-          </p>
-          <p className="text-sm text-purple-700 mt-1">
-            <strong>Current Savings Rate:</strong> {savingsRate.toFixed(1)}% • <strong>Target:</strong> 10-20% • <strong>Australian Average:</strong> 8.6%
-          </p>
-          {monthlySurplus < 0 && (
-            <p className="text-red-600 font-medium text-sm mt-2">⚠️ You're spending more than you earn. Consider reviewing expenses.</p>
-          )}
-        </div>
       </CardHeader>
       <CardContent className="space-y-6 form-mobile">
 
