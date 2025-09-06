@@ -519,6 +519,47 @@ const FullFinancialHealthCheck: React.FC<FullFinancialHealthCheckProps> = ({
               <p><strong>+10% Salary Sacrifice Impact:</strong> Adding 10% of your salary to super would boost your retirement income by ${age && superBalance ? `${((annualIncome * 0.10 * Math.pow(1.07, Math.max(67 - age, 0)) * 0.04) / 1000).toFixed(0)}k` : 'N/A'} annually. Out of a ${(annualIncome * 0.10 / 12).toLocaleString()}/month contribution, approximately ${Math.round((annualIncome * 0.10 / 12) * (annualIncome > 120000 ? 0.37 : annualIncome > 45000 ? 0.30 : 0.19)).toLocaleString()} would be tax savings, making your actual cost only ${Math.round((annualIncome * 0.10 / 12) * (1 - (annualIncome > 120000 ? 0.37 : annualIncome > 45000 ? 0.30 : 0.19))).toLocaleString()}/month.</p>
             </div>
           </div>
+
+          {/* 4% Rule Explanation */}
+          <div className="bg-gradient-to-r from-blue-100 to-indigo-100 p-4 rounded-lg border border-blue-200">
+            <h4 className="font-semibold text-blue-900 mb-3 flex items-center gap-2">
+              <Target className="h-5 w-5" />
+              The 4% Rule - Your Retirement Income Calculator
+            </h4>
+            <div className="space-y-3">
+              <p className="text-sm text-blue-800">
+                <strong>The 4% rule is a time-tested retirement withdrawal strategy.</strong> It suggests you can safely withdraw 4% of your investment portfolio annually in retirement without running out of money over a 30-year period. This rule is based on historical market performance and inflation data.
+              </p>
+              
+              {superBalance && superBalance > 0 ? (
+                <div className="bg-white p-3 rounded-lg border border-blue-200">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <p className="text-xs text-blue-600 font-medium">Your Current Super Balance</p>
+                      <p className="text-xl font-bold text-blue-900">${superBalance.toLocaleString()}</p>
+                    </div>
+                    <div>
+                      <p className="text-xs text-blue-600 font-medium">Annual Income at 4% Rule</p>
+                      <p className="text-xl font-bold text-emerald-600">${(superBalance * 0.04).toLocaleString()}</p>
+                      <p className="text-xs text-blue-600">≈ ${Math.round((superBalance * 0.04) / 12).toLocaleString()}/month</p>
+                    </div>
+                  </div>
+                </div>
+              ) : (
+                <div className="bg-white p-3 rounded-lg border border-blue-200">
+                  <p className="text-sm text-blue-700 italic">
+                    Enter your super balance in the assessment to see your potential annual retirement income using the 4% rule.
+                  </p>
+                </div>
+              )}
+              
+              <div className="text-xs text-blue-700 space-y-1">
+                <p><strong>How it works:</strong> If you have $1 million in super, you could withdraw $40,000 annually (4%) while preserving your capital for inflation and market fluctuations.</p>
+                <p><strong>Why 4%:</strong> This rate historically allows your portfolio to grow enough to maintain purchasing power while providing steady income throughout retirement.</p>
+                <p><strong>Australian context:</strong> Combined with Age Pension (if eligible), this can provide a comfortable retirement income for most Australians.</p>
+              </div>
+            </div>
+          </div>
         </CardContent>
       </Card>
 
