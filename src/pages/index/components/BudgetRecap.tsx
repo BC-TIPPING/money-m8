@@ -102,6 +102,9 @@ const BudgetRecap: React.FC<BudgetRecapProps> = ({
     <Card className="w-full card-mobile">
       <CardHeader>
         <CardTitle className="text-responsive-xl">Budget Analysis</CardTitle>
+        <div className="mt-4 text-sm text-muted-foreground">
+          <p>An income analysis is important because it helps you understand the sources, stability, and growth potential of your earnings. By breaking down where your income comes from—such as wages, investments, or side businesses—you can evaluate how reliable and sustainable each stream is. This analysis also highlights opportunities to increase earnings, diversify income sources, or plan for periods of irregular cash flow. Understanding your income in detail allows you to align spending, saving, and investing decisions with your financial capacity, ensuring you live within your means while still building toward long-term financial security.</p>
+        </div>
       </CardHeader>
       <CardContent className="space-y-6 form-mobile">
 
@@ -146,10 +149,13 @@ const BudgetRecap: React.FC<BudgetRecapProps> = ({
 
         <div className="bg-blue-50 p-4 rounded-lg">
           <h4 className="font-semibold text-blue-900 mb-2 text-responsive-lg">Savings Rate Analysis</h4>
-          <div className="text-sm text-blue-800 space-y-1">
-            <p>• <strong>Current Rate:</strong> {savingsRate.toFixed(1)}%</p>
-            <p>• <strong>Target Rate:</strong> 10-20% (Financial experts recommend)</p>
-            <p>• <strong>Australian Average:</strong> 8.6% (ABS data)</p>
+          <div className="text-sm text-blue-800 space-y-3">
+            <p>A healthy budget with 10-20% savings rate creates the foundation for wealth building and financial security.</p>
+            <div className="space-y-1">
+              <p>• <strong>Current Savings Rate:</strong> {savingsRate.toFixed(1)}%</p>
+              <p>• <strong>Target:</strong> 10-20%</p>
+              <p>• <strong>Australian Average:</strong> 8.6%</p>
+            </div>
             {monthlySurplus < 0 && (
               <p className="text-red-600 font-medium">⚠️ You're spending more than you earn. Consider reviewing expenses.</p>
             )}
