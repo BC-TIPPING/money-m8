@@ -408,9 +408,14 @@ const FullFinancialHealthCheck: React.FC<FullFinancialHealthCheckProps> = ({
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="bg-emerald-50 p-3 rounded-lg mb-4">
+            <p className="text-sm text-emerald-800 mb-2">
+              <strong>An income analysis is important because it helps you understand the sources, stability, and growth potential of your earnings.</strong> 
+              By breaking down where your income comes from—such as wages, investments, or side businesses—you can evaluate how reliable and sustainable each stream is. 
+              This analysis also highlights opportunities to increase earnings, diversify income sources, or plan for periods of irregular cash flow. 
+              Understanding your income in detail allows you to align spending, saving, and investing decisions with your financial capacity, ensuring you live within your means while still building toward long-term financial security.
+            </p>
             <p className="text-sm text-emerald-800">
-              <strong>Your income is the foundation of your financial health.</strong> 
-              Understanding where you stand compared to national benchmarks helps identify opportunities for growth.
+              Ultimately, a personal income analysis allows you to make better financial decisions, plan for the future with confidence, and build long-term financial security.
             </p>
           </div>
           
