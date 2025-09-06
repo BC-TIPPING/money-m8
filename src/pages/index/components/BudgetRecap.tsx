@@ -102,6 +102,12 @@ const BudgetRecap: React.FC<BudgetRecapProps> = ({
     <Card className="w-full card-mobile">
       <CardHeader>
         <CardTitle className="text-responsive-xl">Budget Overview</CardTitle>
+        <div className="bg-purple-50 p-3 rounded-lg mt-4">
+          <p className="text-sm text-purple-800">
+            A healthy budget with 10-20% savings rate creates the foundation for wealth building and financial security. 
+            Current Savings Rate: {savingsRate.toFixed(1)}% • Target: 10-20% • Australian Average: 8.6%
+          </p>
+        </div>
         <div className="bg-blue-50 p-4 rounded-lg mt-4">
           <h4 className="font-semibold text-blue-900 mb-2 text-responsive-lg">Savings Rate Analysis</h4>
           <p className="text-sm text-blue-800 mb-3">
