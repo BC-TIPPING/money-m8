@@ -11,9 +11,10 @@ import GoalSuggestion from "./GoalSuggestion";
 
 interface AISearchSectionProps {
   onGoalSuggested: (goal: string) => void;
+  assessmentData?: any;
 }
 
-const AISearchSection: React.FC<AISearchSectionProps> = ({ onGoalSuggested }) => {
+const AISearchSection: React.FC<AISearchSectionProps> = ({ onGoalSuggested, assessmentData }) => {
   const { user } = useAuth();
   const [question, setQuestion] = useState('');
   const [answer, setAnswer] = useState('');
@@ -43,7 +44,19 @@ const AISearchSection: React.FC<AISearchSectionProps> = ({ onGoalSuggested }) =>
 
     try {
       const { data, error } = await supabase.functions.invoke('ask-openai', {
-        body: { question }
+        body: { 
+          question,
+          assessmentData: assessmentData ? {
+            incomeSources: assessmentData.incomeSources,
+            expenseItems: assessmentData.expenseItems,
+            debtDetails: assessmentData.debtDetails,
+            goals: assessmentData.goals,
+            age: assessmentData.age,
+            superBalance: assessmentData.superBalance,
+            assets: assessmentData.assets,
+            postcode: assessmentData.postcode
+          } : null
+        }
       });
 
       if (error) throw error;

@@ -16,6 +16,7 @@ import InvestmentPropertyCalculator from "./index/InvestmentPropertyCalculator";
 import ActionItemsSection from "./index/ActionItemsSection";
 import { Link } from "react-router-dom";
 import FullFinancialHealthCheck from "./index/FullFinancialHealthCheck";
+import AISearchSection from "./index/components/AISearchSection";
 import { BarChart3 } from "lucide-react";
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
@@ -234,7 +235,17 @@ export default function Index() {
                       isGeneratingSummary={isGeneratingSummary}
                       aiSummary={aiSummary}
                     />
-                    
+
+                    {/* AI Question Section */}
+                    <div className="mt-8">
+                      <AISearchSection 
+                        onGoalSuggested={(goal) => {
+                          console.log('Goal suggested:', goal);
+                          // Could handle goal suggestions here if needed
+                        }} 
+                        assessmentData={assessment}
+                      />
+                    </div>
 
                   </div>
                 )}

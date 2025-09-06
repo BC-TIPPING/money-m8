@@ -125,7 +125,7 @@ serve(async (req) => {
   }
 
   try {
-    const { question } = await req.json();
+    const { question, assessmentData } = await req.json();
 
     if (!question) {
       return new Response(JSON.stringify({ error: 'Question is required' }), {
@@ -134,7 +134,59 @@ serve(async (req) => {
       });
     }
 
-    console.log(`Received Australian money question: ${question}`);
+    console.log(`Received Australian money question: ${question}`, assessmentData ? 'with assessment data' : 'without assessment data');
+
+    // Build context from assessment data if provided
+    let userContext = '';
+    if (assessmentData) {
+      const { incomeSources, expenseItems, debtDetails, goals, age, superBalance, assets, postcode } = assessmentData;
+      
+      userContext = '\n\nUSER CONTEXT (use this to personalize your response):\n';
+      
+      if (incomeSources && incomeSources.length > 0) {
+        const totalIncome = incomeSources.reduce((sum, source) => {
+          const amount = parseFloat(source.amount) || 0;
+          const multiplier = source.frequency === 'Weekly' ? 52 : 
+                            source.frequency === 'Fortnightly' ? 26 : 
+                            source.frequency === 'Monthly' ? 12 : 1;
+          return sum + (amount * multiplier);
+        }, 0);
+        userContext += `- Annual Income: $${Math.round(totalIncome).toLocaleString()}\n`;
+      }
+      
+      if (expenseItems && expenseItems.length > 0) {
+        const totalExpenses = expenseItems.reduce((sum, expense) => {
+          const amount = parseFloat(expense.amount) || 0;
+          const multiplier = expense.frequency === 'Weekly' ? 52 : 
+                            expense.frequency === 'Fortnightly' ? 26 : 
+                            expense.frequency === 'Monthly' ? 12 : 1;
+          return sum + (amount * multiplier);
+        }, 0);
+        userContext += `- Annual Expenses: $${Math.round(totalExpenses).toLocaleString()}\n`;
+      }
+      
+      if (debtDetails && debtDetails.length > 0) {
+        userContext += `- Debts: ${debtDetails.map(debt => `${debt.type} ($${parseFloat(debt.balance || '0').toLocaleString()} balance)`).join(', ')}\n`;
+      }
+      
+      if (goals && goals.length > 0) {
+        userContext += `- Current Goals: ${goals.join(', ')}\n`;
+      }
+      
+      if (age) {
+        userContext += `- Age: ${age}\n`;
+      }
+      
+      if (superBalance) {
+        userContext += `- Super Balance: $${parseInt(superBalance).toLocaleString()}\n`;
+      }
+      
+      if (postcode) {
+        userContext += `- Location: ${postcode}\n`;
+      }
+      
+      userContext += '\nPlease provide advice that takes into account their specific financial situation above.\n';
+    }
 
     const response = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
@@ -145,7 +197,7 @@ serve(async (req) => {
       body: JSON.stringify({
         model: 'gpt-4o-mini',
         messages: [
-          { role: 'system', content: australianFinancialPrompt },
+          { role: 'system', content: australianFinancialPrompt + userContext },
           { role: 'user', content: question }
         ],
         max_tokens: 400,
