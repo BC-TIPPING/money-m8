@@ -916,65 +916,10 @@ const FullFinancialHealthCheck: React.FC<FullFinancialHealthCheckProps> = ({
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
-          <div className="bg-indigo-50 p-4 rounded-lg mb-4 space-y-3">
-            <div>
-              <h4 className="font-semibold text-indigo-900 mb-2">💰 The Power of Compound Investment Returns</h4>
-              <p className="text-sm text-indigo-800 mb-3">
-                <strong>Investing transforms your money into a wealth-building machine through compound returns.</strong> This means you earn returns not just on your original investment, but also on all the returns you've previously earned. It's like earning interest on your interest, creating an exponential growth effect over time.
-              </p>
-            </div>
-
-            <div className="bg-indigo-100 p-3 rounded">
-              <h5 className="font-semibold text-indigo-900 mb-2">🔢 Compound Growth Example:</h5>
-              <p className="text-xs text-indigo-800 mb-2">
-                If you invest $10,000 at 8% annual returns:
-              </p>
-              <ul className="text-xs text-indigo-800 space-y-1">
-                <li>• Year 1: $10,800 (earned $800)</li>
-                <li>• Year 5: $14,693 (earned $4,693 total)</li>
-                <li>• Year 10: $21,589 (earned $11,589 total)</li>
-                <li>• Year 20: $46,610 (earned $36,610 total)</li>
-                <li>• Year 30: $100,627 (earned $90,627 total)</li>
-              </ul>
-              <p className="text-xs text-indigo-900 font-semibold mt-2">
-                Notice how the growth accelerates - in the final 10 years alone, you earn more than double your original investment!
-              </p>
-            </div>
-
-            <div>
-              <h5 className="font-semibold text-indigo-900 mb-2">⏰ Why Starting Early is Everything</h5>
-              <p className="text-sm text-indigo-800 mb-2">
-                Time is your greatest asset when investing. Even small amounts invested early can outperform larger amounts invested later due to compound growth.
-              </p>
-              <div className="bg-white p-2 rounded text-xs text-indigo-800">
-                <strong>Early Bird vs Late Starter:</strong><br/>
-                • Sarah invests $200/month from age 25-35 (only 10 years, $24,000 total)<br/>
-                • John invests $200/month from age 35-65 (30 years, $72,000 total)<br/>
-                • At age 65: Sarah has $560,000, John has $540,000<br/>
-                <em>Sarah invested 1/3 the money but ended up with more wealth!</em>
-              </div>
-            </div>
-
-            <div>
-              <h5 className="font-semibold text-indigo-900 mb-2">🎯 The Investment Hierarchy</h5>
-              <p className="text-sm text-indigo-800 mb-2">
-                Follow this proven sequence for maximum wealth building:
-              </p>
-              <ol className="text-xs text-indigo-800 space-y-1 list-decimal list-inside">
-                <li><strong>Emergency Fund:</strong> 3-6 months expenses in high-yield savings (guaranteed access)</li>
-                <li><strong>High-Interest Debt:</strong> Pay off credit cards, personal loans (15-25% guaranteed return)</li>
-                <li><strong>Employer Super Match:</strong> Get the full employer contribution (instant 100% return)</li>
-                <li><strong>Index Fund Investing:</strong> Build long-term wealth through diversified market exposure</li>
-                <li><strong>Property/Advanced Strategies:</strong> Once you have a solid foundation</li>
-              </ol>
-            </div>
-
-            <div>
-              <h5 className="font-semibold text-indigo-900 mb-2">⚖️ Understanding Risk vs Time Horizon</h5>
-              <p className="text-sm text-indigo-800">
-                Your investment strategy should match when you need the money. <strong>Risk tolerance</strong> is your emotional comfort with ups and downs, while <strong>time horizon</strong> is when you need to access your funds. The longer your time horizon, the more risk you can afford to take for potentially higher returns.
-              </p>
-            </div>
+          <div className="bg-indigo-50 p-3 rounded-lg mb-4">
+            <p className="text-sm text-indigo-800">
+              <strong>Investing grows your wealth through compound returns.</strong> After eliminating high-interest debt and building an emergency fund, investing allows your money to work for you. The key is starting early, staying consistent, and choosing investments that match your risk tolerance and time horizon.
+            </p>
           </div>
           
           <InvestmentRiskProfile
