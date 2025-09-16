@@ -116,6 +116,87 @@ const InvestmentRiskProfile: React.FC<InvestmentRiskProfileProps> = ({ riskProfi
             <li>• Review and rebalance annually</li>
           </ul>
         </div>
+
+        <div className="bg-green-50 p-4 rounded-lg">
+          <h4 className="font-semibold text-green-900 mb-3">Why Diversification Matters</h4>
+          <p className="text-sm text-green-800 mb-3">
+            Index funds provide instant diversification by holding hundreds or thousands of stocks in a single investment. 
+            This spreads your risk across multiple companies, industries, and even countries.
+          </p>
+          <div className="text-sm text-green-800 space-y-2">
+            <p><strong>Single Stock Risk:</strong> If you owned only BHP shares and iron ore prices crashed, you could lose 50%+ overnight.</p>
+            <p><strong>Index Fund Protection:</strong> An ASX 200 index fund holds 200 companies - if BHP falls, other companies may rise, limiting your losses.</p>
+            <p><strong>The Power of Spreading Risk:</strong> By owning a slice of the entire market, you remove the risk of picking the wrong individual stocks.</p>
+          </div>
+        </div>
+
+        <div className="bg-yellow-50 p-4 rounded-lg">
+          <h4 className="font-semibold text-yellow-900 mb-3">Risk vs Reward: Understanding Beta</h4>
+          <p className="text-sm text-yellow-800 mb-3">
+            Beta measures how much a stock moves compared to the overall market. A beta of 1.0 means it moves with the market.
+          </p>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-yellow-800">
+            <div>
+              <h5 className="font-semibold mb-2">Risky Mining Stock Example:</h5>
+              <p><strong>Fortescue Metals (FMG)</strong></p>
+              <p>Beta: 1.8 (80% more volatile than market)</p>
+              <p>Risk: Price swings ±30-50% regularly</p>
+              <p>Reward: Can deliver huge gains OR losses</p>
+            </div>
+            <div>
+              <h5 className="font-semibold mb-2">Stable Index Fund:</h5>
+              <p><strong>ASX 200 Index Fund</strong></p>
+              <p>Beta: 1.0 (moves with market)</p>
+              <p>Risk: Typical swings ±15-25%</p>
+              <p>Reward: Steady long-term growth</p>
+            </div>
+          </div>
+          <div className="mt-3 p-2 bg-yellow-100 rounded text-xs text-yellow-900">
+            <strong>Beta Guide:</strong> 0-0.5 (Low risk) | 0.5-1.0 (Moderate risk) | 1.0-1.5 (Market risk) | 1.5+ (High risk)
+          </div>
+        </div>
+
+        <div className="bg-purple-50 p-4 rounded-lg">
+          <h4 className="font-semibold text-purple-900 mb-3">5 Core Index Funds for Australian Investors</h4>
+          <div className="space-y-4">
+            <div className="border-l-4 border-purple-300 pl-3">
+              <h5 className="font-semibold text-purple-900">1. Vanguard Australian Shares Index (VAS)</h5>
+              <p className="text-sm text-purple-800 mb-1">Contains: Top 300 Australian companies (CBA, BHP, CSL, Woolworths)</p>
+              <p className="text-sm text-purple-800">Why it suits you: Core Australian exposure, franking credits, matches your home market</p>
+            </div>
+            
+            <div className="border-l-4 border-purple-300 pl-3">
+              <h5 className="font-semibold text-purple-900">2. Vanguard International Shares Index (VGS)</h5>
+              <p className="text-sm text-purple-800 mb-1">Contains: 1,500+ global companies (Apple, Microsoft, Amazon, Google)</p>
+              <p className="text-sm text-purple-800">Why it suits you: Global diversification, access to world's largest companies, currency hedging</p>
+            </div>
+
+            <div className="border-l-4 border-purple-300 pl-3">
+              <h5 className="font-semibold text-purple-900">3. iShares Core S&P 500 (IVV)</h5>
+              <p className="text-sm text-purple-800 mb-1">Contains: 500 largest US companies (Tesla, NVIDIA, Meta, Netflix)</p>
+              <p className="text-sm text-purple-800">Why it suits you: Access to US growth, tech innovation, world's strongest economy</p>
+            </div>
+
+            <div className="border-l-4 border-purple-300 pl-3">
+              <h5 className="font-semibold text-purple-900">4. Vanguard Emerging Markets (VGE)</h5>
+              <p className="text-sm text-purple-800 mb-1">Contains: Companies from China, India, Taiwan, South Korea (Alibaba, TSMC)</p>
+              <p className="text-sm text-purple-800">Why it suits you: Higher growth potential, demographic trends, diversification from developed markets</p>
+            </div>
+
+            <div className="border-l-4 border-purple-300 pl-3">
+              <h5 className="font-semibold text-purple-900">5. Vanguard Australian Government Bonds (VGB)</h5>
+              <p className="text-sm text-purple-800 mb-1">Contains: Australian government treasury bonds with various maturity dates</p>
+              <p className="text-sm text-purple-800">Why it suits you: Stability during market crashes, income generation, balances stock volatility</p>
+            </div>
+          </div>
+          
+          <div className="mt-4 p-3 bg-purple-100 rounded">
+            <p className="text-xs text-purple-900">
+              <strong>Portfolio Suggestion:</strong> Start with VAS (40%) + VGS (40%) + IVV (20%) for a simple, globally diversified portfolio. 
+              Add VGE (10%) and VGB (10%) as you grow more comfortable with investing.
+            </p>
+          </div>
+        </div>
       </CardContent>
     </Card>
   );
