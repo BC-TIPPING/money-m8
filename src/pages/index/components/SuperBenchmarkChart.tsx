@@ -6,6 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 interface SuperBenchmarkChartProps {
   currentAge?: number;
   currentBalance?: number;
+  currentSalary?: number;
 }
 
 interface BenchmarkDataPoint {
@@ -17,7 +18,7 @@ interface BenchmarkDataPoint {
   currentPlus10?: number;
 }
 
-const SuperBenchmarkChart: React.FC<SuperBenchmarkChartProps> = ({ currentAge, currentBalance }) => {
+const SuperBenchmarkChart: React.FC<SuperBenchmarkChartProps> = ({ currentAge, currentBalance, currentSalary }) => {
   // Australian super benchmark data by age (based on ASFA/ATO data)
   const benchmarkData: BenchmarkDataPoint[] = [
     { age: 25, benchmark: 30000, percentile25: 15000, percentile75: 50000 },
@@ -29,11 +30,12 @@ const SuperBenchmarkChart: React.FC<SuperBenchmarkChartProps> = ({ currentAge, c
     { age: 55, benchmark: 550000, percentile25: 370000, percentile75: 780000 },
     { age: 60, benchmark: 750000, percentile25: 500000, percentile75: 1100000 },
     { age: 65, benchmark: 1000000, percentile25: 650000, percentile75: 1500000 },
+    { age: 67, benchmark: 1200000, percentile25: 780000, percentile75: 1800000 },
   ];
 
   // Calculate projection lines if current age and balance are provided
   const calculateProjections = (): BenchmarkDataPoint[] => {
-    if (!currentAge || !currentBalance) return benchmarkData;
+    if (!currentAge || !currentBalance || !currentSalary) return benchmarkData;
 
     return benchmarkData.map(point => {
       const yearsToProject = point.age - currentAge;
@@ -46,13 +48,12 @@ const SuperBenchmarkChart: React.FC<SuperBenchmarkChartProps> = ({ currentAge, c
         };
       }
 
-      // Use median income for calculations
-      const medianIncome = 72592; // Updated ABS data
+      // Use user's actual salary for calculations
       const monthlyGrowthRate = 0.07 / 12; // 7% annual growth
       const months = yearsToProject * 12;
       
       // Current trend: employer contributions (11.5%)
-      const monthlyEmployerContrib = (medianIncome * 0.115) / 12;
+      const monthlyEmployerContrib = (currentSalary * 0.115) / 12;
       const growthFactor = Math.pow(1 + monthlyGrowthRate, months);
       const annuityFactor = (growthFactor - 1) / monthlyGrowthRate;
       
@@ -60,7 +61,7 @@ const SuperBenchmarkChart: React.FC<SuperBenchmarkChartProps> = ({ currentAge, c
         monthlyEmployerContrib * annuityFactor;
       
       // With additional 10% personal contributions
-      const additionalContrib = (medianIncome * 0.10) / 12;
+      const additionalContrib = (currentSalary * 0.10) / 12;
       const totalMonthlyContrib = monthlyEmployerContrib + additionalContrib;
       const plus10Projection = currentBalance * growthFactor + 
         totalMonthlyContrib * annuityFactor;
@@ -91,7 +92,7 @@ const SuperBenchmarkChart: React.FC<SuperBenchmarkChartProps> = ({ currentAge, c
     return null;
   };
 
-  const retirementData = chartData.find(d => d.age === 65);
+  const retirementData = chartData.find(d => d.age === 67);
   const fourPercentIncomeeCurrent = retirementData?.currentTrend ? retirementData.currentTrend * 0.04 : 0;
   const fourPercentIncomeExtra = retirementData?.currentPlus10 ? retirementData.currentPlus10 * 0.04 : 0;
 
@@ -164,13 +165,13 @@ const SuperBenchmarkChart: React.FC<SuperBenchmarkChartProps> = ({ currentAge, c
               Current Balance: ${currentBalance.toLocaleString()}
             </p>
             <p className="text-sm text-blue-800">
-              With current contributions: ${retirementData?.currentTrend?.toLocaleString() || 'N/A'} at 65
+              With current contributions: ${retirementData?.currentTrend?.toLocaleString() || 'N/A'} at 67
               <span className="text-green-600 ml-2">
                 (${fourPercentIncomeeCurrent.toLocaleString()}/year using 4% rule)
               </span>
             </p>
             <p className="text-sm text-green-800">
-              Adding 10% personal contributions: ${retirementData?.currentPlus10?.toLocaleString() || 'N/A'} at 65
+              Adding 10% personal contributions: ${retirementData?.currentPlus10?.toLocaleString() || 'N/A'} at 67
               <span className="text-green-600 ml-2">
                 (${fourPercentIncomeExtra.toLocaleString()}/year using 4% rule)
               </span>

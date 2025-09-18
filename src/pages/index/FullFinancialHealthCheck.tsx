@@ -508,7 +508,7 @@ const FullFinancialHealthCheck: React.FC<FullFinancialHealthCheckProps> = ({
             currentSalary={annualIncome}
           />
 
-          <SuperBenchmarkChart currentAge={age} currentBalance={superBalance} />
+          <SuperBenchmarkChart currentAge={age} currentBalance={superBalance} currentSalary={annualIncome} />
           
           <div className="bg-blue-50 p-4 rounded-lg space-y-3">
             <h4 className="font-semibold text-blue-900">Understanding Your Superannuation Position</h4>
