@@ -21,7 +21,7 @@ const SuperannuationChart: React.FC<SuperannuationChartProps> = ({
     const data = [];
     const yearsToRetirement = retirementAge - currentAge;
     const compulsoryRate = 0.115; // 11.5% as of 2024
-    const returnRate = 0.07; // 7% average return
+    const monthlyGrowthRate = 0.07 / 12; // 7% annual growth, compounded monthly
     
     let balanceWithoutExtra = currentBalance;
     let balanceWithExtra = currentBalance;
@@ -30,12 +30,19 @@ const SuperannuationChart: React.FC<SuperannuationChartProps> = ({
       const age = currentAge + year;
       
       if (year > 0) {
-        // Compulsory contributions
-        const compulsoryContribution = currentSalary * compulsoryRate;
-        
-        // Apply returns and add contributions
-        balanceWithoutExtra = balanceWithoutExtra * (1 + returnRate) + compulsoryContribution;
-        balanceWithExtra = balanceWithExtra * (1 + returnRate) + compulsoryContribution + additionalContributions;
+        // Monthly compounding over the year
+        for (let month = 0; month < 12; month++) {
+          // Apply monthly growth
+          balanceWithoutExtra = balanceWithoutExtra * (1 + monthlyGrowthRate);
+          balanceWithExtra = balanceWithExtra * (1 + monthlyGrowthRate);
+          
+          // Add monthly contributions (compulsory contributions divided by 12)
+          const monthlyCompulsoryContrib = (currentSalary * compulsoryRate) / 12;
+          const monthlyAdditionalContrib = additionalContributions / 12;
+          
+          balanceWithoutExtra += monthlyCompulsoryContrib;
+          balanceWithExtra += monthlyCompulsoryContrib + monthlyAdditionalContrib;
+        }
       }
       
       data.push({
