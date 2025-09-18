@@ -686,7 +686,7 @@ const FullFinancialHealthCheck: React.FC<FullFinancialHealthCheckProps> = ({
           {highInterestDebt && (
             <div className="bg-red-50 p-3 rounded-lg mb-4">
               <p className="text-sm text-red-800">
-                <strong>High-interest debt is wealth destruction in action.</strong> Credit cards and personal loans typically charge 15-25% interest, making them impossible to outpace with investments. Eliminating high-interest debt provides a guaranteed return equal to the interest rate - often better than any investment you could make.
+                <strong>High-interest debt is wealth destruction in action.</strong> Credit cards and personal loans typically charge 15-25% interest, making them impossible to outpace with investments. Here's the key insight: when you pay off debt, you get a <strong>guaranteed return equal to the interest rate</strong> - no market risk, no volatility. Unlike investments, this return isn't taxed as income, and there are no fees or uncertainty. A 20% credit card debt eliminated gives you an immediate, risk-free 20% return - something even the best investors struggle to achieve consistently. This mathematical certainty makes debt elimination your highest-priority "investment."
               </p>
             </div>
           )}
@@ -723,7 +723,7 @@ const FullFinancialHealthCheck: React.FC<FullFinancialHealthCheckProps> = ({
                 </Badge>
               </div>
               <p className="text-sm text-yellow-800 mb-3">
-                <strong>High-interest debt is wealth destruction in action!</strong> With ${highInterestDebt.totalBalance.toLocaleString()} in high-interest debt at {highInterestDebt.weightedRate.toFixed(1)}% average rate, you're bleeding money every month. Stop investing, cut up the credit cards, and attack this debt with gazelle intensity. Every dollar thrown at this debt is a <strong>guaranteed {highInterestDebt.weightedRate.toFixed(1)}% return</strong> - better than any investment! Use the debt snowball method: list all debts smallest to largest, pay minimums on all, then throw every extra penny at the smallest debt until it's gone. This isn't about math, it's about changing behavior and building momentum!
+                <strong>High-interest debt is wealth destruction in action!</strong> With ${highInterestDebt.totalBalance.toLocaleString()} in high-interest debt at {highInterestDebt.weightedRate.toFixed(1)}% average rate, you're bleeding money every month. Here's the brutal math: every dollar you pay toward this debt gives you a <strong>guaranteed {highInterestDebt.weightedRate.toFixed(1)}% return</strong> with zero risk, zero taxes, and zero fees. Compare that to the stock market's historical 10% average (before taxes and inflation) - your debt payoff is mathematically superior! Stop investing, cut up the credit cards, and attack this debt with gazelle intensity. Use the debt snowball method: list all debts smallest to largest, pay minimums on all, then throw every extra penny at the smallest debt until it's gone. This isn't about math, it's about changing behavior and building momentum!
               </p>
               {generateSummary && (
                  <div className="space-y-3">
