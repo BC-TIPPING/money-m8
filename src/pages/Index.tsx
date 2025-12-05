@@ -57,17 +57,20 @@ export default function Index() {
   // Handle return from external pages (like Super Calculator)
   useEffect(() => {
     const state = location.state as { returnToHealthCheck?: boolean } | null;
-    if (state?.returnToHealthCheck && hasCompletedAssessment) {
-      const totalQuestions = questions.length + healthCheckQuestions.length;
-      assessment.setGoals(['Full Financial Health Check']);
-      assessment.setStep(totalQuestions);
-      assessment.setIsFinished(true);
-      assessment.setShowAssessment(true);
-      window.scrollTo({ top: 0, behavior: 'instant' });
-      // Clear the state to prevent re-triggering
-      window.history.replaceState({}, document.title);
+    if (state?.returnToHealthCheck) {
+      // Use setTimeout to ensure state is properly initialized
+      setTimeout(() => {
+        const totalQuestions = questions.length + healthCheckQuestions.length;
+        assessment.setGoals(['Full Financial Health Check']);
+        assessment.setStep(totalQuestions);
+        assessment.setIsFinished(true);
+        assessment.setShowAssessment(true);
+        window.scrollTo({ top: 0, behavior: 'instant' });
+        // Clear the state to prevent re-triggering
+        window.history.replaceState({}, document.title);
+      }, 50);
     }
-  }, [location.state, hasCompletedAssessment]);
+  }, [location.state]);
 
   const handleStartAssessment = (goal: string) => {
     // Check if user has completed assessment before and redirect accordingly
