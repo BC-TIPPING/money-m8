@@ -229,8 +229,10 @@ const InvestmentGrowthCalculator: React.FC<InvestmentGrowthCalculatorProps> = ({
                 <LineChart data={calculations.projectionData}>
                   <CartesianGrid strokeDasharray="3 3" />
                   <XAxis 
-                    dataKey="year" 
+                    dataKey="month" 
                     label={{ value: 'Years', position: 'insideBottom', offset: -5 }}
+                    tickFormatter={(month) => Math.floor(month / 12).toString()}
+                    interval={Math.max(1, Math.floor(calculations.projectionData.length / 10))}
                   />
                   <YAxis 
                     label={{ value: 'Value ($)', angle: -90, position: 'insideLeft' }}
@@ -242,7 +244,7 @@ const InvestmentGrowthCalculator: React.FC<InvestmentGrowthCalculatorProps> = ({
                                    name === 'contributions' ? 'Your Contributions' : 'Investment Growth';
                       return [`$${value.toLocaleString()}`, label];
                     }}
-                    labelFormatter={(year) => `Year ${year}`}
+                    labelFormatter={(month) => `Year ${Math.floor(month / 12)}`}
                   />
                   <Line 
                     type="monotone" 
