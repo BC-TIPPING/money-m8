@@ -38,12 +38,26 @@ const HouseBuyingCalculator: React.FC<HouseBuyingCalculatorProps> = ({
   // Calculate non-housing expenses
   const nonHousingExpenses = totalMonthlyExpenses - currentHousingExpense;
   
+  // Calculate savings from expense items
+  const monthlySavings = calculateMonthlyAmount(
+    (assessmentData.expenseItems || []).filter((item: any) => 
+      item.category === 'Savings' || 
+      item.category === 'Investments'
+    )
+  );
+  
   // Use 30% debt-to-income ratio only
   const maxHousingPayment = totalMonthlyNetIncome * 0.3;
   
+  // Budget surplus = income - expenses
+  const budgetSurplus = totalMonthlyNetIncome - totalMonthlyExpenses;
+  
+  // Calculate reduction in current expenses needed
+  // What they have available: budget surplus + savings + current rent
+  const currentlyAvailable = budgetSurplus + monthlySavings + currentHousingExpense;
+  const reductionInExpenses = Math.max(0, maxHousingPayment - currentlyAvailable);
+  
   // Calculate how much needs to be cut from budget to afford the mortgage
-  // Available after mortgage = income - mortgage payment
-  // Need to cut = non-housing expenses - (income - mortgage payment)
   const availableAfterMortgage = totalMonthlyNetIncome - maxHousingPayment;
   const expensesToCut = Math.max(0, nonHousingExpenses - availableAfterMortgage);
   
@@ -151,9 +165,12 @@ const HouseBuyingCalculator: React.FC<HouseBuyingCalculatorProps> = ({
               <p className="text-xs text-gray-500">Based on {loanTerm}-year loan at {interestRate}% with ${deposit.toLocaleString()} deposit</p>
             </div>
             <div>
-              <p className="text-sm text-gray-600">Amount Available for Housing:</p>
-              <p className="text-2xl font-bold text-green-600">
-                ${maxHousingPayment.toLocaleString('en-US', { maximumFractionDigits: 0 })}
+              <p className="text-sm text-gray-600">Reduction in Current Expenses:</p>
+              <p className={`text-2xl font-bold ${reductionInExpenses > 0 ? 'text-amber-600' : 'text-green-600'}`}>
+                {reductionInExpenses > 0 
+                  ? `$${reductionInExpenses.toLocaleString('en-US', { maximumFractionDigits: 0 })}`
+                  : 'None needed!'
+                }
               </p>
             </div>
           </div>
