@@ -35,9 +35,17 @@ const HouseBuyingCalculator: React.FC<HouseBuyingCalculatorProps> = ({
     )
   );
   
-  // Use 30% debt-to-income ratio PLUS current rent (since you're already paying rent)
-  const baseMaxHousingPayment = totalMonthlyNetIncome * 0.3;
-  const maxHousingPayment = baseMaxHousingPayment + currentHousingExpense;
+  // Calculate non-housing expenses
+  const nonHousingExpenses = totalMonthlyExpenses - currentHousingExpense;
+  
+  // Use 30% debt-to-income ratio only
+  const maxHousingPayment = totalMonthlyNetIncome * 0.3;
+  
+  // Calculate how much needs to be cut from budget to afford the mortgage
+  // Available after mortgage = income - mortgage payment
+  // Need to cut = non-housing expenses - (income - mortgage payment)
+  const availableAfterMortgage = totalMonthlyNetIncome - maxHousingPayment;
+  const expensesToCut = Math.max(0, nonHousingExpenses - availableAfterMortgage);
   
   // Calculate maximum loan amount based on 30% debt-to-income ratio
   const monthlyRate = interestRate / 100 / 12;
@@ -128,7 +136,7 @@ const HouseBuyingCalculator: React.FC<HouseBuyingCalculatorProps> = ({
         {/* Results Section */}
         <div className="bg-blue-50 rounded-lg p-4 space-y-3">
           <h3 className="font-semibold text-lg text-blue-900">Your Borrowing Capacity (30% Rule)</h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div>
               <p className="text-sm text-gray-600">Maximum Monthly Payment:</p>
               <p className="text-2xl font-bold text-green-600">
@@ -136,30 +144,23 @@ const HouseBuyingCalculator: React.FC<HouseBuyingCalculatorProps> = ({
               </p>
             </div>
             <div>
-              <p className="text-sm text-gray-600">Maximum Loan Amount:</p>
-              <p className="text-2xl font-bold text-green-600">
-                ${maxLoanAmount.toLocaleString('en-US', { maximumFractionDigits: 0 })}
-              </p>
-            </div>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
               <p className="text-sm text-gray-600">Maximum Purchase Price:</p>
               <p className="text-2xl font-bold text-blue-600">
                 ${maxPurchasePrice.toLocaleString('en-US', { maximumFractionDigits: 0 })}
               </p>
+              <p className="text-xs text-gray-500">Based on {loanTerm}-year loan at {interestRate}% with ${deposit.toLocaleString()} deposit</p>
             </div>
             <div>
-              <p className="text-sm text-gray-600">Debt-to-Income Ratio:</p>
-              <p className={`text-xl font-semibold ${debtToIncomeRatio > 30 ? 'text-red-600' : 'text-green-600'}`}>
-                {debtToIncomeRatio.toFixed(1)}%
+              <p className="text-sm text-gray-600">Amount Available for Housing:</p>
+              <p className="text-2xl font-bold text-green-600">
+                ${maxHousingPayment.toLocaleString('en-US', { maximumFractionDigits: 0 })}
               </p>
             </div>
           </div>
         </div>
 
         {/* Financial Health Check */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
           <Card>
             <CardContent className="p-4">
               <div className="text-center">
@@ -174,9 +175,9 @@ const HouseBuyingCalculator: React.FC<HouseBuyingCalculatorProps> = ({
           <Card>
             <CardContent className="p-4">
               <div className="text-center">
-                <p className="text-sm text-gray-600">Current Expenses</p>
+                <p className="text-sm text-gray-600">Non-Housing Expenses</p>
                 <p className="text-lg font-semibold text-gray-900">
-                  ${totalMonthlyExpenses.toLocaleString('en-US', { maximumFractionDigits: 0 })}
+                  ${nonHousingExpenses.toLocaleString('en-US', { maximumFractionDigits: 0 })}
                 </p>
               </div>
             </CardContent>
@@ -185,10 +186,27 @@ const HouseBuyingCalculator: React.FC<HouseBuyingCalculatorProps> = ({
           <Card>
             <CardContent className="p-4">
               <div className="text-center">
-                <p className="text-sm text-gray-600">Available for Housing</p>
-                <p className="text-lg font-semibold text-green-600">
-                  ${maxHousingPayment.toLocaleString('en-US', { maximumFractionDigits: 0 })}
+                <p className="text-sm text-gray-600">Available After Mortgage</p>
+                <p className="text-lg font-semibold text-gray-900">
+                  ${availableAfterMortgage.toLocaleString('en-US', { maximumFractionDigits: 0 })}
                 </p>
+              </div>
+            </CardContent>
+          </Card>
+          
+          <Card className={expensesToCut > 0 ? "border-amber-300 bg-amber-50" : "border-green-300 bg-green-50"}>
+            <CardContent className="p-4">
+              <div className="text-center">
+                <p className="text-sm text-gray-600">Expenses to Cut</p>
+                <p className={`text-lg font-semibold ${expensesToCut > 0 ? 'text-amber-600' : 'text-green-600'}`}>
+                  {expensesToCut > 0 
+                    ? `$${expensesToCut.toLocaleString('en-US', { maximumFractionDigits: 0 })}`
+                    : 'None needed!'
+                  }
+                </p>
+                {expensesToCut > 0 && (
+                  <p className="text-xs text-gray-500 mt-1">Excluding rent</p>
+                )}
               </div>
             </CardContent>
           </Card>
