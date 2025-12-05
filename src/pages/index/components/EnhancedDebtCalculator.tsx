@@ -429,6 +429,7 @@ const EnhancedDebtCalculator: React.FC<EnhancedDebtCalculatorProps> = ({
                     dataKey="month" 
                     tickFormatter={(value) => `${Math.floor(value/12)}y`}
                     label={{ value: 'Time (Years)', position: 'insideBottom', offset: -5 }}
+                    interval={Math.max(1, Math.floor(calculationResults.chartData.length / 10))}
                   />
                   <YAxis 
                     tickFormatter={(value) => `$${(value / 1000)}k`}
@@ -472,7 +473,7 @@ const EnhancedDebtCalculator: React.FC<EnhancedDebtCalculatorProps> = ({
                   }
                 </p>
                 <p>
-                  <strong>Total Strategy Impact:</strong> Save ${calculationResults.interestSaved.toLocaleString()} 
+                  <strong>Total Strategy Impact:</strong> Save ${calculationResults.interestSaved.toLocaleString()}{' '}
                   and become debt-free {calculationResults.monthsSaved} months earlier
                 </p>
                 {(oneOffPayment > 0 || budgetAdjustment > 0 || useWindfall || autoIncrease) && (
