@@ -12,9 +12,48 @@ export const useSectionPDFExport = () => {
     const contentWidth = pdfWidth - (2 * margin);
     const contentHeight = pdfHeight - (2 * margin);
 
+    // Add title page header
+    const addHeader = () => {
+      // Add logo (using a simple placeholder shape for now)
+      pdf.setFillColor(16, 185, 129); // Emerald color
+      pdf.circle(pdfWidth / 2 - 15, 25, 8, 'F');
+      pdf.setFillColor(59, 130, 246); // Blue color
+      pdf.circle(pdfWidth / 2 + 5, 25, 6, 'F');
+      pdf.setFillColor(168, 85, 247); // Purple color
+      pdf.circle(pdfWidth / 2 + 20, 25, 4, 'F');
+      
+      // Title
+      pdf.setFont('helvetica', 'bold');
+      pdf.setFontSize(24);
+      pdf.setTextColor(31, 41, 55);
+      pdf.text('Your Complete Financial Health Check', pdfWidth / 2, 45, { align: 'center' });
+      
+      // Subtitle
+      pdf.setFont('helvetica', 'normal');
+      pdf.setFontSize(12);
+      pdf.setTextColor(107, 114, 128);
+      pdf.text('Comprehensive analysis based on Australian financial benchmarks', pdfWidth / 2, 55, { align: 'center' });
+      
+      // Date
+      const today = new Date().toLocaleDateString('en-AU', { 
+        year: 'numeric', 
+        month: 'long', 
+        day: 'numeric' 
+      });
+      pdf.setFontSize(10);
+      pdf.text(`Generated: ${today}`, pdfWidth / 2, 65, { align: 'center' });
+      
+      // Divider line
+      pdf.setDrawColor(229, 231, 235);
+      pdf.setLineWidth(0.5);
+      pdf.line(margin, 72, pdfWidth - margin, 72);
+      
+      return 78; // Return Y position after header
+    };
+
     // Define section groups - sections in same array are grouped on same page
     const sectionGroups = [
-      // Group 1: Health Score, KPI Cards, Income Analysis (same page)
+      // Group 1: Health Score, KPI Cards, Income Analysis (same page with header)
       ['health-score', 'kpi-cards', 'income-analysis'],
       // Individual sections (each on new page)
       ['budget-analysis'],
@@ -25,7 +64,7 @@ export const useSectionPDFExport = () => {
       ['investment-strategy'],
       ['learning-resources'],
       ['action-plan'],
-      ['ai-assistant'],
+      // Removed ai-assistant
       ['stepper'],
       ['charts'],
       ['action-items'],
@@ -58,20 +97,26 @@ export const useSectionPDFExport = () => {
       if (!isFirstPage) {
         pdf.addPage();
       }
-      isFirstPage = false;
 
-      let currentY = margin;
+      // Add header on first page, start content below it
+      let currentY = isFirstPage ? addHeader() : margin;
+      isFirstPage = false;
 
       for (const element of elements) {
         console.log(`Capturing section: ${element.getAttribute('data-export-section')}`);
 
         try {
+          // Get element's bounding rect for precise capture
+          const rect = element.getBoundingClientRect();
+          
           const canvas = await html2canvas(element, { 
             scale: 2,
             useCORS: true,
             backgroundColor: '#ffffff',
             logging: false,
             allowTaint: true,
+            width: rect.width,
+            height: rect.height,
             x: 0,
             y: 0,
             scrollX: 0,
@@ -86,7 +131,8 @@ export const useSectionPDFExport = () => {
           const imgHeight = (canvasHeight * contentWidth) / canvasWidth;
 
           // Check if we need a new page
-          if (currentY + imgHeight > pdfHeight - margin && currentY > margin) {
+          const availableHeight = pdfHeight - margin - currentY;
+          if (imgHeight > availableHeight && currentY > margin + 10) {
             pdf.addPage();
             currentY = margin;
           }
@@ -126,13 +172,13 @@ export const useSectionPDFExport = () => {
                 
                 remainingHeight -= pageHeight;
                 sourceY += sourceHeight;
-                currentY += pageHeight + 3;
+                currentY += pageHeight + 2;
               }
             }
           } else {
             const imgData = canvas.toDataURL('image/png', 1.0);
             pdf.addImage(imgData, 'PNG', margin, currentY, imgWidth, imgHeight);
-            currentY += imgHeight + 3; // Small gap between sections
+            currentY += imgHeight + 2;
           }
 
         } catch (error) {
