@@ -52,6 +52,29 @@ export function useSaveAssessment(onSuccessCallback: (data: any) => void) {
   });
 }
 
+export function useUpdateAssessment(onSuccessCallback: (data: any) => void) {
+  const { toast } = useToast();
+  return useMutation({
+    mutationFn: async ({ id, data: assessmentData }: { id: string; data: AssessmentInsert }) => {
+      const { data, error } = await supabase
+        .from('assessments')
+        .update(assessmentData)
+        .eq('id', id)
+        .select();
+
+      if (error) throw error;
+      return data;
+    },
+    onSuccess: (data) => {
+      onSuccessCallback(data);
+      toast({ title: "Assessment Updated", description: "Your assessment has been saved." });
+    },
+    onError: (error) => {
+      toast({ title: "Error updating assessment", description: error.message, variant: 'destructive' });
+    }
+  });
+}
+
 export function useUpdateHomeLoanRepayment() {
     const { toast } = useToast();
     return useMutation({

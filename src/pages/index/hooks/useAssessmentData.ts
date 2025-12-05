@@ -1,8 +1,8 @@
 import { useState, useEffect, useMemo } from "react";
 import { useToast } from "@/components/ui/use-toast";
 import { type Database } from "@/integrations/supabase/types";
-import { PRELOADED_EXPENSE_CATEGORIES, questions, useAssessmentState } from "../assessmentHooks";
-import { useFetchAssessment, useSaveAssessment, useGenerateSummary, useUpdateHomeLoanRepayment } from './useAssessmentApi';
+import { PRELOADED_EXPENSE_CATEGORIES, questions, healthCheckQuestions, useAssessmentState } from "../assessmentHooks";
+import { useFetchAssessment, useSaveAssessment, useUpdateAssessment, useGenerateSummary, useUpdateHomeLoanRepayment } from './useAssessmentApi';
 import { useAuth } from "@/contexts/AuthContext";
 
 type AssessmentInsert = Database['public']['Tables']['assessments']['Insert'];
@@ -86,7 +86,16 @@ export function useAssessmentData(assessment: AssessmentState) {
     setChartData(data.chartData);
   });
 
-  const isComplete = assessment.step >= questions.length;
+  const { mutate: updateAssessment, isPending: isUpdating } = useUpdateAssessment((data) => {
+    if (data && data.length > 0) {
+      setAssessmentId(data[0].id);
+    }
+  });
+
+  // Calculate total questions based on whether Full Financial Health Check is selected
+  const isFullHealthCheck = assessment.goals.includes('Full Financial Health Check');
+  const totalQuestions = isFullHealthCheck ? questions.length + healthCheckQuestions.length : questions.length;
+  const isComplete = assessment.step >= totalQuestions;
 
   // Track if assessment has been completed
   useEffect(() => {
@@ -95,12 +104,18 @@ export function useAssessmentData(assessment: AssessmentState) {
     }
   }, [isComplete]);
 
-  // Auto-save assessments when complete (for all users including anonymous)
+  // Auto-save assessments when complete AND finished (for all users including anonymous)
   useEffect(() => {
-    if (isComplete && !isSubmitted && !isSaving && assessmentData) {
-      saveAssessment(assessmentData);
+    if (isComplete && assessment.isFinished && !isSubmitted && !isSaving && !isUpdating && assessmentData) {
+      // If we have an existing assessment ID, update instead of insert
+      if (assessmentId) {
+        updateAssessment({ id: assessmentId, data: assessmentData });
+        setIsSubmitted(true);
+      } else {
+        saveAssessment(assessmentData);
+      }
     }
-  }, [isComplete, isSubmitted, isSaving, saveAssessment, assessmentData]);
+  }, [isComplete, assessment.isFinished, isSubmitted, isSaving, isUpdating, saveAssessment, updateAssessment, assessmentData, assessmentId]);
 
   // Only load existing assessment for logged-in users
   useEffect(() => {
