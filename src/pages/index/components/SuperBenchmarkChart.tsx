@@ -106,8 +106,16 @@ const SuperBenchmarkChart: React.FC<SuperBenchmarkChartProps> = ({ currentAge, c
           <ResponsiveContainer width="100%" height="100%">
             <LineChart data={chartData} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
               <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="age" />
-              <YAxis tickFormatter={(value) => `$${(value / 1000).toFixed(0)}k`} />
+              <XAxis 
+                dataKey="age" 
+                domain={[25, 67]}
+                ticks={[25, 30, 35, 40, 45, 50, 55, 60, 65, 67]}
+                type="number"
+              />
+              <YAxis 
+                tickFormatter={(value) => `$${(value / 1000).toFixed(0)}k`}
+                domain={[0, 'auto']}
+              />
               <Tooltip content={<CustomTooltip />} />
               <Line 
                 type="monotone" 
