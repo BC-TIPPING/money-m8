@@ -284,32 +284,69 @@ const PostDebtInvestmentVisualization: React.FC<PostDebtInvestmentVisualizationP
                 <Area 
                   type="monotone" 
                   dataKey="conservative" 
-                  stackId="1" 
-                  stroke="hsl(var(--muted-foreground))" 
-                  fill="hsl(var(--muted-foreground))" 
-                  fillOpacity={0.3}
+                  stroke="#3b82f6"
+                  fill="#3b82f6"
+                  fillOpacity={0.2}
                   name="Conservative (5%)"
                 />
                 <Area 
                   type="monotone" 
                   dataKey="moderate" 
-                  stackId="2" 
-                  stroke="hsl(var(--primary))" 
-                  fill="hsl(var(--primary))" 
-                  fillOpacity={0.6}
+                  stroke="#10b981"
+                  fill="#10b981"
+                  fillOpacity={0.4}
                   name="Moderate (7.5%)"
                 />
                 <Area 
                   type="monotone" 
                   dataKey="aggressive" 
-                  stackId="3" 
-                  stroke="hsl(var(--chart-2))" 
-                  fill="hsl(var(--chart-2))" 
-                  fillOpacity={0.4}
+                  stroke="#8b5cf6"
+                  fill="#8b5cf6"
+                  fillOpacity={0.3}
                   name="Aggressive (10%)"
                 />
               </AreaChart>
             </ResponsiveContainer>
+          </div>
+
+          {/* Milestone Table */}
+          <div className="overflow-x-auto">
+            <h4 className="font-semibold text-gray-900 mb-3">Investment Milestones (7.5% return)</h4>
+            <table className="w-full text-sm border-collapse">
+              <thead>
+                <tr className="bg-gray-100">
+                  <th className="border border-gray-200 px-3 py-2 text-left font-semibold">Year</th>
+                  <th className="border border-gray-200 px-3 py-2 text-right font-semibold">Total Invested</th>
+                  <th className="border border-gray-200 px-3 py-2 text-right font-semibold">Investment Profit</th>
+                  <th className="border border-gray-200 px-3 py-2 text-right font-semibold">Total Balance</th>
+                  <th className="border border-gray-200 px-3 py-2 text-right font-semibold text-emerald-700">With +10% Extra</th>
+                </tr>
+              </thead>
+              <tbody>
+                {[5, 10, 15, 20].map((year) => {
+                  const months = year * 12;
+                  const monthlyRate = 0.075 / 12;
+                  const invested = monthlyInvestmentAmount * months;
+                  const balance = monthlyInvestmentAmount * ((Math.pow(1 + monthlyRate, months) - 1) / monthlyRate);
+                  const profit = balance - invested;
+                  const investedExtra = (monthlyInvestmentAmount * 1.1) * months;
+                  const balanceExtra = (monthlyInvestmentAmount * 1.1) * ((Math.pow(1 + monthlyRate, months) - 1) / monthlyRate);
+                  
+                  return (
+                    <tr key={year} className={year % 10 === 0 ? 'bg-blue-50' : ''}>
+                      <td className="border border-gray-200 px-3 py-2 font-medium">{year} years</td>
+                      <td className="border border-gray-200 px-3 py-2 text-right">${Math.round(invested).toLocaleString()}</td>
+                      <td className="border border-gray-200 px-3 py-2 text-right text-green-600 font-medium">+${Math.round(profit).toLocaleString()}</td>
+                      <td className="border border-gray-200 px-3 py-2 text-right font-bold">${Math.round(balance).toLocaleString()}</td>
+                      <td className="border border-gray-200 px-3 py-2 text-right font-bold text-emerald-600">${Math.round(balanceExtra).toLocaleString()}</td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+            <p className="text-xs text-gray-500 mt-2">
+              * "With +10% Extra" shows the impact of increasing your monthly investment by just 10% (${Math.round(monthlyInvestmentAmount * 0.1).toLocaleString()} more per month)
+            </p>
           </div>
           
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -446,36 +483,72 @@ const PostDebtInvestmentVisualization: React.FC<PostDebtInvestmentVisualizationP
               <Tooltip content={<CustomTooltip />} />
               <Legend wrapperStyle={{ paddingTop: '3px' }} />
               
-              {/* Debt payoff period indicator */}
               <Area 
                 type="monotone" 
                 dataKey="conservative" 
-                stackId="1" 
-                stroke="hsl(var(--muted-foreground))" 
-                fill="hsl(var(--muted-foreground))" 
-                fillOpacity={0.3}
+                stroke="#3b82f6"
+                fill="#3b82f6"
+                fillOpacity={0.2}
                 name="Conservative (5%)"
               />
               <Area 
                 type="monotone" 
                 dataKey="moderate" 
-                stackId="2" 
-                stroke="hsl(var(--primary))" 
-                fill="hsl(var(--primary))" 
-                fillOpacity={0.6}
+                stroke="#10b981"
+                fill="#10b981"
+                fillOpacity={0.4}
                 name="Moderate (7.5%)"
               />
               <Area 
                 type="monotone" 
                 dataKey="aggressive" 
-                stackId="3" 
-                stroke="hsl(var(--chart-2))" 
-                fill="hsl(var(--chart-2))" 
-                fillOpacity={0.4}
+                stroke="#8b5cf6"
+                fill="#8b5cf6"
+                fillOpacity={0.3}
                 name="Aggressive (10%)"
               />
             </AreaChart>
           </ResponsiveContainer>
+        </div>
+
+        {/* Milestone Table */}
+        <div className="overflow-x-auto">
+          <h4 className="font-semibold text-gray-900 mb-3">Investment Milestones (7.5% return)</h4>
+          <table className="w-full text-sm border-collapse">
+            <thead>
+              <tr className="bg-gray-100">
+                <th className="border border-gray-200 px-3 py-2 text-left font-semibold">Year</th>
+                <th className="border border-gray-200 px-3 py-2 text-right font-semibold">Total Invested</th>
+                <th className="border border-gray-200 px-3 py-2 text-right font-semibold">Investment Profit</th>
+                <th className="border border-gray-200 px-3 py-2 text-right font-semibold">Total Balance</th>
+                <th className="border border-gray-200 px-3 py-2 text-right font-semibold text-emerald-700">With +10% Extra</th>
+              </tr>
+            </thead>
+            <tbody>
+              {[5, 10, 15, 20].map((year) => {
+                const months = year * 12;
+                const monthlyRate = 0.075 / 12;
+                const invested = metrics.monthlyInvestmentAmount * months;
+                const balance = metrics.monthlyInvestmentAmount * ((Math.pow(1 + monthlyRate, months) - 1) / monthlyRate);
+                const profit = balance - invested;
+                const investedExtra = (metrics.monthlyInvestmentAmount * 1.1) * months;
+                const balanceExtra = (metrics.monthlyInvestmentAmount * 1.1) * ((Math.pow(1 + monthlyRate, months) - 1) / monthlyRate);
+                
+                return (
+                  <tr key={year} className={year % 10 === 0 ? 'bg-blue-50' : ''}>
+                    <td className="border border-gray-200 px-3 py-2 font-medium">{year} years</td>
+                    <td className="border border-gray-200 px-3 py-2 text-right">${Math.round(invested).toLocaleString()}</td>
+                    <td className="border border-gray-200 px-3 py-2 text-right text-green-600 font-medium">+${Math.round(profit).toLocaleString()}</td>
+                    <td className="border border-gray-200 px-3 py-2 text-right font-bold">${Math.round(balance).toLocaleString()}</td>
+                    <td className="border border-gray-200 px-3 py-2 text-right font-bold text-emerald-600">${Math.round(balanceExtra).toLocaleString()}</td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+          <p className="text-xs text-gray-500 mt-2">
+            * "With +10% Extra" shows the impact of increasing your monthly investment by just 10% (${Math.round(metrics.monthlyInvestmentAmount * 0.1).toLocaleString()} more per month)
+          </p>
         </div>
 
         {/* Key Insights */}
