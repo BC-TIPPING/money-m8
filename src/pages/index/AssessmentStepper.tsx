@@ -1,7 +1,7 @@
 
 import React from "react";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, ArrowLeft, Loader2 } from "lucide-react";
+import { ArrowRight, ArrowLeft, Loader2, Info } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
@@ -862,9 +862,10 @@ const AssessmentStepper: React.FC<AssessmentStepperProps> = (props) => {
             {currentQuestion.subtitle}
           </p>
           {'helperText' in currentQuestion && (currentQuestion as any).helperText && (
-            <p className="text-sm text-muted-foreground bg-muted/50 p-3 rounded-lg mb-6 border-l-2 border-primary/30">
-              {(currentQuestion as any).helperText}
-            </p>
+            <div className="flex items-start gap-3 text-sm bg-blue-50 text-blue-700 p-4 rounded-lg mb-6 border border-blue-200">
+              <Info className="h-5 w-5 flex-shrink-0 mt-0.5" />
+              <p>{(currentQuestion as any).helperText}</p>
+            </div>
           )}
           
           {renderQuestion(currentQuestion)}
