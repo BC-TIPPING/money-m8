@@ -74,18 +74,21 @@ export const healthCheckQuestions = [
     id: "postcode",
     title: "Location",
     subtitle: "What's your postcode?",
+    helperText: "We use this to compare your finances to others in your region. If you're not comfortable sharing, select the nearest capital city postcode.",
     type: "text",
   },
   {
     id: "age",
     title: "Age",
     subtitle: "What's your age?",
+    helperText: "Your age helps us calculate retirement projections and compare your super balance to relevant benchmarks.",
     type: "number",
   },
   {
     id: "superBalance",
     title: "Superannuation Balance",
     subtitle: "What's your current super balance?",
+    helperText: "This allows us to assess if you're on track for retirement compared to others your age.",
     type: "number",
   },
   {
