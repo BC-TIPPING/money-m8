@@ -858,9 +858,14 @@ const AssessmentStepper: React.FC<AssessmentStepperProps> = (props) => {
           <h2 className="text-2xl font-bold text-gray-900 mb-2">
             {currentQuestion.title}
           </h2>
-          <p className="text-gray-600 mb-8">
+          <p className="text-gray-600 mb-4">
             {currentQuestion.subtitle}
           </p>
+          {'helperText' in currentQuestion && (currentQuestion as any).helperText && (
+            <p className="text-sm text-muted-foreground bg-muted/50 p-3 rounded-lg mb-6 border-l-2 border-primary/30">
+              {(currentQuestion as any).helperText}
+            </p>
+          )}
           
           {renderQuestion(currentQuestion)}
         </div>
