@@ -488,7 +488,7 @@ const FullFinancialHealthCheck: React.FC<FullFinancialHealthCheckProps> = ({
               <PiggyBank className="h-5 w-5 text-blue-600" />
               Superannuation Health
             </div>
-            <Link to="/maximise-super">
+            <Link to="/maximise-super" state={{ age, superBalance, salary: annualIncome, fromHealthCheck: true }}>
               <Button variant="outline" size="sm">
                 Super Calculator <ArrowRight className="h-4 w-4 ml-1" />
               </Button>
@@ -1295,7 +1295,7 @@ const FullFinancialHealthCheck: React.FC<FullFinancialHealthCheckProps> = ({
               <div className="flex items-center gap-2">
                 <div className="w-8 h-8 bg-blue-600 text-white rounded-full flex items-center justify-center text-sm font-bold">4</div>
                 <p className="font-medium">Boost superannuation contributions</p>
-                <Link to="/maximise-super">
+                <Link to="/maximise-super" state={{ age, superBalance, salary: annualIncome, fromHealthCheck: true }}>
                   <Button variant="outline" size="sm">
                     Super Calc <ArrowRight className="h-4 w-4 ml-1" />
                   </Button>
@@ -1328,7 +1328,7 @@ const FullFinancialHealthCheck: React.FC<FullFinancialHealthCheckProps> = ({
                 }}>
                   Budget Planner
                 </Button>
-                <Link to="/maximise-super">
+                <Link to="/maximise-super" state={{ age, superBalance, salary: annualIncome, fromHealthCheck: true }}>
                   <Button size="sm" variant="outline">Super Calculator</Button>
                 </Link>
                 <Link to="/pay-off-home-loan">

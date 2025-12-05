@@ -1,20 +1,47 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { ArrowLeft, Calculator, TrendingUp } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import SuperannuationChart from './SuperannuationChart';
 
+interface LocationState {
+  age?: number;
+  superBalance?: number;
+  salary?: number;
+  fromHealthCheck?: boolean;
+}
+
 export default function MaximiseSuper() {
-  const [currentAge, setCurrentAge] = useState(30);
+  const navigate = useNavigate();
+  const location = useLocation();
+  const state = location.state as LocationState | null;
+
+  // Use assessment data from navigation state if available
+  const [currentAge, setCurrentAge] = useState(state?.age || 30);
   const [retirementAge, setRetirementAge] = useState(67);
-  const [currentBalance, setCurrentBalance] = useState(50000);
-  const [currentSalary, setCurrentSalary] = useState(80000);
+  const [currentBalance, setCurrentBalance] = useState(state?.superBalance || 50000);
+  const [currentSalary, setCurrentSalary] = useState(state?.salary || 80000);
   const [additionalContributions, setAdditionalContributions] = useState(2000);
   const [salaryPackaging, setSalaryPackaging] = useState(0);
+
+  // Scroll to top on mount
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'instant' });
+  }, []);
+
+  // Handle back navigation
+  const handleBack = () => {
+    if (state?.fromHealthCheck) {
+      // Navigate back and trigger health check view
+      navigate('/', { state: { returnToHealthCheck: true } });
+    } else {
+      navigate('/');
+    }
+  };
 
   // Calculate projections
   const yearsToRetirement = retirementAge - currentAge;
@@ -45,11 +72,9 @@ export default function MaximiseSuper() {
     <div className="min-h-screen bg-gray-50 py-8">
       <div className="container mx-auto px-4 max-w-4xl">
         <div className="mb-6">
-          <Button asChild variant="outline" className="mb-4">
-            <Link to="/">
-              <ArrowLeft className="mr-2 h-4 w-4" />
-              Back to Assessment
-            </Link>
+          <Button variant="outline" className="mb-4" onClick={handleBack}>
+            <ArrowLeft className="mr-2 h-4 w-4" />
+            {state?.fromHealthCheck ? 'Back to Health Check' : 'Back to Assessment'}
           </Button>
           <h1 className="text-3xl font-bold text-gray-900 mb-2">💰 Maximise Your Super</h1>
           <p className="text-gray-600">
