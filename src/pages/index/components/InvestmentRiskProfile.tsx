@@ -161,30 +161,50 @@ const InvestmentRiskProfile: React.FC<InvestmentRiskProfileProps> = ({ riskProfi
           <div className="space-y-4">
             <div className="border-l-4 border-purple-300 pl-3">
               <h5 className="font-semibold text-purple-900">1. Vanguard Australian Shares Index (VAS)</h5>
+              <div className="flex gap-4 text-xs text-purple-700 mb-1">
+                <span className="bg-purple-200 px-2 py-0.5 rounded">5yr Avg Return: 8.2% p.a.</span>
+                <span className="bg-purple-200 px-2 py-0.5 rounded">Beta: 1.0</span>
+              </div>
               <p className="text-sm text-purple-800 mb-1">Contains: Top 300 Australian companies (CBA, BHP, CSL, Woolworths)</p>
               <p className="text-sm text-purple-800">Why it suits you: Core Australian exposure, franking credits, matches your home market</p>
             </div>
             
             <div className="border-l-4 border-purple-300 pl-3">
               <h5 className="font-semibold text-purple-900">2. Vanguard International Shares Index (VGS)</h5>
+              <div className="flex gap-4 text-xs text-purple-700 mb-1">
+                <span className="bg-purple-200 px-2 py-0.5 rounded">5yr Avg Return: 12.8% p.a.</span>
+                <span className="bg-purple-200 px-2 py-0.5 rounded">Beta: 1.05</span>
+              </div>
               <p className="text-sm text-purple-800 mb-1">Contains: 1,500+ global companies (Apple, Microsoft, Amazon, Google)</p>
               <p className="text-sm text-purple-800">Why it suits you: Global diversification, access to world's largest companies, currency hedging</p>
             </div>
 
             <div className="border-l-4 border-purple-300 pl-3">
               <h5 className="font-semibold text-purple-900">3. iShares Core S&P 500 (IVV)</h5>
+              <div className="flex gap-4 text-xs text-purple-700 mb-1">
+                <span className="bg-purple-200 px-2 py-0.5 rounded">5yr Avg Return: 14.5% p.a.</span>
+                <span className="bg-purple-200 px-2 py-0.5 rounded">Beta: 1.0</span>
+              </div>
               <p className="text-sm text-purple-800 mb-1">Contains: 500 largest US companies (Tesla, NVIDIA, Meta, Netflix)</p>
               <p className="text-sm text-purple-800">Why it suits you: Access to US growth, tech innovation, world's strongest economy</p>
             </div>
 
             <div className="border-l-4 border-purple-300 pl-3">
               <h5 className="font-semibold text-purple-900">4. Vanguard Emerging Markets (VGE)</h5>
+              <div className="flex gap-4 text-xs text-purple-700 mb-1">
+                <span className="bg-purple-200 px-2 py-0.5 rounded">5yr Avg Return: 4.2% p.a.</span>
+                <span className="bg-purple-200 px-2 py-0.5 rounded">Beta: 1.15</span>
+              </div>
               <p className="text-sm text-purple-800 mb-1">Contains: Companies from China, India, Taiwan, South Korea (Alibaba, TSMC)</p>
               <p className="text-sm text-purple-800">Why it suits you: Higher growth potential, demographic trends, diversification from developed markets</p>
             </div>
 
             <div className="border-l-4 border-purple-300 pl-3">
               <h5 className="font-semibold text-purple-900">5. Vanguard Australian Government Bonds (VGB)</h5>
+              <div className="flex gap-4 text-xs text-purple-700 mb-1">
+                <span className="bg-purple-200 px-2 py-0.5 rounded">5yr Avg Return: 1.8% p.a.</span>
+                <span className="bg-purple-200 px-2 py-0.5 rounded">Beta: 0.1</span>
+              </div>
               <p className="text-sm text-purple-800 mb-1">Contains: Australian government treasury bonds with various maturity dates</p>
               <p className="text-sm text-purple-800">Why it suits you: Stability during market crashes, income generation, balances stock volatility</p>
             </div>
@@ -194,6 +214,9 @@ const InvestmentRiskProfile: React.FC<InvestmentRiskProfileProps> = ({ riskProfi
             <p className="text-xs text-purple-900">
               <strong>Portfolio Suggestion:</strong> Start with VAS (40%) + VGS (40%) + IVV (20%) for a simple, globally diversified portfolio. 
               Add VGE (10%) and VGB (10%) as you grow more comfortable with investing.
+            </p>
+            <p className="text-xs text-purple-700 mt-1 italic">
+              Note: Returns are historical averages and do not guarantee future performance. Beta measures volatility relative to the market.
             </p>
           </div>
         </div>
