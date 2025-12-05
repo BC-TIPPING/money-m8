@@ -778,8 +778,18 @@ const FullFinancialHealthCheck: React.FC<FullFinancialHealthCheckProps> = ({
             
             if (isUnder50 && !hasMortgage) {
               // Show Home Buying section instead of mortgage payoff
-              // Use 30% debt-to-income ratio as the standard for house buying (consistent with HouseBuyingCalculator)
-              const maxHousingPayment = monthlyNetIncome * 0.3;
+              // Calculate current rent/mortgage from expenses
+              const currentHousingExpense = calculateMonthlyAmount(
+                expenseItems.filter(item => 
+                  item.category === 'Housing (Rent/Mortgage)' || 
+                  item.category === 'Housing' || 
+                  item.category === 'Rent'
+                )
+              );
+              
+              // Use 30% debt-to-income ratio PLUS current rent (since you're already paying rent, you can afford that + more)
+              const baseMaxHousingPayment = monthlyNetIncome * 0.3;
+              const maxHousingPayment = baseMaxHousingPayment + currentHousingExpense;
               
               // Calculate maximum loan amount using proper mortgage formula (6.5% rate, 30 years)
               const interestRate = 6.5;

@@ -26,8 +26,18 @@ const HouseBuyingCalculator: React.FC<HouseBuyingCalculatorProps> = ({
   // Calculate monthly expenses
   const totalMonthlyExpenses = calculateMonthlyAmount(assessmentData.expenseItems);
   
-  // Use 30% debt-to-income ratio as the standard for house buying
-  const maxHousingPayment = totalMonthlyNetIncome * 0.3;
+  // Calculate current rent/mortgage from expenses
+  const currentHousingExpense = calculateMonthlyAmount(
+    (assessmentData.expenseItems || []).filter((item: any) => 
+      item.category === 'Housing (Rent/Mortgage)' || 
+      item.category === 'Housing' || 
+      item.category === 'Rent'
+    )
+  );
+  
+  // Use 30% debt-to-income ratio PLUS current rent (since you're already paying rent)
+  const baseMaxHousingPayment = totalMonthlyNetIncome * 0.3;
+  const maxHousingPayment = baseMaxHousingPayment + currentHousingExpense;
   
   // Calculate maximum loan amount based on 30% debt-to-income ratio
   const monthlyRate = interestRate / 100 / 12;
