@@ -58,17 +58,40 @@ export default function Index() {
   useEffect(() => {
     const state = location.state as { returnToHealthCheck?: boolean } | null;
     if (state?.returnToHealthCheck) {
-      // Use setTimeout to ensure state is properly initialized
-      setTimeout(() => {
-        const totalQuestions = questions.length + healthCheckQuestions.length;
-        assessment.setGoals(['Full Financial Health Check']);
-        assessment.setStep(totalQuestions);
-        assessment.setIsFinished(true);
-        assessment.setShowAssessment(true);
-        window.scrollTo({ top: 0, behavior: 'instant' });
-        // Clear the state to prevent re-triggering
-        window.history.replaceState({}, document.title);
-      }, 50);
+      // Restore assessment data from sessionStorage
+      const savedData = sessionStorage.getItem('healthCheckAssessmentData');
+      if (savedData) {
+        try {
+          const data = JSON.parse(savedData);
+          // Restore all assessment fields
+          if (data.age !== undefined) assessment.setAge(data.age);
+          if (data.postcode) assessment.setPostcode(data.postcode);
+          if (data.superBalance !== undefined) assessment.setSuperBalance(data.superBalance);
+          if (data.superFund) assessment.setSuperFund(data.superFund);
+          if (data.mortgageRate !== undefined) assessment.setMortgageRate(data.mortgageRate);
+          if (data.insurances) assessment.setInsurances(data.insurances);
+          if (data.assets) assessment.setAssets(data.assets);
+          if (data.debtTypes) assessment.setDebtTypes(data.debtTypes);
+          if (data.debtDetails) assessment.setDebtDetails(data.debtDetails);
+          if (data.incomeSources) assessment.setIncomeSources(data.incomeSources);
+          if (data.expenseItems) assessment.setExpenseItems(data.expenseItems);
+          if (data.goals) assessment.setGoals(data.goals);
+          // Clear sessionStorage after restoring
+          sessionStorage.removeItem('healthCheckAssessmentData');
+        } catch (e) {
+          console.error('Failed to restore assessment data:', e);
+        }
+      }
+      
+      // Set view state to show health check summary
+      const totalQuestions = questions.length + healthCheckQuestions.length;
+      assessment.setGoals(['Full Financial Health Check']);
+      assessment.setStep(totalQuestions);
+      assessment.setIsFinished(true);
+      assessment.setShowAssessment(true);
+      window.scrollTo({ top: 0, behavior: 'instant' });
+      // Clear the state to prevent re-triggering
+      window.history.replaceState({}, document.title);
     }
   }, [location.state]);
 

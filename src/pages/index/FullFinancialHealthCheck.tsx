@@ -1,11 +1,11 @@
 
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
 import { ArrowRight, TrendingUp, Shield, Home, PiggyBank, Target, BarChart3, DollarSign, Calendar, TrendingDown, Loader2, ExternalLink } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import IncomeComparisonChart from "./components/IncomeComparisonChart";
 import SuperBenchmarkChart from "./components/SuperBenchmarkChart";
 import DebtPayoffVisualization from "./components/DebtPayoffVisualization";
@@ -55,6 +55,34 @@ const FullFinancialHealthCheck: React.FC<FullFinancialHealthCheckProps> = ({
   aiSummary
 }) => {
   const [showToughLove, setShowToughLove] = useState(false);
+  const navigate = useNavigate();
+
+  // Save assessment data to sessionStorage and navigate to super calculator
+  const navigateToSuperCalculator = useCallback(() => {
+    const assessmentData = {
+      age,
+      postcode,
+      superBalance,
+      superFund,
+      mortgageRate,
+      insurances,
+      assets,
+      debtTypes,
+      debtDetails,
+      incomeSources,
+      expenseItems,
+      goals,
+    };
+    sessionStorage.setItem('healthCheckAssessmentData', JSON.stringify(assessmentData));
+    navigate('/maximise-super', { 
+      state: { 
+        age, 
+        superBalance, 
+        salary: calculateMonthlyAmount(incomeSources) * 12, 
+        fromHealthCheck: true 
+      } 
+    });
+  }, [age, postcode, superBalance, superFund, mortgageRate, insurances, assets, debtTypes, debtDetails, incomeSources, expenseItems, goals, navigate]);
   // Calculate income using the established function
   const monthlyIncome = calculateMonthlyAmount(incomeSources);
   const annualIncome = monthlyIncome * 12;
@@ -488,11 +516,9 @@ const FullFinancialHealthCheck: React.FC<FullFinancialHealthCheckProps> = ({
               <PiggyBank className="h-5 w-5 text-blue-600" />
               Superannuation Health
             </div>
-            <Link to="/maximise-super" state={{ age, superBalance, salary: annualIncome, fromHealthCheck: true }}>
-              <Button variant="outline" size="sm">
+            <Button variant="outline" size="sm" onClick={navigateToSuperCalculator}>
                 Super Calculator <ArrowRight className="h-4 w-4 ml-1" />
               </Button>
-            </Link>
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
@@ -1295,11 +1321,9 @@ const FullFinancialHealthCheck: React.FC<FullFinancialHealthCheckProps> = ({
               <div className="flex items-center gap-2">
                 <div className="w-8 h-8 bg-blue-600 text-white rounded-full flex items-center justify-center text-sm font-bold">4</div>
                 <p className="font-medium">Boost superannuation contributions</p>
-                <Link to="/maximise-super" state={{ age, superBalance, salary: annualIncome, fromHealthCheck: true }}>
-                  <Button variant="outline" size="sm">
-                    Super Calc <ArrowRight className="h-4 w-4 ml-1" />
-                  </Button>
-                </Link>
+                <Button variant="outline" size="sm" onClick={navigateToSuperCalculator}>
+                  Super Calc <ArrowRight className="h-4 w-4 ml-1" />
+                </Button>
               </div>
 
               {!highInterestDebt && (
@@ -1328,9 +1352,7 @@ const FullFinancialHealthCheck: React.FC<FullFinancialHealthCheckProps> = ({
                 }}>
                   Budget Planner
                 </Button>
-                <Link to="/maximise-super" state={{ age, superBalance, salary: annualIncome, fromHealthCheck: true }}>
-                  <Button size="sm" variant="outline">Super Calculator</Button>
-                </Link>
+                <Button size="sm" variant="outline" onClick={navigateToSuperCalculator}>Super Calculator</Button>
                 <Link to="/pay-off-home-loan">
                   <Button size="sm" variant="outline">Debt Calculator</Button>
                 </Link>
