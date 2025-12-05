@@ -4,8 +4,9 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
-import { ArrowRight, TrendingUp, Shield, Home, PiggyBank, Target, BarChart3, DollarSign, Calendar, TrendingDown, Loader2, ExternalLink } from "lucide-react";
+import { ArrowRight, TrendingUp, Shield, Home, PiggyBank, Target, BarChart3, DollarSign, Calendar, TrendingDown, Loader2, ExternalLink, Info } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import IncomeComparisonChart from "./components/IncomeComparisonChart";
 import SuperBenchmarkChart from "./components/SuperBenchmarkChart";
 import DebtPayoffVisualization from "./components/DebtPayoffVisualization";
@@ -813,9 +814,24 @@ const FullFinancialHealthCheck: React.FC<FullFinancialHealthCheckProps> = ({
                 )
               );
               
-              // Use 30% debt-to-income ratio PLUS current rent (since you're already paying rent, you can afford that + more)
-              const baseMaxHousingPayment = monthlyNetIncome * 0.3;
-              const maxHousingPayment = baseMaxHousingPayment + currentHousingExpense;
+              // Calculate savings from expense items
+              const monthlySavingsExpense = calculateMonthlyAmount(
+                expenseItems.filter(item => 
+                  item.category === 'Savings' || 
+                  item.category === 'Investments'
+                )
+              );
+              
+              // Use 30% debt-to-income ratio ONLY
+              const maxHousingPayment = monthlyNetIncome * 0.3;
+              
+              // Budget surplus = income - expenses
+              const budgetSurplus = monthlyNetIncome - monthlyExpenses;
+              
+              // Calculate reduction in current expenses needed
+              // What they have available: budget surplus + savings + current rent
+              const currentlyAvailable = budgetSurplus + monthlySavingsExpense + currentHousingExpense;
+              const reductionInExpenses = Math.max(0, maxHousingPayment - currentlyAvailable);
               
               // Calculate maximum loan amount using proper mortgage formula (6.5% rate, 30 years)
               const interestRate = 6.5;
@@ -867,9 +883,29 @@ const FullFinancialHealthCheck: React.FC<FullFinancialHealthCheckProps> = ({
                           <p className="text-xs text-gray-500">Based on 30-year loan at 6.5% with $100k deposit</p>
                         </div>
                         <div>
-                          <p className="text-sm text-gray-600">Amount Available for Housing:</p>
-                          <p className="text-2xl font-bold text-green-600">
-                            ${Math.round(maxHousingPayment).toLocaleString()}
+                          <TooltipProvider>
+                            <Tooltip>
+                              <TooltipTrigger asChild>
+                                <p className="text-sm text-gray-600 flex items-center gap-1 cursor-help">
+                                  Reduction in Current Expenses:
+                                  <Info className="h-3 w-3 text-gray-400" />
+                                </p>
+                              </TooltipTrigger>
+                              <TooltipContent className="max-w-xs">
+                                <p className="text-xs">
+                                  <strong>Formula:</strong> Max Payment − (Budget Surplus + Savings + Rent)
+                                </p>
+                                <p className="text-xs mt-1">
+                                  This shows how much you need to reduce your current non-housing expenses to afford the maximum mortgage payment.
+                                </p>
+                              </TooltipContent>
+                            </Tooltip>
+                          </TooltipProvider>
+                          <p className={`text-2xl font-bold ${reductionInExpenses > 0 ? 'text-amber-600' : 'text-green-600'}`}>
+                            {reductionInExpenses > 0 
+                              ? `$${Math.round(reductionInExpenses).toLocaleString()}`
+                              : 'None needed!'
+                            }
                           </p>
                         </div>
                       </div>
