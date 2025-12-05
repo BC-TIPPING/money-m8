@@ -555,23 +555,23 @@ const FullFinancialHealthCheck: React.FC<FullFinancialHealthCheckProps> = ({
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                       <div>
                         <p className="text-xs text-blue-600 font-medium">Current Balance (4% Rule)</p>
-                        <p className="text-lg font-bold text-blue-900">${currentAnnualIncome.toLocaleString()}/year</p>
+                        <p className="text-lg font-bold text-blue-900">${Math.round(currentAnnualIncome).toLocaleString()}/year</p>
                         <p className="text-xs text-blue-600">≈ ${Math.round(currentAnnualIncome / 12).toLocaleString()}/month</p>
                       </div>
                       <div>
                         <p className="text-xs text-blue-600 font-medium">At Retirement (Age 67)</p>
-                        <p className="text-lg font-bold text-emerald-600">${projectedAnnualIncome.toLocaleString()}/year</p>
+                        <p className="text-lg font-bold text-emerald-600">${Math.round(projectedAnnualIncome).toLocaleString()}/year</p>
                         <p className="text-xs text-blue-600">≈ ${Math.round(projectedAnnualIncome / 12).toLocaleString()}/month</p>
                       </div>
                       <div>
                         <p className="text-xs text-blue-600 font-medium">With +10% Salary Sacrifice</p>
-                        <p className="text-lg font-bold text-purple-600">${projectedAnnualIncomeExtra.toLocaleString()}/year</p>
+                        <p className="text-lg font-bold text-purple-600">${Math.round(projectedAnnualIncomeExtra).toLocaleString()}/year</p>
                         <p className="text-xs text-blue-600">≈ ${Math.round(projectedAnnualIncomeExtra / 12).toLocaleString()}/month</p>
                       </div>
                     </div>
                     <div className="mt-3 pt-3 border-t border-blue-200">
                       <p className="text-xs text-blue-700">
-                        <strong>Additional income from +10% contributions:</strong> ${(projectedAnnualIncomeExtra - projectedAnnualIncome).toLocaleString()}/year more in retirement
+                        <strong>Additional income from +10% contributions:</strong> ${Math.round(projectedAnnualIncomeExtra - projectedAnnualIncome).toLocaleString()}/year more in retirement
                       </p>
                     </div>
                   </div>
