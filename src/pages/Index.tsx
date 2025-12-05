@@ -1,7 +1,7 @@
 import LandingSection from "./index/LandingSection";
 import AssessmentStepper from "./index/AssessmentStepper";
 import AssessmentSummary from "./index/AssessmentSummary";
-import { useAssessmentState, questions } from "./index/assessmentHooks";
+import { useAssessmentState, questions, healthCheckQuestions } from "./index/assessmentHooks";
 import { useAssessmentData } from "./index/hooks/useAssessmentData";
 import InterestSavedChart from "./index/InterestSavedChart";
 import DebtReductionChart from "./index/DebtReductionChart";
@@ -141,7 +141,9 @@ export default function Index() {
   const handleBackToHealthCheck = () => {
     // Directly navigate to Full Financial Health Check without triggering goal change logic
     // that might reset showAssessment
-    assessment.setStep(questions.length);
+    // Use total questions count (base + health check questions) to go to the summary
+    const totalQuestions = questions.length + healthCheckQuestions.length;
+    assessment.setStep(totalQuestions);
     assessment.setIsFinished(true);
     
     // Only update goals if not already set to Full Financial Health Check
