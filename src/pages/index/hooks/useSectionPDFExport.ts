@@ -15,8 +15,18 @@ export const useSectionPDFExport = () => {
     // Define section selectors in order - more specific and comprehensive
     const sectionSelectors = [
       '[data-export-section="stepper"]', // Assessment stepper/summary
-      '[data-export-section="budget-analysis"]', // Budget Analysis section
-      '[data-export-section="health-check"]', // Full Financial Health Check  
+      '[data-export-section="health-score"]', // Financial Health Score
+      '[data-export-section="kpi-cards"]', // KPI Cards
+      '[data-export-section="income-analysis"]', // Income Analysis
+      '[data-export-section="budget-analysis"]', // Budget Analysis (other goals)
+      '[data-export-section="budget-analysis-health"]', // Budget Analysis (health check)
+      '[data-export-section="super-health"]', // Superannuation Health
+      '[data-export-section="insurance-protection"]', // Insurance Protection
+      '[data-export-section="debt-strategy"]', // Debt Strategy
+      '[data-export-section="investment-strategy"]', // Investment Strategy
+      '[data-export-section="learning-resources"]', // Learning Resources
+      '[data-export-section="action-plan"]', // Financial Action Plan
+      '[data-export-section="ai-assistant"]', // AI Assistant
       '[data-export-section="charts"]', // Charts section
       '[data-export-section="action-items"]', // Action items
     ];

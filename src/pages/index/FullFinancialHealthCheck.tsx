@@ -314,7 +314,7 @@ const FullFinancialHealthCheck: React.FC<FullFinancialHealthCheckProps> = ({
 
       {/* Financial Health Score - Only show when assessment is complete */}
       {goals.includes('Full Financial Health Check') && (
-        <Card className="border-emerald-200 bg-gradient-to-br from-emerald-50 to-white">
+        <Card data-export-section="health-score" className="border-emerald-200 bg-gradient-to-br from-emerald-50 to-white">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <BarChart3 className="h-5 w-5 text-emerald-600" />
@@ -348,7 +348,7 @@ const FullFinancialHealthCheck: React.FC<FullFinancialHealthCheckProps> = ({
       )}
 
       {/* KPI Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+      <div data-export-section="kpi-cards" className="grid grid-cols-1 md:grid-cols-4 gap-4">
         <Card>
           <CardContent className="p-4">
             <div className="flex items-center gap-2">
@@ -397,7 +397,7 @@ const FullFinancialHealthCheck: React.FC<FullFinancialHealthCheckProps> = ({
       </div>
 
       {/* Section 1: Income Analysis */}
-      <Card className="border-emerald-200 bg-gradient-to-br from-emerald-50 to-white">
+      <Card data-export-section="income-analysis" className="border-emerald-200 bg-gradient-to-br from-emerald-50 to-white">
         <CardHeader>
           <CardTitle className="flex items-center justify-between">
             <div className="flex items-center gap-2">
@@ -451,7 +451,7 @@ const FullFinancialHealthCheck: React.FC<FullFinancialHealthCheckProps> = ({
       </Card>
 
       {/* Section 2: Budget Analysis */}
-      <Card className="border-purple-200 bg-gradient-to-br from-purple-50 to-white">
+      <Card data-export-section="budget-analysis-health" className="border-purple-200 bg-gradient-to-br from-purple-50 to-white">
         <CardHeader>
           <CardTitle className="flex items-center justify-between">
             <div className="flex items-center gap-2">
@@ -480,7 +480,7 @@ const FullFinancialHealthCheck: React.FC<FullFinancialHealthCheckProps> = ({
       </Card>
 
       {/* Section 3: Superannuation Health */}
-      <Card className="border-blue-200 bg-gradient-to-br from-blue-50 to-white">
+      <Card data-export-section="super-health" className="border-blue-200 bg-gradient-to-br from-blue-50 to-white">
         <CardHeader>
           <CardTitle className="flex items-center justify-between">
             <div className="flex items-center gap-2">
@@ -595,7 +595,7 @@ const FullFinancialHealthCheck: React.FC<FullFinancialHealthCheckProps> = ({
       </Card>
 
       {/* Section 4: Insurance Protection */}
-      <Card className="border-purple-200 bg-gradient-to-br from-purple-50 to-white">
+      <Card data-export-section="insurance-protection" className="border-purple-200 bg-gradient-to-br from-purple-50 to-white">
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <span className="w-8 h-8 bg-purple-600 text-white rounded-full flex items-center justify-center text-sm font-bold">4</span>
@@ -674,7 +674,7 @@ const FullFinancialHealthCheck: React.FC<FullFinancialHealthCheckProps> = ({
       </Card>
 
       {/* Section 5: Debt Strategy */}
-      <Card className="border-red-200 bg-gradient-to-br from-red-50 to-white">
+      <Card data-export-section="debt-strategy" className="border-red-200 bg-gradient-to-br from-red-50 to-white">
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <span className="w-8 h-8 bg-red-600 text-white rounded-full flex items-center justify-center text-sm font-bold">5</span>
@@ -899,7 +899,7 @@ const FullFinancialHealthCheck: React.FC<FullFinancialHealthCheckProps> = ({
       </Card>
 
       {/* Section 6: Investment Strategy */}
-      <Card className="border-indigo-200 bg-gradient-to-br from-indigo-50 to-white">
+      <Card data-export-section="investment-strategy" className="border-indigo-200 bg-gradient-to-br from-indigo-50 to-white">
         <CardHeader>
           <CardTitle className="flex items-center justify-between">
             <div className="flex items-center gap-2">
@@ -1082,7 +1082,7 @@ const FullFinancialHealthCheck: React.FC<FullFinancialHealthCheckProps> = ({
       </Card>
 
       {/* Section 7: Tailored Financial Resources */}
-      <Card className="border-orange-200 bg-gradient-to-br from-orange-50 to-white">
+      <Card data-export-section="learning-resources" className="border-orange-200 bg-gradient-to-br from-orange-50 to-white">
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <span className="w-8 h-8 bg-orange-600 text-white rounded-full flex items-center justify-center text-sm font-bold">7</span>
@@ -1229,7 +1229,7 @@ const FullFinancialHealthCheck: React.FC<FullFinancialHealthCheckProps> = ({
       </Card>
 
       {/* Section 8: Financial Action Plan */}
-      <Card className="border-emerald-200 bg-gradient-to-br from-emerald-50 to-white">
+      <Card data-export-section="action-plan" className="border-emerald-200 bg-gradient-to-br from-emerald-50 to-white">
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <span className="w-8 h-8 bg-emerald-600 text-white rounded-full flex items-center justify-center text-sm font-bold">8</span>
@@ -1333,7 +1333,7 @@ const FullFinancialHealthCheck: React.FC<FullFinancialHealthCheckProps> = ({
       </Card>
 
       {/* AI Financial Assistant */}
-      <Card>
+      <Card data-export-section="ai-assistant">
         <CardContent className="p-8">
           <HealthCheckAISearchSection 
             assessmentData={{

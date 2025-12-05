@@ -218,7 +218,7 @@ export default function Index() {
             {isComplete && (
               <>
                 {assessment.goals.includes('Full Financial Health Check') && isComplete && assessment.step >= questions.length && assessment.isFinished && (
-                  <div className="container mx-auto px-4 py-6 sm:px-6 lg:px-8 health-check-section" data-export-section="health-check">
+                  <div className="container mx-auto px-4 py-6 sm:px-6 lg:px-8 health-check-section">
                     <FullFinancialHealthCheck
                       age={assessment.age}
                       postcode={assessment.postcode}
