@@ -14,7 +14,7 @@ import { useEffect } from "react";
 import HouseBuyingCalculator from "./index/HouseBuyingCalculator";
 import InvestmentPropertyCalculator from "./index/InvestmentPropertyCalculator";
 import ActionItemsSection from "./index/ActionItemsSection";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import FullFinancialHealthCheck from "./index/FullFinancialHealthCheck";
 import { BarChart3 } from "lucide-react";
 import ReactMarkdown from 'react-markdown';
@@ -38,6 +38,7 @@ export default function Index() {
   const assessment = useAssessmentState();
   const { user, signOut } = useAuth();
   const { handleExportToPDF } = useSectionPDFExport();
+  const location = useLocation();
 
   const {
     aiSummary,
@@ -52,6 +53,21 @@ export default function Index() {
     handleSetBudgetGoal,
     hasCompletedAssessment,
   } = useAssessmentData(assessment);
+
+  // Handle return from external pages (like Super Calculator)
+  useEffect(() => {
+    const state = location.state as { returnToHealthCheck?: boolean } | null;
+    if (state?.returnToHealthCheck && hasCompletedAssessment) {
+      const totalQuestions = questions.length + healthCheckQuestions.length;
+      assessment.setGoals(['Full Financial Health Check']);
+      assessment.setStep(totalQuestions);
+      assessment.setIsFinished(true);
+      assessment.setShowAssessment(true);
+      window.scrollTo({ top: 0, behavior: 'instant' });
+      // Clear the state to prevent re-triggering
+      window.history.replaceState({}, document.title);
+    }
+  }, [location.state, hasCompletedAssessment]);
 
   const handleStartAssessment = (goal: string) => {
     // Check if user has completed assessment before and redirect accordingly
