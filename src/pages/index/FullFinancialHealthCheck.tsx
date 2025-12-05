@@ -778,16 +778,20 @@ const FullFinancialHealthCheck: React.FC<FullFinancialHealthCheckProps> = ({
             
             if (isUnder50 && !hasMortgage) {
               // Show Home Buying section instead of mortgage payoff
-              const housingExpenses = calculateMonthlyAmount(
-                expenseItems.filter(item => 
-                  item.category === 'Housing' || 
-                  item.category === 'Rent' ||
-                  item.category === 'Utilities'
-                )
-              );
+              // Use 30% debt-to-income ratio as the standard for house buying (consistent with HouseBuyingCalculator)
+              const maxHousingPayment = monthlyNetIncome * 0.3;
               
-              // Calculate available for housing (current housing + surplus + savings)
-              const availableForHousing = housingExpenses + Math.max(0, monthlySurplus) + savingsAndInvestmentsAmount;
+              // Calculate maximum loan amount using proper mortgage formula (6.5% rate, 30 years)
+              const interestRate = 6.5;
+              const loanTerm = 30;
+              const monthlyRate = interestRate / 100 / 12;
+              const numPayments = loanTerm * 12;
+              const maxLoanAmount = maxHousingPayment > 0 
+                ? (maxHousingPayment * (Math.pow(1 + monthlyRate, numPayments) - 1)) / 
+                  (monthlyRate * Math.pow(1 + monthlyRate, numPayments))
+                : 0;
+              const assumedDeposit = 100000;
+              const maxPurchasePrice = maxLoanAmount + assumedDeposit;
               
               // Calculate time to save 5% deposit based on budget surplus
               const depositTarget = 50000; // 5% of roughly $1M house
@@ -816,20 +820,20 @@ const FullFinancialHealthCheck: React.FC<FullFinancialHealthCheckProps> = ({
                         <div>
                           <p className="text-sm text-gray-600">Maximum Monthly Payment:</p>
                           <p className="text-2xl font-bold text-green-600">
-                            ${availableForHousing.toLocaleString('en-US', { maximumFractionDigits: 0 })}
+                            ${Math.round(maxHousingPayment).toLocaleString()}
                           </p>
                         </div>
                         <div>
                           <p className="text-sm text-gray-600">Maximum Purchase Price:</p>
                           <p className="text-2xl font-bold text-blue-600">
-                            ${((availableForHousing * 300) + 100000).toLocaleString('en-US', { maximumFractionDigits: 0 })}
+                            ${Math.round(maxPurchasePrice).toLocaleString()}
                           </p>
-                          <p className="text-xs text-gray-500">Based on 30-year loan at 6.5%</p>
+                          <p className="text-xs text-gray-500">Based on 30-year loan at 6.5% with $100k deposit</p>
                         </div>
                         <div>
                           <p className="text-sm text-gray-600">Amount Available for Housing:</p>
                           <p className="text-2xl font-bold text-green-600">
-                            ${availableForHousing.toLocaleString('en-US', { maximumFractionDigits: 0 })}
+                            ${Math.round(maxHousingPayment).toLocaleString()}
                           </p>
                         </div>
                       </div>
