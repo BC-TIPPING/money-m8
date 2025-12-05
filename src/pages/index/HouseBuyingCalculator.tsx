@@ -4,8 +4,9 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Calculator, TrendingUp, AlertCircle } from 'lucide-react';
+import { Calculator, TrendingUp, AlertCircle, Info } from 'lucide-react';
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { calculateMonthlyAmount } from "@/lib/financialCalculations";
 
 interface HouseBuyingCalculatorProps {
@@ -165,7 +166,24 @@ const HouseBuyingCalculator: React.FC<HouseBuyingCalculatorProps> = ({
               <p className="text-xs text-gray-500">Based on {loanTerm}-year loan at {interestRate}% with ${deposit.toLocaleString()} deposit</p>
             </div>
             <div>
-              <p className="text-sm text-gray-600">Reduction in Current Expenses:</p>
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <p className="text-sm text-gray-600 flex items-center gap-1 cursor-help">
+                      Reduction in Current Expenses:
+                      <Info className="h-3 w-3 text-gray-400" />
+                    </p>
+                  </TooltipTrigger>
+                  <TooltipContent className="max-w-xs">
+                    <p className="text-xs">
+                      <strong>Formula:</strong> Max Payment − (Budget Surplus + Savings + Rent)
+                    </p>
+                    <p className="text-xs mt-1">
+                      This shows how much you need to reduce your current non-housing expenses to afford the maximum mortgage payment.
+                    </p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
               <p className={`text-2xl font-bold ${reductionInExpenses > 0 ? 'text-amber-600' : 'text-green-600'}`}>
                 {reductionInExpenses > 0 
                   ? `$${reductionInExpenses.toLocaleString('en-US', { maximumFractionDigits: 0 })}`
