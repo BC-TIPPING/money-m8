@@ -12,27 +12,73 @@ export const useSectionPDFExport = () => {
     const contentWidth = pdfWidth - (2 * margin);
     const contentHeight = pdfHeight - (2 * margin);
 
+    // Load logo image
+    const loadLogo = (): Promise<string | null> => {
+      return new Promise((resolve) => {
+        const img = new Image();
+        img.crossOrigin = 'anonymous';
+        img.onload = () => {
+          const canvas = document.createElement('canvas');
+          canvas.width = img.width;
+          canvas.height = img.height;
+          const ctx = canvas.getContext('2d');
+          if (ctx) {
+            ctx.drawImage(img, 0, 0);
+            resolve(canvas.toDataURL('image/png'));
+          } else {
+            resolve(null);
+          }
+        };
+        img.onerror = () => resolve(null);
+        img.src = '/lovable-uploads/3b4aa2ff-8ca4-4b86-85e7-85b1d027ca73.png';
+      });
+    };
+
     // Add title page header
-    const addHeader = () => {
-      // Add logo (using a simple placeholder shape for now)
-      pdf.setFillColor(16, 185, 129); // Emerald color
-      pdf.circle(pdfWidth / 2 - 15, 25, 8, 'F');
-      pdf.setFillColor(59, 130, 246); // Blue color
-      pdf.circle(pdfWidth / 2 + 5, 25, 6, 'F');
-      pdf.setFillColor(168, 85, 247); // Purple color
-      pdf.circle(pdfWidth / 2 + 20, 25, 4, 'F');
+    const addHeader = async () => {
+      const logoData = await loadLogo();
+      
+      // Try to add logo if available
+      if (logoData) {
+        try {
+          pdf.addImage(logoData, 'PNG', pdfWidth / 2 - 15, 15, 30, 30);
+        } catch (e) {
+          console.log('Could not add logo image');
+          // Fallback: Draw dollar sign icon representation
+          pdf.setFillColor(16, 185, 129);
+          pdf.circle(pdfWidth / 2, 25, 10, 'F');
+          pdf.setTextColor(255, 255, 255);
+          pdf.setFontSize(14);
+          pdf.setFont('helvetica', 'bold');
+          pdf.text('$', pdfWidth / 2, 28, { align: 'center' });
+        }
+      } else {
+        // Fallback: Draw dollar sign icon representation
+        pdf.setFillColor(16, 185, 129);
+        pdf.circle(pdfWidth / 2, 25, 10, 'F');
+        pdf.setTextColor(255, 255, 255);
+        pdf.setFontSize(14);
+        pdf.setFont('helvetica', 'bold');
+        pdf.text('$', pdfWidth / 2, 28, { align: 'center' });
+      }
+      
+      // App name
+      pdf.setFont('helvetica', 'bold');
+      pdf.setFontSize(16);
+      pdf.setTextColor(16, 185, 129);
+      pdf.text('Money Mate', pdfWidth / 2, 52, { align: 'center' });
       
       // Title
       pdf.setFont('helvetica', 'bold');
-      pdf.setFontSize(24);
+      pdf.setFontSize(22);
       pdf.setTextColor(31, 41, 55);
-      pdf.text('Your Complete Financial Health Check', pdfWidth / 2, 45, { align: 'center' });
+      pdf.text('Your Complete Financial Health Check', pdfWidth / 2, 65, { align: 'center' });
       
       // Subtitle
       pdf.setFont('helvetica', 'normal');
-      pdf.setFontSize(12);
+      pdf.setFontSize(11);
       pdf.setTextColor(107, 114, 128);
-      pdf.text('Comprehensive analysis based on Australian financial benchmarks', pdfWidth / 2, 55, { align: 'center' });
+      pdf.text('Comprehensive analysis based on Australian financial benchmarks', pdfWidth / 2, 73, { align: 'center' });
       
       // Date
       const today = new Date().toLocaleDateString('en-AU', { 
@@ -41,14 +87,14 @@ export const useSectionPDFExport = () => {
         day: 'numeric' 
       });
       pdf.setFontSize(10);
-      pdf.text(`Generated: ${today}`, pdfWidth / 2, 65, { align: 'center' });
+      pdf.text(`Generated: ${today}`, pdfWidth / 2, 81, { align: 'center' });
       
       // Divider line
       pdf.setDrawColor(229, 231, 235);
       pdf.setLineWidth(0.5);
-      pdf.line(margin, 72, pdfWidth - margin, 72);
+      pdf.line(margin, 88, pdfWidth - margin, 88);
       
-      return 78; // Return Y position after header
+      return 94; // Return Y position after header
     };
 
     // Define section groups - sections in same array are grouped on same page
@@ -64,7 +110,6 @@ export const useSectionPDFExport = () => {
       ['investment-strategy'],
       ['learning-resources'],
       ['action-plan'],
-      // Removed ai-assistant
       ['stepper'],
       ['charts'],
       ['action-items'],
@@ -99,7 +144,7 @@ export const useSectionPDFExport = () => {
       }
 
       // Add header on first page, start content below it
-      let currentY = isFirstPage ? addHeader() : margin;
+      let currentY = isFirstPage ? await addHeader() : margin;
       isFirstPage = false;
 
       for (const element of elements) {
