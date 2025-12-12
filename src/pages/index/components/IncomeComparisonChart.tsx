@@ -9,26 +9,60 @@ interface IncomeComparisonChartProps {
 }
 
 const IncomeComparisonChart: React.FC<IncomeComparisonChartProps> = ({ userIncome, postcode }) => {
-  // National median full-time wage $88,400
+  // National median full-time wage - ABS Characteristics of Employment, August 2024
   const nationalMedian = 88400;
-  const nationalAverage = 92000; // Updated based on ABS data
   
-  // Simplified postcode-based median using ATO data patterns
+  // State/Territory median incomes based on ABS August 2024 data
   const getPostcodeMedian = (postcode: string): number => {
-    const firstDigit = parseInt(postcode.substring(0, 1));
-    // Rough estimates based on state income patterns from ATO data
-    switch (firstDigit) {
-      case 1: return 65000; // NSW regional
-      case 2: return 85000; // NSW metro (Sydney)
-      case 3: return 75000; // VIC
-      case 4: return 70000; // QLD
-      case 5: return 68000; // SA
-      case 6: return 80000; // WA
-      case 7: return 62000; // TAS
-      case 8: return 75000; // NT
-      case 9: return 70000; // ACT
-      default: return nationalMedian;
+    const postcodeNum = parseInt(postcode);
+    
+    // ACT postcodes: 0200-0299, 2600-2618, 2900-2920
+    if ((postcodeNum >= 200 && postcodeNum <= 299) ||
+        (postcodeNum >= 2600 && postcodeNum <= 2618) ||
+        (postcodeNum >= 2900 && postcodeNum <= 2920)) {
+      return 87776; // ACT - highest median
     }
+    
+    // NT postcodes: 0800-0899
+    if (postcodeNum >= 800 && postcodeNum <= 899) {
+      return 78000; // NT
+    }
+    
+    // NSW postcodes: 1000-2599, 2619-2899, 2921-2999
+    if ((postcodeNum >= 1000 && postcodeNum <= 2599) ||
+        (postcodeNum >= 2619 && postcodeNum <= 2899) ||
+        (postcodeNum >= 2921 && postcodeNum <= 2999)) {
+      return 72124; // NSW
+    }
+    
+    // VIC postcodes: 3000-3999, 8000-8999
+    if ((postcodeNum >= 3000 && postcodeNum <= 3999) ||
+        (postcodeNum >= 8000 && postcodeNum <= 8999)) {
+      return 72800; // VIC
+    }
+    
+    // QLD postcodes: 4000-4999, 9000-9999
+    if ((postcodeNum >= 4000 && postcodeNum <= 4999) ||
+        (postcodeNum >= 9000 && postcodeNum <= 9999)) {
+      return 70200; // QLD
+    }
+    
+    // SA postcodes: 5000-5999
+    if (postcodeNum >= 5000 && postcodeNum <= 5999) {
+      return 65000; // SA
+    }
+    
+    // WA postcodes: 6000-6999
+    if (postcodeNum >= 6000 && postcodeNum <= 6999) {
+      return 78000; // WA
+    }
+    
+    // TAS postcodes: 7000-7999
+    if (postcodeNum >= 7000 && postcodeNum <= 7999) {
+      return 62816; // TAS - lowest median
+    }
+    
+    return nationalMedian;
   };
 
   const postcodeMedian = postcode ? getPostcodeMedian(postcode) : nationalMedian;
